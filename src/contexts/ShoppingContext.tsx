@@ -156,19 +156,27 @@ const sampleProducts: Product[] = [
     id: "5",
     name: "URBAN",
     price: 89,
-    image: "https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg",
+    image:
+      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-nil-messenger--M14988_PM2_Front%20view.png?wid=2400&hei=2400",
     category: "Clothing",
     rating: 4.5,
     inStock: true,
     description: "Casual streetwear jacket with modern cut",
     designer: "Urban Style",
     articleNumber: "US005",
+    images: [
+      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-nil-messenger--M14988_PM2_Front%20view.png?wid=2400&hei=2400",
+      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-nil-messenger--M14988_PM1_Worn%20view.png?wid=2400&hei=2400",
+      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-nil-messenger--M14988_PM1_Worn%20view.png?wid=2400&hei=2400",
+      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-nil-messenger--M14988_PM1_Worn%20view.png?wid=2400&hei=2400",
+    ],
   },
   {
     id: "6",
     name: "CLASSIC",
     price: 199,
-    image: "https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg",
+    image:
+      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-nil-messenger--M14988_PM1_Worn%20view.png?wid=2400&hei=2400",
     category: "Clothing",
     rating: 4.8,
     inStock: true,
@@ -181,7 +189,7 @@ const sampleProducts: Product[] = [
     name: "LUXE",
     price: 245,
     image:
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-sequin-signature-knit-top--FTKS31XDK102_PM2_Front%20view.png?wid=2400&hei=2400",
+      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-sequin-signature-knit-top--FTKS31XDK102_PM2_Front%20view.png",
     category: "Clothing",
     rating: 4.9,
     inStock: true,
@@ -191,22 +199,10 @@ const sampleProducts: Product[] = [
   },
   {
     id: "20",
-    name: "LV JACKET",
-    price: 325,
-    image:
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-embossed-monogram-zip-up-jacket--FMJA26D97900_PM2_Front%20view.png?wid=2400&hei=2400",
-    category: "Clothing",
-    rating: 4.9,
-    inStock: true,
-    description: "Luxury leather jacket with classic style",
-    designer: "Louis Vuitton",
-    articleNumber: "LV020",
-  },
-  {
-    id: "20",
     name: "FORMAL",
     price: 189,
-    image: "https://images.pexels.com/photos/1043475/pexels-photo-1043475.jpeg",
+    image:
+      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-nil-messenger--M14988_PM1_Worn%20view.png?wid=2400&hei=2400",
     category: "Clothing",
     rating: 4.7,
     inStock: true,

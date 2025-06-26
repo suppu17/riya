@@ -1,90 +1,155 @@
-import React from "react";
-import { Heart, ShoppingCart, Star } from "lucide-react";
+import React, { useState, useEffect } from "react";
 import { useShopping } from "../contexts/ShoppingContext";
+import { Plus, Minus, Star } from "lucide-react";
 
+// In a larger app, this would be in a shared types file.
 interface Product {
   id: string;
   name: string;
   price: number;
   image: string;
+  images?: string[];
+  description?: string;
   category: string;
   rating: number;
   inStock: boolean;
+  designer?: string;
+  articleNumber?: string;
 }
 
 interface ProductCardProps {
   product: Product;
-  size?: "small" | "medium" | "large";
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({
-  product,
-  size = "medium",
-}) => {
-  const { addToCart, addToWishlist, wishlist } = useShopping();
-  const isInWishlist = wishlist.some((item) => item.id === product.id);
+const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const { addToCart } = useShopping();
+  const [quantity, setQuantity] = useState(1);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  const sizeClasses = {
-    small: "w-32 h-40",
-    medium: "w-40 h-48",
-    large: "w-48 h-56",
+  // Reset state when the product prop changes
+  useEffect(() => {
+    setSelectedImageIndex(0);
+    setQuantity(1);
+  }, [product]);
+
+  const handleAddToCart = () => {
+    for (let i = 0; i < quantity; i++) {
+      addToCart(product);
+    }
   };
 
   return (
-    <div
-      className={`${sizeClasses[size]} bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 overflow-hidden group hover:bg-white/15 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-purple-500/20`}
-    >
-      <div className="relative h-2/3 overflow-hidden">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+    <div className="w-full h-full bg-black rounded-3xl text-white relative overflow-hidden border border-white/20 shadow-2xl">
+      {/* Background Image */}
+      <img
+        src={product.images?.[selectedImageIndex] || product.image}
+        alt={product.name}
+        className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-in-out"
+      />
 
-        <button
-          onClick={() => addToWishlist(product)}
-          className={`absolute top-2 right-2 w-8 h-8 rounded-full backdrop-blur-xl border border-white/20 flex items-center justify-center transition-all duration-300 ${
-            isInWishlist
-              ? "bg-red-500/80 text-white"
-              : "bg-white/10 text-white/60 hover:text-red-400"
-          }`}
-        >
-          <Heart
-            className="w-4 h-4"
-            fill={isInWishlist ? "currentColor" : "none"}
-          />
-        </button>
+      {/* Gradient Overlay for Text Readability */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent"></div>
 
-        <div className="absolute bottom-2 left-2 flex items-center gap-1">
-          <Star className="w-3 h-3 text-yellow-400 fill-current" />
-          <span className="text-xs text-white font-medium">
-            {product.rating}
-          </span>
+      {/* Content Overlay */}
+      <div className="relative z-10 flex flex-col h-full p-8 justify-between">
+        {/* Top Section: Header */}
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-bold tracking-wider [text-shadow:0_2px_4px_rgba(0,0,0,0.7)]">
+              {product.name.toUpperCase()}
+            </h1>
+            <p className="text-white/90 mt-1 [text-shadow:0_1px_2px_rgba(0,0,0,0.5)] max-w-lg">
+              {product.description}
+            </p>
+            <div className="flex items-center gap-2 mt-3">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  className={`w-5 h-5 ${
+                    i < Math.floor(product.rating)
+                      ? "text-yellow-400 fill-current"
+                      : "text-white/40"
+                  } [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]`}
+                />
+              ))}
+              <span className="text-white/90 text-sm ml-1 [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
+                {product.rating}
+              </span>
+            </div>
+          </div>
+          <div className="text-right flex-shrink-0 ml-4">
+            <span className="text-5xl font-bold text-white [text-shadow:0_2px_8px_rgba(0,0,0,0.8)]">
+              ${product.price}
+            </span>
+          </div>
         </div>
-      </div>
 
-      <div className="p-3 h-1/3 flex flex-col justify-between">
+        {/* Bottom Section */}
         <div>
-          <h3 className="text-sm font-medium text-white truncate">
-            {product.name}
-          </h3>
-          <p className="text-xs text-white/60">{product.category}</p>
-        </div>
+          {/* Product Info */}
+          <div className="grid grid-cols-2 gap-6 mb-6 bg-black/40 backdrop-blur-sm p-4 rounded-xl border border-white/10">
+            <div>
+              <h3 className="text-white/70 font-semibold mb-1">Designer</h3>
+              <p className="text-lg">{product.designer}</p>
+            </div>
+            <div>
+              <h3 className="text-white/70 font-semibold mb-1">
+                Article number
+              </h3>
+              <p className="text-lg">{product.articleNumber}</p>
+            </div>
+          </div>
 
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-bold text-white">${product.price}</span>
-          <button
-            onClick={() => addToCart(product)}
-            disabled={!product.inStock}
-            className={`w-6 h-6 rounded-lg flex items-center justify-center transition-all duration-300 ${
-              product.inStock
-                ? "bg-purple-500/80 hover:bg-purple-600/80 text-white hover:scale-110"
-                : "bg-gray-500/50 text-gray-400 cursor-not-allowed"
-            }`}
-          >
-            <ShoppingCart className="w-3 h-3" />
-          </button>
+          {/* Image Thumbnails */}
+          {product.images && product.images.length > 1 && (
+            <div className="flex gap-3 mb-6 overflow-x-auto pb-2">
+              {product.images.map((image, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedImageIndex(index)}
+                  className={`w-16 h-16 rounded-xl overflow-hidden border-2 transition-all duration-300 flex-shrink-0 ${
+                    selectedImageIndex === index
+                      ? "border-white/50"
+                      : "border-white/20 hover:border-white/30"
+                  }`}
+                >
+                  <img
+                    src={image}
+                    alt={`${product.name} ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Quantity and Add to Cart */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white/80 hover:text-white transition-colors border border-white/20"
+              >
+                <Minus className="w-5 h-5" />
+              </button>
+              <span className="text-white font-semibold text-2xl w-8 text-center [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
+                {quantity}
+              </span>
+              <button
+                onClick={() => setQuantity(quantity + 1)}
+                className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white/80 hover:text-white transition-colors border border-white/20"
+              >
+                <Plus className="w-5 h-5" />
+              </button>
+            </div>
+
+            <button
+              onClick={handleAddToCart}
+              className="px-10 py-4 bg-white/20 backdrop-blur-md rounded-2xl text-white font-semibold hover:bg-white/30 transition-all duration-300 border border-white/30 text-lg"
+            >
+              Add to cart
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { useConversation } from "@elevenlabs/react";
 import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
 import React from "react";
-import { Mic, MicOff } from "lucide-react";
+import { Mic, MicOff, Pause, Play } from "lucide-react";
 
 // Define Product type to be used as prop
 interface Product {
@@ -111,8 +111,8 @@ const RiyaVoiceAgent: React.FC<RiyaVoiceAgentProps> = ({
   }
 
   return (
-    <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/20 flex flex-col items-center text-center">
-      <div className="w-28 h-28 rounded-full mb-2 overflow-hidden border-2 border-white/30">
+    <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-2 border border-white/20 flex flex-col items-center text-center relative">
+      <div className="w-full h-full aspect-square rounded-2xl overflow-hidden border-2 border-white/30">
         <video
           src="https://cdn.dribbble.com/userupload/15697531/file/original-0242acdc69146d4472fc5e69b48616dc.mp4"
           autoPlay
@@ -122,8 +122,16 @@ const RiyaVoiceAgent: React.FC<RiyaVoiceAgentProps> = ({
           className="w-full h-full object-cover"
         />
       </div>
-      {/* <h4 className="text-white font-medium">Riya</h4>
-      <p className="text-white/60 text-sm mb-0">Your Shopping Assistant</p> */}
+      <div className="absolute bottom-8 left-0 right-0 text-center mt-2">
+        <p className="text-orange-500 font-medium text-sm mb-0 bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-amber-500">
+          {conversation.status !== "connected"
+            ? "Riya.ai"
+            : conversation.status !== "speaking"
+            ? "listening"
+            : "speaking"}
+          <br />
+        </p>
+      </div>
 
       <button
         onClick={() => {
@@ -135,19 +143,13 @@ const RiyaVoiceAgent: React.FC<RiyaVoiceAgentProps> = ({
             conversation.startSession();
           }
         }}
-        className={`fixed -bottom-7 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center text-white/80 transition-colors border-2 border-white/30 mb-4 
-          ${
-            conversation.status === "listening"
-              ? "bg-green-500/50"
-              : "bg-white/20 hover:bg-white/30"
-          }`}
+        className={`absolute right-4 top-4 w-7 h-7 rounded-full flex items-center justify-center text-white transition-all 
+          bg-black/20 backdrop-blur-xl border border-white/20 hover:border-white/30 z-50`}
       >
-        {["connected", "speaking", "listening"].includes(
-          conversation.status
-        ) ? (
-          <MicOff className="w-4 h-4" />
+        {conversation.status !== "connected" ? (
+          <Play className="w-3 h-3" />
         ) : (
-          <Mic className="w-4 h-4" />
+          <Pause className="w-3 h-3" />
         )}
       </button>
     </div>
