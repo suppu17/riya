@@ -59,8 +59,8 @@ interface NewLandingPageProps {
 }
 
 const NewLandingPage: React.FC<NewLandingPageProps> = ({ onComplete }) => {
+  // Using wallpaper as background
   const { currentWallpaper } = useWallpaper();
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [animationReady, setAnimationReady] = useState(false);
 
   // Animation sequence setup
@@ -86,119 +86,58 @@ const NewLandingPage: React.FC<NewLandingPageProps> = ({ onComplete }) => {
     };
   }, [onComplete]);
 
-  // Content for each slide
-  const slides = [
-    {
-      title: "Welcome to Riya",
-      subtitle: "Your AI-powered shopping assistant",
-      description: "Discover a new way to shop with personalized recommendations and voice assistance."
-    },
-    {
-      title: "Smart Shopping",
-      subtitle: "Tailored to your preferences",
-      description: "Riya learns your style and budget to find the perfect items for you."
-    },
-    {
-      title: "Voice Enabled",
-      subtitle: "Shop hands-free",
-      description: "Simply ask Riya to find products, compare prices, or place orders with your voice."
-    }
-  ];
-
-  // Handle slide navigation
-  const nextSlide = () => {
-    if (currentSlide < slides.length - 1) {
-      setCurrentSlide(currentSlide + 1);
-    } else {
-      onComplete();
-    }
-  };
-
-  const prevSlide = () => {
-    if (currentSlide > 0) {
-      setCurrentSlide(currentSlide - 1);
-    }
-  };
-
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      {/* Dynamic Background */}
-      <div
-        className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
-        style={{ backgroundImage: `url('${currentWallpaper}')` }}
-      ></div>
-
-      {/* Gradient Overlays */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-black/30 to-black/60"></div>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/40"></div>
-
-      {/* Main Content Container */}
-      <div className="relative w-full h-full flex flex-col items-center justify-center z-10 px-6">
-        {/* Logo */}
-        <div className={`mb-8 ${animationReady ? 'scale-in' : 'opacity-0'}`} style={{ animationDelay: '0.3s' }}>
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center pulse">
-            <span className="text-4xl font-bold text-white">R</span>
-          </div>
-        </div>
-
-        {/* Content Card */}
+      {/* Full screen container with wallpaper background */}
+      <div className="relative w-full h-full">
+        {/* Wallpaper background */}
         <div 
-          className={`bg-black/30 backdrop-blur-lg rounded-3xl p-8 max-w-md w-full ${animationReady ? 'scale-in' : 'opacity-0'}`}
-          style={{ animationDelay: '0.6s' }}
-        >
-          <h1 className="text-4xl md:text-5xl font-bold mb-2 text-white text-center">
-            {slides[currentSlide].title}
-          </h1>
-          <h2 className="text-xl md:text-2xl font-medium mb-6 text-purple-300 text-center">
-            {slides[currentSlide].subtitle}
-          </h2>
-          <p className="text-lg text-gray-200 text-center mb-8">
-            {slides[currentSlide].description}
-          </p>
-
-          {/* Progress Indicators */}
-          <div className="flex justify-center space-x-2 mb-8">
-            {slides.map((_, index) => (
-              <div 
-                key={index} 
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentSlide ? 'bg-purple-500 scale-125' : 'bg-gray-400'
-                }`}
-              ></div>
-            ))}
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('${currentWallpaper}')` }}
+        ></div>
+        
+        {/* Overlay gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70"></div>
+        
+        {/* Main Content Container */}
+        <div className="relative w-full h-full flex flex-col items-center justify-center z-10 px-8">
+          {/* Logo */}
+          <div className={`mb-8 ${animationReady ? 'scale-in' : 'opacity-0'}`} style={{ animationDelay: '0.3s' }}>
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-orange-300 to-orange-500 flex items-center justify-center pulse">
+              <span className="text-4xl font-bold text-white">R</span>
+            </div>
           </div>
 
-          {/* Navigation Buttons */}
-          <div className="flex justify-between items-center">
-            <button
-              onClick={prevSlide}
-              className={`px-4 py-2 rounded-full ${
-                currentSlide === 0 
-                  ? 'bg-gray-600/50 text-gray-400 cursor-not-allowed' 
-                  : 'bg-white/20 hover:bg-white/30 text-white'
-              } transition-all duration-300`}
-              disabled={currentSlide === 0}
-            >
-              Previous
-            </button>
-            
-            <button
-              onClick={nextSlide}
-              className={`px-6 py-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium hover:opacity-90 transition-all duration-300 float`}
-            >
-              {currentSlide === slides.length - 1 ? 'Get Started' : 'Next'}
-            </button>
+          {/* Content Card */}
+          <div 
+            className={`bg-black/30 backdrop-blur-lg rounded-3xl p-8 max-w-md w-full ${animationReady ? 'scale-in' : 'opacity-0'}`}
+            style={{ animationDelay: '0.6s' }}
+          >
+            <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white text-center tracking-wider">
+              RIYA
+            </h1>
+            <h2 className="text-xl md:text-2xl font-medium mb-6 text-orange-200 text-center">
+              Voice it. Get it. Slay it.
+            </h2>
+            <div className="flex justify-center mt-8 mb-4">
+              <button
+                onClick={onComplete}
+                className="px-8 py-3 rounded-full bg-gradient-to-r from-orange-400 to-orange-500 text-white font-medium hover:opacity-90 transition-all duration-300 float"
+              >
+                <span className="border-b-2 border-white">Shop now</span>
+              </button>
+            </div>
           </div>
+
+          {/* Skip Button */}
+          <button
+            onClick={onComplete}
+            className={`mt-8 text-gray-300 hover:text-white transition-colors duration-300 ${animationReady ? 'fade-in-up' : 'opacity-0'}`}
+            style={{ animationDelay: '1s' }}
+          >
+            Skip Intro
+          </button>
         </div>
-
-        {/* Skip Button */}
-        <button
-          onClick={onComplete}
-          className={`mt-8 text-gray-300 hover:text-white transition-colors duration-300 ${animationReady ? 'fade-in-up' : 'opacity-0'}`}
-          style={{ animationDelay: '1s' }}
-        >
-          Skip Intro
-        </button>
       </div>
     </div>
   );
