@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useShopping } from "../../contexts/ShoppingContext";
 import TryOnDisplay from "./TryOnDisplay";
-import ModelSelectionModal from "../ModelSelectionModal";
+import PhotoSelectionModal from "../PhotoSelectionModal";
 
 const ProductDisplay: React.FC = () => {
   const {
@@ -13,6 +13,7 @@ const ProductDisplay: React.FC = () => {
     handleTryOnMe,
     isTryingOn,
     selectedModelId,
+    modelImages,
   } = useShopping();
 
   const [showModelModal, setShowModelModal] = useState(false);
@@ -220,6 +221,29 @@ const ProductDisplay: React.FC = () => {
                     )}
                   </motion.button>
 
+                  {/* Selected Photo Thumbnail */}
+                  {selectedModelId && (
+                    <motion.div
+                      className="absolute top-16 left-1/2 transform -translate-x-1/2 z-10"
+                      initial={{ opacity: 0, scale: 0.8, y: -10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.8, y: -10 }}
+                      transition={{ duration: 0.3, delay: 0.2 }}
+                    >
+                      <div className="relative">
+                        <img
+                          src={
+                            modelImages?.find((m) => m.id === selectedModelId)
+                              ?.url
+                          }
+                          alt="Selected photo"
+                          className="w-12 h-12 rounded-full object-cover border-2 border-white/50 shadow-lg"
+                        />
+                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border border-white/50"></div>
+                      </div>
+                    </motion.div>
+                  )}
+
                   {/* Custom Tooltip */}
                   <motion.div
                     className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-sm text-white text-xs font-medium px-3 py-2 rounded-lg shadow-lg border border-white/20 whitespace-nowrap pointer-events-none opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200"
@@ -274,8 +298,8 @@ const ProductDisplay: React.FC = () => {
         )}
       </motion.div>
 
-      {/* Model Selection Modal */}
-      <ModelSelectionModal
+      {/* Photo Selection Modal */}
+      <PhotoSelectionModal
         isOpen={showModelModal}
         onClose={() => setShowModelModal(false)}
       />

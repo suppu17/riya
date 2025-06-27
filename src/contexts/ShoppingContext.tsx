@@ -17,6 +17,7 @@ export interface ModelImage {
   id: string;
   name: string;
   url: string;
+  isCustom?: boolean;
 }
 
 interface ShoppingContextType {
@@ -57,6 +58,7 @@ interface ShoppingContextType {
   setTryOnResult: (result: string | null) => void;
   setIsTryingOn: (isTryingOn: boolean) => void;
   setTryOnError: (error: string | null) => void;
+  addCustomPhoto?: (photo: ModelImage) => void;
 }
 
 const ShoppingContext = createContext<ShoppingContextType | undefined>(
@@ -66,42 +68,42 @@ const ShoppingContext = createContext<ShoppingContextType | undefined>(
 const modelImages: ModelImage[] = [
   {
     id: "1",
-    name: "Model 1",
+    name: "Photo 1",
     url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_1.png",
   },
   {
     id: "2",
-    name: "Model 2",
+    name: "Photo 2",
     url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_2.png",
   },
   {
     id: "3",
-    name: "Model 3",
+    name: "Photo 3",
     url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_3.png",
   },
   {
     id: "4",
-    name: "Model 4",
+    name: "Photo 4",
     url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_4.png",
   },
   {
     id: "5",
-    name: "Model 5",
+    name: "Photo 5",
     url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_5.png",
   },
   {
     id: "6",
-    name: "Model 6",
+    name: "Photo 6",
     url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_6.png",
   },
   {
     id: "7",
-    name: "Model 7",
+    name: "Photo 7",
     url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/YEN_7671.JPG",
   },
   {
     id: "8",
-    name: "Model 8",
+    name: "Photo 8",
     url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/IMG_7514.JPG",
   },
 ];
@@ -120,6 +122,7 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
+  const [customPhotos, setCustomPhotos] = useState<ModelImage[]>([]);
 
   // Try On feature states
   const [tryOnResult, setTryOnResult] = useState<string | null>(null);
@@ -442,6 +445,13 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
     return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
+  const addCustomPhoto = (photo: ModelImage) => {
+    setCustomPhotos((prev) => [...prev, photo]);
+  };
+
+  // Combine default model images with custom photos
+  const allModelImages = [...modelImages, ...customPhotos];
+
   return (
     <ShoppingContext.Provider
       value={{
@@ -473,7 +483,7 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
         isTransitioning,
         fadeDirection,
         isImageTransitioning,
-        modelImages,
+        modelImages: allModelImages,
         handleImageChange,
         handleCategoryChange,
         smoothProductChange,
@@ -482,6 +492,7 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
         setTryOnResult,
         setIsTryingOn,
         setTryOnError,
+        addCustomPhoto,
       }}
     >
       {children}
