@@ -8,6 +8,7 @@ const ProductActions: React.FC = () => {
     selectedProduct,
     quantity,
     setQuantity,
+    addToCart,
   } = useShopping();
 
   if (!selectedProduct) {
@@ -106,46 +107,63 @@ const ProductActions: React.FC = () => {
       </motion.div>
 
       <motion.div
-        className="bg-white/5 backdrop-blur-sm rounded-full px-4 py-2 border border-white/10"
+        className="space-y-4"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.9 }}
       >
-        <div className="flex items-center justify-center gap-2">
-          <motion.button
-            onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            className="w-6 h-6 bg-white/10 rounded-md flex items-center justify-center text-white/80 hover:bg-white/20 transition-all duration-200 border border-white/10"
-            whileHover={{
-              scale: 1.05,
-              backgroundColor: "rgba(255, 255, 255, 0.2)",
-            }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Minus className="w-2.5 h-2.5" />
-          </motion.button>
+        <motion.div
+          className="bg-white/5 backdrop-blur-sm rounded-full px-4 py-2 border border-white/10"
+        >
+          <div className="flex items-center justify-center gap-2">
+            <motion.button
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              className="w-6 h-6 bg-white/10 rounded-md flex items-center justify-center text-white/80 hover:bg-white/20 transition-all duration-200 border border-white/10"
+              whileHover={{
+                scale: 1.05,
+                backgroundColor: "rgba(255, 255, 255, 0.2)",
+              }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Minus className="w-2.5 h-2.5" />
+            </motion.button>
 
-          <motion.span
-            className="text-white text-sm font-bold px-2 min-w-[24px] text-center"
-            key={quantity}
-            initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.2 }}
-          >
-            {quantity}
-          </motion.span>
+            <motion.span
+              className="text-white text-sm font-bold px-2 min-w-[24px] text-center"
+              key={quantity}
+              initial={{ scale: 1.1 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.2 }}
+            >
+              {quantity}
+            </motion.span>
 
-          <motion.button
-            onClick={() => setQuantity(quantity + 1)}
-            className="w-6 h-6 bg-white/10 rounded-md flex items-center justify-center text-white/80 hover:bg-white/20 transition-all duration-200 border border-white/10"
-            whileHover={{
-              scale: 1.05,
-              backgroundColor: "rgba(255, 255, 255, 0.2)",
-            }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Plus className="w-2.5 h-2.5" />
-          </motion.button>
-        </div>
+            <motion.button
+              onClick={() => setQuantity(quantity + 1)}
+              className="w-6 h-6 bg-white/10 rounded-md flex items-center justify-center text-white/80 hover:bg-white/20 transition-all duration-200 border border-white/10"
+              whileHover={{
+                scale: 1.05,
+                backgroundColor: "rgba(255, 255, 255, 0.2)",
+              }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Plus className="w-2.5 h-2.5" />
+            </motion.button>
+          </div>
+        </motion.div>
+
+        <motion.button
+          onClick={() => {
+            addToCart(selectedProduct);
+            setQuantity(1);
+          }}
+          className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full py-3 px-6 text-white font-semibold transition-all duration-300 border border-white/20 hover:border-white/40 flex items-center justify-center gap-2 group"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <ShoppingBag className="w-5 h-5 text-white/80 group-hover:text-white transition-colors" />
+          Add to Cart
+        </motion.button>
       </motion.div>
     </motion.div>
   );

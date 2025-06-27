@@ -7,19 +7,7 @@ import React, {
   useEffect,
 } from "react";
 
-export interface Product {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  category: string;
-  rating: number;
-  inStock: boolean;
-  description?: string;
-  designer?: string;
-  articleNumber?: string;
-  images?: string[];
-}
+import { sampleProducts, Product } from "./products";
 
 export interface CartItem extends Product {
   quantity: number;
@@ -115,197 +103,6 @@ const modelImages: ModelImage[] = [
     id: "8",
     name: "Model 8",
     url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/IMG_7514.JPG",
-  },
-];
-
-const sampleProducts: Product[] = [
-  {
-    id: "1",
-    name: "BVLGARI Allegra Baciami Eau De Parfum, 3.4 oz.",
-    price: 295,
-    image:
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4284544_100000_m",
-    category: "Beauty",
-    rating: 4.8,
-    inStock: true,
-    description: "Luxurious eau de parfum with captivating floral notes",
-    designer: "BVLGARI",
-    articleNumber: "BV001",
-    images: [
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4284544_100000_m",
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4284544_100000_c",
-    ],
-  },
-  {
-    id: "2",
-    name: "Rolex Oyster Perpetual Explorer 39mm Watch",
-    price: 10900,
-    image:
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4860902_100134_a",
-    category: "Accessories",
-    rating: 4.9,
-    inStock: true,
-    description: "39mm luxury watch with precision movement",
-    designer: "Rolex",
-    articleNumber: "RX001",
-    images: [
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4860902_100134_a",
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4860902_100134_z",
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4860902_100134_b",
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4860902_100134_c",
-    ],
-  },
-  {
-    id: "3",
-    name: "Franck Muller Limited Edition Rose Gold Auberlen Skeleton Auto Watch with Leather Strap",
-    price: 34000,
-    image:
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4176304_100000_m",
-    category: "Accessories",
-    rating: 4.9,
-    inStock: true,
-    description:
-      "Limited edition rose gold skeleton automatic watch with leather strap",
-    designer: "Franck Muller",
-    articleNumber: "FM001",
-    images: [
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4176304_100000_m",
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4176304_100000_a",
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4176304_100000_b",
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4176304_100000_c",
-    ],
-  },
-  {
-    id: "4",
-    name: "DIOR Dior Addict Lip Glow Butter",
-    price: 42,
-    image:
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_5031416_100000_n",
-    category: "Beauty",
-    rating: 4.6,
-    inStock: true,
-    description: "Nourishing lip balm with natural glow enhancement",
-    designer: "DIOR",
-    articleNumber: "DR001",
-    images: [
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_5031416_100000_n",
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_1200/01/nm_5031416_100263_a",
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_1200/01/nm_5031416_100000_d",
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_1200/01/nm_5031416_100000_b",
-    ],
-  },
-  {
-    id: "5",
-    name: "DIOR Sauvage Eau de Parfum",
-    price: 157,
-    image:
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_2535609_100000_a",
-    category: "Beauty",
-    rating: 4.7,
-    inStock: true,
-    description: "Bold and sophisticated fragrance with woody notes",
-    designer: "DIOR",
-    articleNumber: "DR002",
-    images: [
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_2535609_100000_a",
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_2535609_100000_b",
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_2535609_100000_h",
-    ],
-  },
-  {
-    id: "6",
-    name: "DIOR Rouge Blush Colour & Glow",
-    price: 50,
-    image:
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4868703_100594_m",
-    category: "Beauty",
-    rating: 4.5,
-    inStock: true,
-    description: "Radiant blush for natural colour and luminous glow",
-    designer: "DIOR",
-    articleNumber: "DR003",
-    images: [
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4868703_100594_m",
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4868703_100594_a",
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4868703_100594_b",
-    ],
-  },
-  {
-    id: "7",
-    name: "Burberry Sloanne Woven Linen Block-Heel Sandals",
-    price: 790,
-    image:
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_5040273_100296_m",
-    category: "Shoes",
-    rating: 4.4,
-    inStock: true,
-    description: "Elegant woven linen sandals with comfortable block heel",
-    designer: "Burberry",
-    articleNumber: "BB001",
-    images: [
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_5040273_100296_m",
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_5040273_100296_a",
-      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_5040273_100296_d",
-    ],
-  },
-  {
-    id: "8",
-    name: "Louis Vuitton Floral Jacquard A-Line Dress",
-    price: 3050,
-    image:
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/lv_dresses/Louis_Vuitton_Dresses_6.png",
-    category: "Clothing",
-    rating: 4.8,
-    inStock: true,
-    description:
-      "Elegant floral jacquard A-line dress with sophisticated silhouette",
-    designer: "Louis Vuitton",
-    articleNumber: "1AGPKU",
-    images: [
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/lv_dresses/Louis_Vuitton_Dresses_7.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/lv_dresses/Louis_Vuitton_Dresses_8.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/lv_dresses/Louis_Vuitton_Dresses_9.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/lv_dresses/Louis_Vuitton_Dresses_10.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/lv_dresses/Louis_Vuitton_Dresses_11.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/lv_dresses/Louis_Vuitton_Dresses_12.png",
-    ],
-  },
-  {
-    id: "9",
-    name: "Louis Vuitton LV Isola Flat Mule",
-    price: 795,
-    image:
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-lv-isola-flat-mule--ASPH1ATC53_PM2_Front%20view.png?wid=2400&hei=2400",
-    category: "Shoes",
-    rating: 4.6,
-    inStock: true,
-    description: "Stylish flat mule with signature LV design elements",
-    designer: "Louis Vuitton",
-    articleNumber: "1AGYP8",
-    images: [
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-lv-isola-flat-mule--ASPH1ATC53_PM2_Front%20view.png?wid=2400&hei=2400",
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-lv-isola-flat-mule--ASPH1ATC53_PM1_Side%20view.png?wid=2400&hei=2400",
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-lv-isola-flat-mule--ASPH1ATC53_PM1_Interior%20view.png?wid=2400&hei=2400",
-    ],
-  },
-  {
-    id: "10",
-    name: "Louis Vuitton Capucines BB",
-    price: 7000,
-    image:
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-capucines-bb--M24656_PM2_Front%20view.png?wid=2400&hei=2400",
-    category: "Bags",
-    rating: 4.9,
-    inStock: true,
-    description: "Iconic handbag with timeless elegance and craftsmanship",
-    designer: "Louis Vuitton",
-    articleNumber: "M24656",
-    images: [
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-capucines-bb--M24656_PM2_Front%20view.png?wid=2400&hei=2400",
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-capucines-bb--M24656_PM1_Side%20view.png?wid=2400&hei=2400",
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-capucines-bb--M24656_PM1_Interior%20view.png?wid=2400&hei=2400",
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-capucines-bb--M24656_PM1_Interior2%20view.png?wid=2400&hei=2400",
-    ],
   },
 ];
 
@@ -525,24 +322,59 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
         }
 
         // Find the model image from the centralized modelImages array
-        const selectedModel = modelImages.find(model => model.id === selectedModelId);
+        const selectedModel = modelImages.find(
+          (model) => model.id === selectedModelId
+        );
         return selectedModel?.url || modelImages[0]?.url; // Fallback to first model
       };
 
       const requestBody = {
         model_name: "tryon-v1.6",
         inputs: {
-          model_image: getSelectedModelImage(),
-          garment_image: selectedProduct.image,
+          model_image: await convertImageToBase64(getSelectedModelImage()),
+          garment_image: await convertImageToBase64(selectedProduct.image),
         },
       };
+
+      // Helper function to convert image URL to base64
+      async function convertImageToBase64(imageUrl: string): Promise<string> {
+        // For S3 URLs, return the URL directly since the API can handle URLs
+        if (imageUrl.includes("s3.")) {
+          return imageUrl;
+        }
+
+        try {
+          const response = await fetch(imageUrl, {
+            mode: "cors",
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error(`Failed to fetch image: ${response.status}`);
+          }
+
+          const blob = await response.blob();
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        } catch (error) {
+          console.error("Error converting image to base64:", error);
+          // Return the URL directly as fallback if fetch fails
+          return imageUrl;
+        }
+      }
 
       const response = await fetch("https://api.fashn.ai/v1/run", {
         method: "POST",
         body: JSON.stringify(requestBody),
         headers: {
           Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
+          "Content-Type": "image/png", // Changed from image/png to application/json since we're sending JSON data
         },
       });
 

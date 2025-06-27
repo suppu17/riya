@@ -1,6 +1,6 @@
-import React from 'react';
-import { useShopping } from '../../contexts/ShoppingContext';
-import { Loader2, Clock } from 'lucide-react';
+import React from "react";
+import { useShopping } from "../../contexts/ShoppingContext";
+import { Loader2, Clock } from "lucide-react";
 
 const TryOnDisplay: React.FC = () => {
   const {
@@ -24,14 +24,12 @@ const TryOnDisplay: React.FC = () => {
               {tryOnStatus === "in_queue" && "Waiting in queue..."}
               {tryOnStatus === "processing" &&
                 "Processing your virtual try-on..."}
-              {tryOnStatus === "starting" &&
-                "Starting virtual try-on..."}
+              {tryOnStatus === "starting" && "Starting virtual try-on..."}
               {!tryOnStatus && "Creating your virtual try-on..."}
             </p>
             {predictionId && (
               <p className="text-white/60 text-xs mt-2 flex items-center gap-1">
-                <Clock className="w-3 h-3" /> This may take up to 40
-                seconds
+                <Clock className="w-3 h-3" /> This may take up to 40 seconds
               </p>
             )}
             <p className="text-white/60 text-xs mt-2">
@@ -67,18 +65,21 @@ const TryOnDisplay: React.FC = () => {
               alt="Virtual Try-On Result"
               className="max-h-full max-w-full object-contain rounded-xl"
               onError={(e) => {
-                console.error('Failed to load try-on result image:', tryOnResult);
-                setTryOnError('Failed to load try-on result image');
+                console.error(
+                  "Failed to load try-on result image:",
+                  tryOnResult
+                );
+                setTryOnError("Failed to load try-on result image");
                 setTryOnResult(null);
               }}
             />
           </div>
-          
+
           {/* Reset button */}
           <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-xl px-3 py-1.5 rounded-xl">
             <button
               onClick={() => setTryOnResult(null)}
-              className="text-white text-xs font-medium flex items-center gap-1 hover:bg-white/20 px-2 py-1 rounded transition-colors"
+              className="text-gray-300 text-xs font-medium flex items-center gap-1 hover:bg-white/20 px-2 py-1 rounded transition-colors"
             >
               <i className="fas fa-times"></i>
               Reset Try On

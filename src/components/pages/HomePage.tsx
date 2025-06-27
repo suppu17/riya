@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "motion/react";
 import TopNavigationBar from "../home/TopNavigationBar";
 import ProductListSidebar from "../home/ProductListSidebar";
+import CategoryGallery from "../home/CategoryGallery";
 import CategoryNavigation from "../home/CategoryNavigation";
 import ProductDisplay from "../home/ProductDisplay";
 import ProductActions from "../home/ProductActions";
@@ -30,13 +31,14 @@ const HomePage: React.FC = () => {
         transition={{ duration: 0.6, delay: 0.2 }}
       >
         <motion.div
-          className="col-span-3"
+          className="col-span-3 space-y-4"
           initial={{ x: -30, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
           whileHover={{ scale: 1.02 }}
         >
           <ProductListSidebar />
+          <CategoryGallery />
         </motion.div>
 
         <motion.div

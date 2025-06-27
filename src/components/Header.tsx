@@ -2,12 +2,23 @@ import React, { useState } from "react";
 import { Search, Mic, Bell, ShoppingCart } from "lucide-react";
 import { useShopping } from "../contexts/ShoppingContext";
 import { useVoice } from "../contexts/VoiceContext";
+import CartModal from "./CartModal";
 
 const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const { getCartItemCount } = useShopping();
   const { startListening, isListening } = useVoice();
   const cartCount = getCartItemCount();
+
+  const handleCartClick = () => {
+    console.log("Cart clicked");
+    setIsCartModalOpen(true);
+  };
+
+  const handleCloseCartModal = () => {
+    setIsCartModalOpen(false);
+  };
 
   return (
     <div className="h-12 px-2 flex items-center justify-between bg-white/5 backdrop-blur-xl border-b border-white/10">
@@ -44,7 +55,10 @@ const Header: React.FC = () => {
           <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
         </button>
 
-        <button className="relative p-3 text-white/60 hover:text-white transition-colors">
+        <button
+          onClick={handleCartClick}
+          className="relative p-3 text-white/60 hover:text-white transition-colors"
+        >
           <ShoppingCart className="w-5 h-5" />
           {cartCount > 0 && (
             <span className="absolute -top-1 -right-1 w-5 h-5 bg-purple-500 rounded-full text-xs text-white flex items-center justify-center">
@@ -53,6 +67,9 @@ const Header: React.FC = () => {
           )}
         </button>
       </div>
+
+      {/* Cart Modal */}
+      <CartModal isOpen={isCartModalOpen} onClose={handleCloseCartModal} />
     </div>
   );
 };

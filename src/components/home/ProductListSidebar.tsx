@@ -4,7 +4,8 @@ import { useShopping } from "../../contexts/ShoppingContext";
 import ProductListCard from "../ProductListCard";
 
 const ProductListSidebar: React.FC = () => {
-  const { products, currentCategory, selectedProduct, setSelectedProduct } = useShopping();
+  const { products, currentCategory, selectedProduct, setSelectedProduct } =
+    useShopping();
 
   const filteredProducts = products.filter(
     (product) =>
@@ -32,7 +33,7 @@ const ProductListSidebar: React.FC = () => {
       </motion.h3>
 
       <motion.div
-        className="space-y-3 max-h-96 overflow-y-auto"
+        className="space-y-3 max-h-[40vh] overflow-y-auto"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.5 }}

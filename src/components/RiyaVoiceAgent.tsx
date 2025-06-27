@@ -31,7 +31,7 @@ const RiyaVoiceAgent: React.FC = () => {
   const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
 
   const conversation = useConversation({
-    agentId: "agent_01jynswtebf13r5ct23mqfj399",
+    agentId: "agent_01jyncdvaxfqn8kdqk5rfn1jdt",
     client: apiKey ? new ElevenLabsClient({ apiKey }) : undefined,
     voiceId: "21m00Tcm4TlvDq8ikWAM", // A default voice for 'Rachel'.
     clientTools: {

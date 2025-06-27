@@ -5,11 +5,24 @@ const CategoryNavigation: React.FC = () => {
   const { currentCategory, handleCategoryChange } = useShopping();
 
   const categories = [
-    { id: "Clothing", label: "Clothing & Fashion", icon: "fa-tshirt" },
-    { id: "Bags", label: "Bags & Handbags", icon: "fa-shopping-bag" },
-    { id: "Beauty", label: "Beauty & Skincare", icon: "fa-spa" },
-    { id: "Accessories", label: "Accessories", icon: "fa-gem" },
-    { id: "Shoes", label: "Shoes & Footwear", icon: "fa-shoe-prints" },
+    {
+      id: "Clothing",
+      label: "Clothing & Fashion",
+      icon: "fa-tshirt",
+      showTryON: true,
+    },
+    {
+      id: "Bags",
+      label: "Bags & Handbags",
+      icon: "fa-shopping-bag",
+    },
+    { id: "Watches", label: "Watches", icon: "fa-clock" },
+    {
+      id: "Shoes",
+      label: "Shoes & Footwear",
+      icon: "fa-shoe-prints",
+    },
+    { id: "Gifts", label: "Gifts", icon: "fa-gift" },
   ];
 
   return (
@@ -24,10 +37,10 @@ const CategoryNavigation: React.FC = () => {
                 ? "bg-white/20 text-white border border-white/30"
                 : "text-white/60 hover:text-white hover:bg-white/10"
             }`}
-            r
+            role="button"
           >
-            <i className={`fas ${category.icon} text-xl`}></i>
-            <span className="text-base font-medium">
+            <i className={`fas ${category.icon} text-xxl`}></i>
+            <span className="text-base font-large">
               {category.label.split(" ")[0]}
             </span>
           </button>

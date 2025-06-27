@@ -1,11 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "motion/react";
 import { useShopping } from "../../contexts/ShoppingContext";
 import { Mic, ShoppingCart } from "lucide-react";
+import CartModal from "../CartModal";
 
 const TopNavigationBar: React.FC = () => {
   const { getCartItemCount } = useShopping();
   const cartCount = getCartItemCount();
+  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+
+  const handleCartClick = () => {
+    setIsCartModalOpen(true);
+  };
+
+  const handleCloseCartModal = () => {
+    setIsCartModalOpen(false);
+  };
 
   return (
     <motion.div
@@ -55,8 +65,9 @@ const TopNavigationBar: React.FC = () => {
           </motion.div>
         </motion.button>
 
-        <motion.div
-          className="flex items-center gap-2 bg-white/10 backdrop-blur-xl rounded-lg px-3 py-2 border border-white/20"
+        <motion.button
+          onClick={handleCartClick}
+          className="flex items-center gap-2 bg-white/10 backdrop-blur-xl rounded-lg px-3 py-2 border border-white/20 cursor-pointer"
           whileHover={{
             scale: 1.05,
             backgroundColor: "rgba(255, 255, 255, 0.15)",
@@ -85,8 +96,11 @@ const TopNavigationBar: React.FC = () => {
           >
             {cartCount} items
           </motion.span>
-        </motion.div>
+        </motion.button>
       </motion.div>
+
+      {/* Cart Modal */}
+      <CartModal isOpen={isCartModalOpen} onClose={handleCloseCartModal} />
     </motion.div>
   );
 };

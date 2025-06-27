@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useShopping } from "../../contexts/ShoppingContext";
 import TryOnDisplay from "./TryOnDisplay";
-import { Camera } from "lucide-react";
+import ModelSelectionModal from "../ModelSelectionModal";
 
 const ProductDisplay: React.FC = () => {
   const {
@@ -12,7 +12,18 @@ const ProductDisplay: React.FC = () => {
     handleImageChange,
     handleTryOnMe,
     isTryingOn,
+    selectedModelId,
   } = useShopping();
+
+  const [showModelModal, setShowModelModal] = useState(false);
+
+  const handleTryOnClick = async () => {
+    if (!selectedModelId) {
+      setShowModelModal(true);
+      return;
+    }
+    await handleTryOnMe();
+  };
 
   if (!selectedProduct) {
     return (
@@ -86,33 +97,143 @@ const ProductDisplay: React.FC = () => {
                   }}
                 />
 
-                {/* Try On Me Button Overlay */}
-                <motion.button
-                  onClick={handleTryOnMe}
-                  disabled={isTryingOn}
-                  className="absolute top-4 right-4 bg-white/20 backdrop-blur-md border border-white/30 rounded-full p-3 text-white hover:bg-white/30 hover:border-white/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: 0.5 }}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  title={isTryingOn ? "Processing..." : "Try On Me"}
-                >
-                  {isTryingOn ? (
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{
-                        duration: 1,
-                        repeat: Infinity,
-                        ease: "linear",
-                      }}
-                    >
-                      <Camera size={20} />
-                    </motion.div>
-                  ) : (
-                    <Camera size={20} />
-                  )}
-                </motion.button>
+                {/* AI Try On Button Overlay */}
+                <div className="absolute top-4 right-4 group/tooltip">
+                  <motion.button
+                    onClick={handleTryOnClick}
+                    disabled={isTryingOn}
+                    className="w-12 h-12 bg-gradient-to-br from-purple-600/80 via-blue-600/80 to-indigo-700/80 backdrop-blur-md border-3 border-white/50 rounded-full text-white hover:from-purple-500/90 hover:via-blue-500/90 hover:to-indigo-600/90 hover:border-white/80 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group shadow-lg shadow-purple-500/30"
+                    initial={{ opacity: 0, scale: 0.8, y: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{
+                      duration: 0.4,
+                      delay: 0.5,
+                      type: "spring",
+                      stiffness: 200,
+                    }}
+                    whileHover={{
+                      scale: 1.08,
+                      boxShadow: "0 12px 40px rgba(147, 51, 234, 0.5)",
+                      border: "3px solid rgba(255, 255, 255, 0.9)",
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {isTryingOn ? (
+                      <motion.svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="22"
+                        height="22"
+                        fill="none"
+                        viewBox="0 0 16 16"
+                        className="text-white drop-shadow-lg"
+                        animate={{
+                          scale: [1, 1.1, 1],
+                        }}
+                        transition={{
+                          scale: {
+                            duration: 1,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          },
+                        }}
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          d="M7 3.5H1.5v11h13V7"
+                        />
+                        <circle
+                          cx="8"
+                          cy="7"
+                          r="1.5"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                        />
+                        <path
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          d="m5 10.5-1 4h8l-1-4H5Z"
+                        />
+                        <motion.path
+                          fill="#FFD700"
+                          stroke="#FFD700"
+                          strokeWidth="0.5"
+                          d="m12 .5.848 2.151L15 3.5l-2.152.849L12 6.5l-.848-2.151L9 3.5l2.152-.849L12 .5Z"
+                          animate={{
+                            opacity: [0.7, 1, 0.7],
+                            scale: [0.9, 1.3, 0.9],
+                          }}
+                          transition={{
+                            duration: 1.5,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          }}
+                        />
+                      </motion.svg>
+                    ) : (
+                      <motion.svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="22"
+                        height="22"
+                        fill="none"
+                        viewBox="0 0 16 16"
+                        className="text-white group-hover:text-yellow-200 transition-colors duration-200 drop-shadow-lg"
+                        whileHover={{
+                          scale: 1.15,
+                          rotate: [0, -5, 5, 0],
+                        }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          d="M7 3.5H1.5v11h13V7"
+                        />
+                        <circle
+                          cx="8"
+                          cy="7"
+                          r="1.5"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                        />
+                        <path
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          d="m5 10.5-1 4h8l-1-4H5Z"
+                        />
+                        <motion.path
+                          fill="#FFD700"
+                          stroke="#FFD700"
+                          strokeWidth="0.5"
+                          d="m12 .5.848 2.151L15 3.5l-2.152.849L12 6.5l-.848-2.151L9 3.5l2.152-.849L12 .5Z"
+                          animate={{
+                            opacity: [0.8, 1, 0.8],
+                            scale: [0.9, 1.2, 0.9],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                          }}
+                        />
+                      </motion.svg>
+                    )}
+                  </motion.button>
+
+                  {/* Custom Tooltip */}
+                  <motion.div
+                    className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-sm text-white text-xs font-medium px-3 py-2 rounded-lg shadow-lg border border-white/20 whitespace-nowrap pointer-events-none opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200"
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 0, y: -5 }}
+                    whileHover={{ opacity: 1, y: 0 }}
+                  >
+                    <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent font-semibold">
+                      {isTryingOn ? "AI Processing..." : "✨ Try On with AI"}
+                    </span>
+                    {/* Tooltip Arrow */}
+                    <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-black/90 border-l border-t border-white/20 rotate-45"></div>
+                  </motion.div>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -153,57 +274,11 @@ const ProductDisplay: React.FC = () => {
         )}
       </motion.div>
 
-      <motion.div
-        className="mt-4"
-        initial={{ y: 30, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.4, delay: 0.5 }}
-      >
-        <motion.div
-          className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10"
-          whileHover={{
-            backgroundColor: "rgba(255, 255, 255, 0.08)",
-            borderColor: "rgba(255, 255, 255, 0.15)",
-            y: -2,
-          }}
-          transition={{ duration: 0.2 }}
-        >
-          <motion.div className="flex items-center justify-between">
-            <motion.div>
-              <motion.h3
-                className="text-white font-semibold text-lg mb-1"
-                key={selectedProduct.name}
-                initial={{ opacity: 0, x: -15 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                {selectedProduct.name}
-              </motion.h3>
-              <motion.p
-                className="text-white/60 text-xs"
-                initial={{ opacity: 0, x: -15 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-              >
-                {selectedProduct.description}
-              </motion.p>
-            </motion.div>
-            <motion.div
-              className="text-right"
-              initial={{ opacity: 0, x: 15 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, delay: 0.15 }}
-            >
-              <motion.span
-                className="text-white font-bold text-lg"
-                whileHover={{ scale: 1.05 }}
-              >
-                ${selectedProduct.price}
-              </motion.span>
-            </motion.div>
-          </motion.div>
-        </motion.div>
-      </motion.div>
+      {/* Model Selection Modal */}
+      <ModelSelectionModal
+        isOpen={showModelModal}
+        onClose={() => setShowModelModal(false)}
+      />
     </>
   );
 };
