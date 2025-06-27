@@ -3,7 +3,7 @@ import MainContent from "./components/MainContent";
 import VoiceAssistant from "./components/VoiceAssistant";
 import BottomNav from "./components/BottomNav";
 import WallpaperSettings from "./components/WallpaperSettings";
-import LandingPage from "./components/LandingPage";
+import NewLandingPage from "./components/NewLandingPage";
 
 import { ShoppingProvider } from "./contexts/ShoppingContext";
 import { VoiceProvider } from "./contexts/VoiceContext";
@@ -17,7 +17,7 @@ const AppContent: React.FC = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Landing Page */}
-      {showLanding && <LandingPage onComplete={() => setShowLanding(false)} />}
+      {showLanding && <NewLandingPage onComplete={() => setShowLanding(false)} />}
 
       {/* Main App Content */}
       <div
