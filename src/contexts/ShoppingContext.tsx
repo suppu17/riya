@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useRef, useEffect } from "react";
 
-interface Product {
+export interface Product {
   id: string;
   name: string;
   price: number;
@@ -14,7 +14,7 @@ interface Product {
   images?: string[];
 }
 
-interface CartItem extends Product {
+export interface CartItem extends Product {
   quantity: number;
 }
 
@@ -31,6 +31,28 @@ interface ShoppingContextType {
   clearCart: () => void;
   getTotalPrice: () => number;
   getCartItemCount: () => number;
+  selectedProduct: Product | undefined;
+  setSelectedProduct: React.Dispatch<React.SetStateAction<Product | undefined>>;
+  quantity: number;
+  setQuantity: React.Dispatch<React.SetStateAction<number>>;
+  selectedImageIndex: number;
+  setSelectedImageIndex: React.Dispatch<React.SetStateAction<number>>;
+  tryOnResult: string | null;
+  isTryingOn: boolean;
+  tryOnError: string | null;
+  predictionId: string | null;
+  tryOnStatus: string | null;
+  isTransitioning: boolean;
+  fadeDirection: string;
+  isImageTransitioning: boolean;
+  handleImageChange: (index: number) => void;
+  handleCategoryChange: (categoryId: string) => void;
+  smoothProductChange: (product: Product) => void;
+  handleAddToCart: () => void;
+  handleTryOnMe: () => Promise<void>;
+  setTryOnResult: (result: string | null) => void;
+  setIsTryingOn: (isTryingOn: boolean) => void;
+  setTryOnError: (error: string | null) => void;
 }
 
 const ShoppingContext = createContext<ShoppingContextType | undefined>(
@@ -427,18 +449,238 @@ const sampleProducts: Product[] = [
     rating: 4.9,
     inStock: true,
     description: "Premium orchid with exotic purple blooms",
-    designer: "Exotic Flora",
     articleNumber: "EF032",
   },
 ];
 
-export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const [products] = useState<Product[]>(sampleProducts);
+export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<Product[]>([]);
   const [currentCategory, setCurrentCategory] = useState("Clothing");
+
+  const [selectedProduct, setSelectedProduct] = useState(
+    sampleProducts.find((p) => p.category === currentCategory) || sampleProducts[0]
+  );
+  const [quantity, setQuantity] = useState(1);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  // Try On feature states
+  const [tryOnResult, setTryOnResult] = useState<string | null>(null);
+  const [isTryingOn, setIsTryingOn] = useState(false);
+  const [tryOnError, setTryOnError] = useState<string | null>(null);
+  const [predictionId, setPredictionId] = useState<string | null>(null);
+  const [tryOnStatus, setTryOnStatus] = useState<string | null>(null);
+  const pollingTimeoutRef = useRef<number | null>(null);
+
+  // Transition state to control smooth transitions
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [fadeDirection, setFadeDirection] = useState("out"); // "in" or "out"
+  const [isImageTransitioning, setIsImageTransitioning] = useState(false);
+  const nextImageIndexRef = useRef(selectedImageIndex);
+  const nextProductRef = useRef(selectedProduct);
+
+  const handleCategoryChange = (categoryId: string) => {
+    setCurrentCategory(categoryId);
+    const newCategoryProducts = sampleProducts.filter(
+      (p) => p.category === categoryId
+    );
+
+    if (newCategoryProducts.length > 0) {
+      // Start transition
+      setIsTransitioning(true);
+      setFadeDirection("out");
+
+      // Store the next product to show after transition
+      nextProductRef.current = newCategoryProducts[0];
+      setSelectedImageIndex(0);
+
+      // Allow time for fade out before changing product
+      setTimeout(() => {
+        setSelectedProduct(nextProductRef.current);
+        setFadeDirection("in");
+
+        // Complete transition
+        setTimeout(() => {
+          setIsTransitioning(false);
+        }, 300);
+      }, 300);
+    }
+  };
+
+  // Add smooth transition when product changes without category change
+  const smoothProductChange = (product: typeof selectedProduct) => {
+    if (product.id === selectedProduct.id) return;
+
+    setIsTransitioning(true);
+    setFadeDirection("out");
+    nextProductRef.current = product;
+
+    setTimeout(() => {
+      setSelectedProduct(product);
+      setFadeDirection("in");
+
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 300);
+    }, 300);
+  };
+
+  const handleImageChange = (index: number) => {
+    if (index === selectedImageIndex) return;
+
+    setIsImageTransitioning(true);
+    nextImageIndexRef.current = index;
+
+    setTimeout(() => {
+      setSelectedImageIndex(index);
+      setTimeout(() => {
+        setIsImageTransitioning(false);
+      }, 300); // Fade in duration
+    }, 300); // Fade out duration
+  };
+
+  const handleAddToCart = () => {
+    if (!selectedProduct) return;
+    for (let i = 0; i < quantity; i++) {
+      addToCart(selectedProduct);
+    }
+  };
+
+  const clearPolling = () => {
+    if (pollingTimeoutRef.current) {
+      clearTimeout(pollingTimeoutRef.current);
+      pollingTimeoutRef.current = null;
+    }
+  };
+
+  const checkPredictionStatus = async (id: string) => {
+    try {
+      const apiKey = import.meta.env.VITE_FASHN_API_KEY;
+      const response = await fetch(`https://api.fashn.ai/v1/status/${id}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        cache: "no-cache",
+      });
+
+      if (!response.ok) {
+        console.error("API error, retrying...", response.status);
+        // Retry after 5 seconds on server error
+        pollingTimeoutRef.current = window.setTimeout(
+          () => checkPredictionStatus(id),
+          5000
+        );
+        return;
+      }
+
+      const data = await response.json();
+      console.log("Status API Response:", data);
+      setTryOnStatus(data.status || "unknown");
+
+      switch (data.status) {
+        case "completed":
+          setTryOnResult(data.output?.[0] || data.output);
+          setIsTryingOn(false);
+          clearPolling();
+          break;
+        case "failed":
+          setTryOnError(
+            typeof data.error === 'string' ? data.error : JSON.stringify(data.error) || "The prediction failed."
+          );
+          setIsTryingOn(false);
+          clearPolling();
+          break;
+        case "starting":
+        case "in_queue":
+        case "processing":
+          // Continue polling
+          pollingTimeoutRef.current = window.setTimeout(
+            () => checkPredictionStatus(id),
+            3000
+          );
+          break;
+        default:
+          console.warn(`Unknown status: ${data.status}. Retrying...`);
+          pollingTimeoutRef.current = window.setTimeout(
+            () => checkPredictionStatus(id),
+            5000
+          );
+          break;
+      }
+    } catch (error) {
+      console.error("Error checking prediction status, retrying...", error);
+      // Retry after 5 seconds on network error
+      pollingTimeoutRef.current = window.setTimeout(
+        () => checkPredictionStatus(id),
+        5000
+      );
+    }
+  };
+
+  // Clean up polling on component unmount
+  useEffect(() => {
+    return () => clearPolling();
+  }, []);
+
+  const handleTryOnMe = async () => {
+    if (!selectedProduct) return;
+    // Reset state for a new request
+    setIsTryingOn(true);
+    setTryOnError(null);
+    setTryOnResult(null);
+    setTryOnStatus("Initializing...");
+    setPredictionId(null);
+    clearPolling(); // Ensure no previous polling is running
+
+    try {
+      const apiKey = import.meta.env.VITE_FASHN_API_KEY;
+      if (!apiKey) {
+        setTryOnError("API key is not set.");
+        setIsTryingOn(false);
+        return;
+      }
+
+      const requestBody = {
+        model_name: "tryon-v1.6",
+        inputs: {
+          model_image:
+            "https://media.istockphoto.com/id/907261794/photo/handsome-man.jpg?s=612x612&w=0&k=20&c=31YyQlon3lBpv7izm6h05HdwZXNiQKRX6_lkFQcTPRY=",
+          garment_image: selectedProduct.image,
+        },
+      };
+
+      const response = await fetch("https://api.fashn.ai/v1/run", {
+        method: "POST",
+        body: JSON.stringify(requestBody),
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+      console.log("Initial API Response:", data);
+
+      if (response.ok && data.id) {
+        setPredictionId(data.id);
+        setTryOnStatus("starting");
+        // Kick off the polling
+        checkPredictionStatus(data.id);
+      } else {
+        setTryOnError(data.error || "Failed to start prediction.");
+        setIsTryingOn(false);
+      }
+    } catch (error) {
+      console.error("Try on error:", error);
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      setTryOnError(errorMessage);
+      setIsTryingOn(false);
+    }
+  };
+
+  const [products] = useState<Product[]>(sampleProducts);
 
   const addToCart = (product: Product) => {
     setCart((prev) => {
@@ -484,7 +726,7 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
   return (
     <ShoppingContext.Provider
       value={{
-        products,
+        products: sampleProducts,
         cart,
         wishlist,
         currentCategory,
@@ -496,6 +738,28 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
         clearCart,
         getTotalPrice,
         getCartItemCount,
+        selectedProduct,
+        setSelectedProduct,
+        quantity,
+        setQuantity,
+        selectedImageIndex,
+        setSelectedImageIndex,
+        tryOnResult,
+        isTryingOn,
+        tryOnError,
+        predictionId,
+        tryOnStatus,
+        isTransitioning,
+        fadeDirection,
+        isImageTransitioning,
+        handleImageChange,
+        handleCategoryChange,
+        smoothProductChange,
+        handleAddToCart,
+        handleTryOnMe,
+        setTryOnResult,
+        setIsTryingOn,
+        setTryOnError,
       }}
     >
       {children}

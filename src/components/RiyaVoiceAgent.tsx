@@ -18,23 +18,16 @@ interface Product {
   images?: string[];
 }
 
-interface RiyaVoiceAgentProps {
-  products: Product[];
-  setSelectedProduct: (product: Product) => void;
-  addToCart: (product: Product) => void;
-  currentCategory: string;
-  selectedProduct: Product;
-  setCurrentCategory: (category: string) => void;
-}
+import { useShopping } from "../contexts/ShoppingContext";
 
-const RiyaVoiceAgent: React.FC<RiyaVoiceAgentProps> = ({
-  products,
-  setSelectedProduct,
-  addToCart,
-  currentCategory,
-  selectedProduct,
-  setCurrentCategory,
-}) => {
+const RiyaVoiceAgent: React.FC = () => {
+  const {
+    products,
+    setSelectedProduct,
+    addToCart,
+    selectedProduct,
+    setCurrentCategory,
+  } = useShopping();
   const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
 
   const conversation = useConversation({
@@ -75,7 +68,7 @@ const RiyaVoiceAgent: React.FC<RiyaVoiceAgentProps> = ({
         const productIDString = String(productID);
 
         const foundProduct = products.find(
-          (product) => product.id === productIDString
+          (product) => product.id.toString() === productIDString
         );
 
         if (foundProduct) {
