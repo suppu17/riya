@@ -6,6 +6,7 @@ import CartPage from "./pages/CartPage";
 import WishlistPage from "./pages/WishlistPage";
 import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
+import PhotosPage from "./pages/PhotosPage";
 
 interface MainContentProps {
   currentView: string;
@@ -43,12 +44,7 @@ const MainContent: React.FC<MainContentProps> = ({ currentView }) => {
           </div>
         );
       case "photos":
-        return (
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 text-center">
-            <h2 className="text-2xl font-semibold text-white mb-4">Photos</h2>
-            <p className="text-white/60">Photo gallery coming soon...</p>
-          </div>
-        );
+        return <PhotosPage />;
       case "news":
         return (
           <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 text-center">

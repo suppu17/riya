@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, ReactNode, useRef, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useRef,
+  useEffect,
+} from "react";
 
 export interface Product {
   id: string;
@@ -16,6 +23,12 @@ export interface Product {
 
 export interface CartItem extends Product {
   quantity: number;
+}
+
+export interface ModelImage {
+  id: string;
+  name: string;
+  url: string;
 }
 
 interface ShoppingContextType {
@@ -37,6 +50,8 @@ interface ShoppingContextType {
   setQuantity: React.Dispatch<React.SetStateAction<number>>;
   selectedImageIndex: number;
   setSelectedImageIndex: React.Dispatch<React.SetStateAction<number>>;
+  selectedModelId: string | null;
+  setSelectedModelId: (modelId: string | null) => void;
   tryOnResult: string | null;
   isTryingOn: boolean;
   tryOnError: string | null;
@@ -45,6 +60,7 @@ interface ShoppingContextType {
   isTransitioning: boolean;
   fadeDirection: string;
   isImageTransitioning: boolean;
+  modelImages: ModelImage[];
   handleImageChange: (index: number) => void;
   handleCategoryChange: (categoryId: string) => void;
   smoothProductChange: (product: Product) => void;
@@ -59,410 +75,254 @@ const ShoppingContext = createContext<ShoppingContextType | undefined>(
   undefined
 );
 
-const sampleProducts: Product[] = [
-  // Beauty Products (8 total)
+const modelImages: ModelImage[] = [
   {
     id: "1",
-    name: "LUXE GLOW",
-    price: 89,
-    image:
-      "https://luxe-cosmetics.us/cdn/shop/files/01_-_FOR_MEN_LUXE_HAIR_GROWTH_SERUM_1_1_e52afcfc-199e-4aab-bd47-d4247ac47e70.jpg?v=1733118944",
-    category: "Beauty",
-    rating: 4.8,
-    inStock: true,
-    description:
-      "Premium skincare serum with vitamin C and hyaluronic acid. Provides deep hydration and brightening effects for radiant, youthful skin.",
-    designer: "Beauty Lab Co.",
-    articleNumber: "BL001",
+    name: "Model 1",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_1.png",
   },
   {
     id: "2",
-    name: "RADIANT",
-    price: 65,
-    image: "https://images.pexels.com/photos/3685530/pexels-photo-3685530.jpeg",
-    category: "Beauty",
-    rating: 4.6,
-    inStock: true,
-    description: "Illuminating foundation with SPF 30 protection",
-    designer: "Glow Beauty",
-    articleNumber: "GB002",
+    name: "Model 2",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_2.png",
   },
   {
     id: "3",
-    name: "VELVET",
-    price: 45,
-    image:
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-imagination--LP0219_PM2_Front%20view.png?wid=2400&hei=2400",
-    category: "Beauty",
-    rating: 4.7,
-    inStock: true,
-    description: "Matte lipstick collection in 12 stunning shades",
-    designer: "Velvet Cosmetics",
-    articleNumber: "VC003",
+    name: "Model 3",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_3.png",
   },
-  {
-    id: "13",
-    name: "CRYSTAL",
-    price: 125,
-    image: "https://images.pexels.com/photos/3685534/pexels-photo-3685534.jpeg",
-    category: "Beauty",
-    rating: 4.9,
-    inStock: true,
-    description: "Anti-aging night cream with retinol and peptides",
-    designer: "Crystal Beauty",
-    articleNumber: "CB013",
-  },
-  {
-    id: "14",
-    name: "PURE",
-    price: 78,
-    image: "https://images.pexels.com/photos/3685535/pexels-photo-3685535.jpeg",
-    category: "Beauty",
-    rating: 4.5,
-    inStock: true,
-    description: "Gentle cleansing foam for sensitive skin",
-    designer: "Pure Skincare",
-    articleNumber: "PS014",
-  },
-  {
-    id: "15",
-    name: "BLOOM",
-    price: 92,
-    image: "https://images.pexels.com/photos/3685536/pexels-photo-3685536.jpeg",
-    category: "Beauty",
-    rating: 4.8,
-    inStock: true,
-    description: "Hydrating face mask with botanical extracts",
-    designer: "Bloom Naturals",
-    articleNumber: "BN015",
-  },
-  {
-    id: "16",
-    name: "ESSENCE",
-    price: 156,
-    image: "https://images.pexels.com/photos/3685537/pexels-photo-3685537.jpeg",
-    category: "Beauty",
-    rating: 4.7,
-    inStock: true,
-    description: "Luxury perfume with floral and woody notes",
-    designer: "Essence Paris",
-    articleNumber: "EP016",
-  },
-  {
-    id: "17",
-    name: "GLOW",
-    price: 68,
-    image: "https://images.pexels.com/photos/3685538/pexels-photo-3685538.jpeg",
-    category: "Beauty",
-    rating: 4.6,
-    inStock: true,
-    description: "Brightening eye cream with caffeine",
-    designer: "Glow Labs",
-    articleNumber: "GL017",
-  },
-
-  // Clothing (8 total)
   {
     id: "4",
-    name: "AURORA",
-    price: 129,
-    image: "https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg",
-    category: "Clothing",
-    rating: 4.9,
-    inStock: true,
-    description: "Elegant evening dress with flowing silhouette",
-    designer: "Fashion House",
-    articleNumber: "FH004",
+    name: "Model 4",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_4.png",
   },
   {
     id: "5",
-    name: "URBAN",
-    price: 89,
+    name: "Model 5",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_5.png",
+  },
+  {
+    id: "6",
+    name: "Model 6",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_6.png",
+  },
+  {
+    id: "7",
+    name: "Model 7",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/YEN_7671.JPG",
+  },
+  {
+    id: "8",
+    name: "Model 8",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/IMG_7514.JPG",
+  },
+];
+
+const sampleProducts: Product[] = [
+  {
+    id: "1",
+    name: "BVLGARI Allegra Baciami Eau De Parfum, 3.4 oz.",
+    price: 295,
     image:
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-nil-messenger--M14988_PM2_Front%20view.png?wid=2400&hei=2400",
-    category: "Clothing",
-    rating: 4.5,
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4284544_100000_m",
+    category: "Beauty",
+    rating: 4.8,
     inStock: true,
-    description: "Casual streetwear jacket with modern cut",
-    designer: "Urban Style",
-    articleNumber: "US005",
+    description: "Luxurious eau de parfum with captivating floral notes",
+    designer: "BVLGARI",
+    articleNumber: "BV001",
     images: [
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-nil-messenger--M14988_PM2_Front%20view.png?wid=2400&hei=2400",
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-nil-messenger--M14988_PM1_Worn%20view.png?wid=2400&hei=2400",
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-nil-messenger--M14988_PM1_Worn%20view.png?wid=2400&hei=2400",
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-nil-messenger--M14988_PM1_Worn%20view.png?wid=2400&hei=2400",
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4284544_100000_m",
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4284544_100000_c",
+    ],
+  },
+  {
+    id: "2",
+    name: "Rolex Oyster Perpetual Explorer 39mm Watch",
+    price: 10900,
+    image:
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4860902_100134_a",
+    category: "Accessories",
+    rating: 4.9,
+    inStock: true,
+    description: "39mm luxury watch with precision movement",
+    designer: "Rolex",
+    articleNumber: "RX001",
+    images: [
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4860902_100134_a",
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4860902_100134_z",
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4860902_100134_b",
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4860902_100134_c",
+    ],
+  },
+  {
+    id: "3",
+    name: "Franck Muller Limited Edition Rose Gold Auberlen Skeleton Auto Watch with Leather Strap",
+    price: 34000,
+    image:
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4176304_100000_m",
+    category: "Accessories",
+    rating: 4.9,
+    inStock: true,
+    description:
+      "Limited edition rose gold skeleton automatic watch with leather strap",
+    designer: "Franck Muller",
+    articleNumber: "FM001",
+    images: [
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4176304_100000_m",
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4176304_100000_a",
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4176304_100000_b",
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4176304_100000_c",
+    ],
+  },
+  {
+    id: "4",
+    name: "DIOR Dior Addict Lip Glow Butter",
+    price: 42,
+    image:
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_5031416_100000_n",
+    category: "Beauty",
+    rating: 4.6,
+    inStock: true,
+    description: "Nourishing lip balm with natural glow enhancement",
+    designer: "DIOR",
+    articleNumber: "DR001",
+    images: [
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_5031416_100000_n",
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_1200/01/nm_5031416_100263_a",
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_1200/01/nm_5031416_100000_d",
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_1200/01/nm_5031416_100000_b",
+    ],
+  },
+  {
+    id: "5",
+    name: "DIOR Sauvage Eau de Parfum",
+    price: 157,
+    image:
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_2535609_100000_a",
+    category: "Beauty",
+    rating: 4.7,
+    inStock: true,
+    description: "Bold and sophisticated fragrance with woody notes",
+    designer: "DIOR",
+    articleNumber: "DR002",
+    images: [
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_2535609_100000_a",
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_2535609_100000_b",
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_2535609_100000_h",
     ],
   },
   {
     id: "6",
-    name: "CLASSIC",
-    price: 199,
+    name: "DIOR Rouge Blush Colour & Glow",
+    price: 50,
     image:
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-nil-messenger--M14988_PM1_Worn%20view.png?wid=2400&hei=2400",
-    category: "Clothing",
-    rating: 4.8,
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4868703_100594_m",
+    category: "Beauty",
+    rating: 4.5,
     inStock: true,
-    description: "Timeless blazer for professional occasions",
-    designer: "Classic Wear",
-    articleNumber: "CW006",
+    description: "Radiant blush for natural colour and luminous glow",
+    designer: "DIOR",
+    articleNumber: "DR003",
+    images: [
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4868703_100594_m",
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4868703_100594_a",
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_4868703_100594_b",
+    ],
   },
-  {
-    id: "18",
-    name: "LUXE",
-    price: 245,
-    image:
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-sequin-signature-knit-top--FTKS31XDK102_PM2_Front%20view.png",
-    category: "Clothing",
-    rating: 4.9,
-    inStock: true,
-    description: "Premium silk blouse with delicate embroidery",
-    designer: "Luxe Fashion",
-    articleNumber: "LF018",
-  },
-  {
-    id: "20",
-    name: "FORMAL",
-    price: 189,
-    image:
-      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-nil-messenger--M14988_PM1_Worn%20view.png?wid=2400&hei=2400",
-    category: "Clothing",
-    rating: 4.7,
-    inStock: true,
-    description: "Tailored dress pants for business wear",
-    designer: "Formal Attire",
-    articleNumber: "FA020",
-  },
-  {
-    id: "21",
-    name: "SPORT",
-    price: 95,
-    image: "https://images.pexels.com/photos/1040947/pexels-photo-1040947.jpeg",
-    category: "Clothing",
-    rating: 4.6,
-    inStock: true,
-    description: "Athletic wear set with moisture-wicking fabric",
-    designer: "Sport Elite",
-    articleNumber: "SE021",
-  },
-  {
-    id: "22",
-    name: "VINTAGE",
-    price: 165,
-    image: "https://images.pexels.com/photos/1043476/pexels-photo-1043476.jpeg",
-    category: "Clothing",
-    rating: 4.8,
-    inStock: true,
-    description: "Retro-inspired denim jacket with unique details",
-    designer: "Vintage Vibes",
-    articleNumber: "VV022",
-  },
-
-  // Electronics (8 total)
   {
     id: "7",
-    name: "NEXUS PRO",
-    price: 899,
-    image: "https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg",
-    category: "Electronics",
-    rating: 4.8,
+    name: "Burberry Sloanne Woven Linen Block-Heel Sandals",
+    price: 790,
+    image:
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_5040273_100296_m",
+    category: "Shoes",
+    rating: 4.4,
     inStock: true,
-    description: "Premium wireless headphones with noise cancellation",
-    designer: "Tech Innovations",
-    articleNumber: "TI007",
+    description: "Elegant woven linen sandals with comfortable block heel",
+    designer: "Burberry",
+    articleNumber: "BB001",
+    images: [
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_5040273_100296_m",
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_5040273_100296_a",
+      "https://media.neimanmarcus.com/f_auto,q_auto:low,ar_4:5,c_fill,dpr_2.0,w_790/01/nm_5040273_100296_d",
+    ],
   },
   {
     id: "8",
-    name: "SMART HUB",
-    price: 299,
-    image: "https://images.pexels.com/photos/4465124/pexels-photo-4465124.jpeg",
-    category: "Electronics",
-    rating: 4.6,
+    name: "Louis Vuitton Floral Jacquard A-Line Dress",
+    price: 3050,
+    image:
+      "https://assetsimagesai.s3.us-east-1.amazonaws.com/lv_dresses/Louis_Vuitton_Dresses_6.png",
+    category: "Clothing",
+    rating: 4.8,
     inStock: true,
-    description: "Voice-controlled smart home assistant",
-    designer: "Smart Living",
-    articleNumber: "SL008",
+    description:
+      "Elegant floral jacquard A-line dress with sophisticated silhouette",
+    designer: "Louis Vuitton",
+    articleNumber: "1AGPKU",
+    images: [
+      "https://assetsimagesai.s3.us-east-1.amazonaws.com/lv_dresses/Louis_Vuitton_Dresses_7.png",
+      "https://assetsimagesai.s3.us-east-1.amazonaws.com/lv_dresses/Louis_Vuitton_Dresses_8.png",
+      "https://assetsimagesai.s3.us-east-1.amazonaws.com/lv_dresses/Louis_Vuitton_Dresses_9.png",
+      "https://assetsimagesai.s3.us-east-1.amazonaws.com/lv_dresses/Louis_Vuitton_Dresses_10.png",
+      "https://assetsimagesai.s3.us-east-1.amazonaws.com/lv_dresses/Louis_Vuitton_Dresses_11.png",
+      "https://assetsimagesai.s3.us-east-1.amazonaws.com/lv_dresses/Louis_Vuitton_Dresses_12.png",
+    ],
   },
   {
     id: "9",
-    name: "VISION 4K",
-    price: 1299,
-    image: "https://images.pexels.com/photos/442576/pexels-photo-442576.jpeg",
-    category: "Electronics",
-    rating: 4.7,
-    inStock: true,
-    description: "Ultra HD smart television with HDR",
-    designer: "Vision Tech",
-    articleNumber: "VT009",
-  },
-  {
-    id: "23",
-    name: "POWER BANK",
-    price: 79,
-    image: "https://images.pexels.com/photos/788947/pexels-photo-788947.jpeg",
-    category: "Electronics",
-    rating: 4.5,
-    inStock: true,
-    description: "High-capacity portable charger with fast charging",
-    designer: "Power Tech",
-    articleNumber: "PT023",
-  },
-  {
-    id: "24",
-    name: "WIRELESS MOUSE",
-    price: 129,
-    image: "https://images.pexels.com/photos/442577/pexels-photo-442577.jpeg",
-    category: "Electronics",
+    name: "Louis Vuitton LV Isola Flat Mule",
+    price: 795,
+    image:
+      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-lv-isola-flat-mule--ASPH1ATC53_PM2_Front%20view.png?wid=2400&hei=2400",
+    category: "Shoes",
     rating: 4.6,
     inStock: true,
-    description: "Ergonomic wireless mouse with precision tracking",
-    designer: "Precision Devices",
-    articleNumber: "PD024",
+    description: "Stylish flat mule with signature LV design elements",
+    designer: "Louis Vuitton",
+    articleNumber: "1AGYP8",
+    images: [
+      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-lv-isola-flat-mule--ASPH1ATC53_PM2_Front%20view.png?wid=2400&hei=2400",
+      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-lv-isola-flat-mule--ASPH1ATC53_PM1_Side%20view.png?wid=2400&hei=2400",
+      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-lv-isola-flat-mule--ASPH1ATC53_PM1_Interior%20view.png?wid=2400&hei=2400",
+    ],
   },
-  {
-    id: "25",
-    name: "GAMING KEYBOARD",
-    price: 189,
-    image: "https://images.pexels.com/photos/442578/pexels-photo-442578.jpeg",
-    category: "Electronics",
-    rating: 4.8,
-    inStock: true,
-    description: "Mechanical gaming keyboard with RGB lighting",
-    designer: "Gaming Pro",
-    articleNumber: "GP025",
-  },
-  {
-    id: "26",
-    name: "TABLET PRO",
-    price: 699,
-    image: "https://images.pexels.com/photos/442579/pexels-photo-442579.jpeg",
-    category: "Electronics",
-    rating: 4.7,
-    inStock: true,
-    description: "Professional tablet with stylus support",
-    designer: "Digital Arts",
-    articleNumber: "DA026",
-  },
-  {
-    id: "27",
-    name: "SMART WATCH",
-    price: 399,
-    image: "https://images.pexels.com/photos/442580/pexels-photo-442580.jpeg",
-    category: "Electronics",
-    rating: 4.6,
-    inStock: true,
-    description: "Fitness tracking smartwatch with health monitoring",
-    designer: "Health Tech",
-    articleNumber: "HT027",
-  },
-
-  // Plants & Gardening (8 total)
   {
     id: "10",
-    name: "MONSTERA",
-    price: 45,
-    image: "https://images.pexels.com/photos/6208086/pexels-photo-6208086.jpeg",
-    category: "Plants",
+    name: "Louis Vuitton Capucines BB",
+    price: 7000,
+    image:
+      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-capucines-bb--M24656_PM2_Front%20view.png?wid=2400&hei=2400",
+    category: "Bags",
     rating: 4.9,
     inStock: true,
-    description: "Large monstera deliciosa in ceramic pot",
-    designer: "Green Paradise",
-    articleNumber: "GP010",
-  },
-  {
-    id: "11",
-    name: "FIDDLE LEAF",
-    price: 89,
-    image: "https://images.pexels.com/photos/6208087/pexels-photo-6208087.jpeg",
-    category: "Plants",
-    rating: 4.5,
-    inStock: true,
-    description: "Tall fiddle leaf fig tree for indoor spaces",
-    designer: "Plant Studio",
-    articleNumber: "PS011",
-  },
-  {
-    id: "12",
-    name: "SUCCULENT SET",
-    price: 29,
-    image: "https://images.pexels.com/photos/6208088/pexels-photo-6208088.jpeg",
-    category: "Plants",
-    rating: 4.8,
-    inStock: true,
-    description: "Collection of 6 assorted succulents",
-    designer: "Desert Bloom",
-    articleNumber: "DB012",
-  },
-  {
-    id: "28",
-    name: "SNAKE PLANT",
-    price: 35,
-    image: "https://images.pexels.com/photos/6208089/pexels-photo-6208089.jpeg",
-    category: "Plants",
-    rating: 4.7,
-    inStock: true,
-    description: "Low-maintenance snake plant in modern planter",
-    designer: "Urban Jungle",
-    articleNumber: "UJ028",
-  },
-  {
-    id: "29",
-    name: "PEACE LILY",
-    price: 52,
-    image: "https://images.pexels.com/photos/6208090/pexels-photo-6208090.jpeg",
-    category: "Plants",
-    rating: 4.6,
-    inStock: true,
-    description: "Elegant peace lily with white blooms",
-    designer: "Bloom & Grow",
-    articleNumber: "BG029",
-  },
-  {
-    id: "30",
-    name: "RUBBER TREE",
-    price: 68,
-    image: "https://images.pexels.com/photos/6208091/pexels-photo-6208091.jpeg",
-    category: "Plants",
-    rating: 4.8,
-    inStock: true,
-    description: "Glossy rubber tree plant in decorative pot",
-    designer: "Leaf & Branch",
-    articleNumber: "LB030",
-  },
-  {
-    id: "31",
-    name: "HERB GARDEN",
-    price: 42,
-    image: "https://images.pexels.com/photos/6208092/pexels-photo-6208092.jpeg",
-    category: "Plants",
-    rating: 4.5,
-    inStock: true,
-    description: "Indoor herb garden kit with basil, mint, and rosemary",
-    designer: "Fresh Herbs Co.",
-    articleNumber: "FH031",
-  },
-  {
-    id: "32",
-    name: "ORCHID",
-    price: 95,
-    image: "https://images.pexels.com/photos/6208093/pexels-photo-6208093.jpeg",
-    category: "Plants",
-    rating: 4.9,
-    inStock: true,
-    description: "Premium orchid with exotic purple blooms",
-    articleNumber: "EF032",
+    description: "Iconic handbag with timeless elegance and craftsmanship",
+    designer: "Louis Vuitton",
+    articleNumber: "M24656",
+    images: [
+      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-capucines-bb--M24656_PM2_Front%20view.png?wid=2400&hei=2400",
+      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-capucines-bb--M24656_PM1_Side%20view.png?wid=2400&hei=2400",
+      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-capucines-bb--M24656_PM1_Interior%20view.png?wid=2400&hei=2400",
+      "https://us.louisvuitton.com/images/is/image/lv/1/PP_VP_L/louis-vuitton-capucines-bb--M24656_PM1_Interior2%20view.png?wid=2400&hei=2400",
+    ],
   },
 ];
 
-export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<Product[]>([]);
   const [currentCategory, setCurrentCategory] = useState("Clothing");
 
   const [selectedProduct, setSelectedProduct] = useState(
-    sampleProducts.find((p) => p.category === currentCategory) || sampleProducts[0]
+    sampleProducts.find((p) => p.category === currentCategory) ||
+      sampleProducts[0]
   );
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
 
   // Try On feature states
   const [tryOnResult, setTryOnResult] = useState<string | null>(null);
@@ -581,13 +441,28 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({ children }
 
       switch (data.status) {
         case "completed":
-          setTryOnResult(data.output?.[0] || data.output);
+          // Extract URL from the output array
+          let resultUrl = data.output?.[0] || data.output;
+
+          // Handle case where output contains backticks and URL
+          if (typeof resultUrl === "string" && resultUrl.includes("`")) {
+            // Extract URL from string like: ' `https://cdn.fashn.ai/...` '
+            const urlMatch = resultUrl.match(/`([^`]+)`/);
+            if (urlMatch && urlMatch[1]) {
+              resultUrl = urlMatch[1].trim();
+            }
+          }
+
+          console.log("Processed try-on result URL:", resultUrl);
+          setTryOnResult(resultUrl);
           setIsTryingOn(false);
           clearPolling();
           break;
         case "failed":
           setTryOnError(
-            typeof data.error === 'string' ? data.error : JSON.stringify(data.error) || "The prediction failed."
+            typeof data.error === "string"
+              ? data.error
+              : JSON.stringify(data.error) || "The prediction failed."
           );
           setIsTryingOn(false);
           clearPolling();
@@ -642,11 +517,22 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({ children }
         return;
       }
 
+      // Get the selected model image URL
+      const getSelectedModelImage = () => {
+        if (!selectedModelId) {
+          // Default model image if no model is selected
+          return "https://media.istockphoto.com/id/907261794/photo/handsome-man.jpg?s=612x612&w=0&k=20&c=31YyQlon3lBpv7izm6h05HdwZXNiQKRX6_lkFQcTPRY=";
+        }
+
+        // Find the model image from the centralized modelImages array
+        const selectedModel = modelImages.find(model => model.id === selectedModelId);
+        return selectedModel?.url || modelImages[0]?.url; // Fallback to first model
+      };
+
       const requestBody = {
         model_name: "tryon-v1.6",
         inputs: {
-          model_image:
-            "https://media.istockphoto.com/id/907261794/photo/handsome-man.jpg?s=612x612&w=0&k=20&c=31YyQlon3lBpv7izm6h05HdwZXNiQKRX6_lkFQcTPRY=",
+          model_image: getSelectedModelImage(),
           garment_image: selectedProduct.image,
         },
       };
@@ -674,7 +560,8 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({ children }
       }
     } catch (error) {
       console.error("Try on error:", error);
-      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      const errorMessage =
+        error instanceof Error ? error.message : "An unknown error occurred";
       setTryOnError(errorMessage);
       setIsTryingOn(false);
     }
@@ -744,6 +631,8 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({ children }
         setQuantity,
         selectedImageIndex,
         setSelectedImageIndex,
+        selectedModelId,
+        setSelectedModelId,
         tryOnResult,
         isTryingOn,
         tryOnError,
@@ -752,6 +641,7 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({ children }
         isTransitioning,
         fadeDirection,
         isImageTransitioning,
+        modelImages,
         handleImageChange,
         handleCategoryChange,
         smoothProductChange,

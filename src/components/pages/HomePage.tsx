@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "motion/react";
 import TopNavigationBar from "../home/TopNavigationBar";
 import ProductListSidebar from "../home/ProductListSidebar";
 import CategoryNavigation from "../home/CategoryNavigation";
@@ -8,20 +9,80 @@ import RiyaVoiceAgent from "../RiyaVoiceAgent";
 
 const HomePage: React.FC = () => {
   return (
-    <div className="min-h-screen">
-      <TopNavigationBar />
-      <div className="grid grid-cols-12 gap-6">
-        <ProductListSidebar />
-        <div className="col-span-6">
-          <CategoryNavigation />
-          <ProductDisplay />
-        </div>
-        <div className="col-span-3 space-y-6">
-          <RiyaVoiceAgent />
-          <ProductActions />
-        </div>
-      </div>
-    </div>
+    <motion.div
+      className="min-h-screen"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
+      <motion.div
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
+        <TopNavigationBar />
+      </motion.div>
+
+      <motion.div
+        className="grid grid-cols-12 gap-6"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        <motion.div
+          className="col-span-3"
+          initial={{ x: -30, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          whileHover={{ scale: 1.02 }}
+        >
+          <ProductListSidebar />
+        </motion.div>
+
+        <motion.div
+          className="col-span-6"
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <motion.div
+            whileHover={{ scale: 1.01 }}
+            transition={{ duration: 0.2 }}
+          >
+            <CategoryNavigation />
+          </motion.div>
+
+          <motion.div
+            whileHover={{ scale: 1.005 }}
+            transition={{ duration: 0.3 }}
+            className="mt-6"
+          >
+            <ProductDisplay />
+          </motion.div>
+        </motion.div>
+
+        <motion.div
+          className="col-span-3 space-y-6"
+          initial={{ x: 30, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+        >
+          <motion.div
+            whileHover={{ scale: 1.02, y: -2 }}
+            transition={{ duration: 0.2 }}
+          >
+            <RiyaVoiceAgent />
+          </motion.div>
+
+          <motion.div
+            whileHover={{ scale: 1.02, y: -2 }}
+            transition={{ duration: 0.2 }}
+          >
+            <ProductActions />
+          </motion.div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 };
 

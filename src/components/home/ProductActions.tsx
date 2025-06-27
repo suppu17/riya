@@ -1,69 +1,153 @@
-import React from 'react';
-import { useShopping } from '../../contexts/ShoppingContext';
-import { Plus, Minus, Star, Truck, Store } from 'lucide-react';
+import React from "react";
+import { motion } from "motion/react";
+import { useShopping } from "../../contexts/ShoppingContext";
+import { Star, Plus, Minus, ShoppingBag } from "lucide-react";
 
 const ProductActions: React.FC = () => {
-  const { selectedProduct, quantity, setQuantity, handleAddToCart } = useShopping();
+  const {
+    selectedProduct,
+    quantity,
+    setQuantity,
+  } = useShopping();
 
   if (!selectedProduct) {
-    return null;
+    return (
+      <motion.div
+        className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/20"
+        initial={{ x: 50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
+        <motion.div
+          className="text-center py-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.6 }}
+        >
+          <motion.div
+            className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.3, delay: 0.7 }}
+          >
+            <ShoppingBag className="w-8 h-8 text-white/40" />
+          </motion.div>
+          <p className="text-white/60 text-sm">
+            Select a product to view details
+          </p>
+        </motion.div>
+      </motion.div>
+    );
   }
 
   return (
-      <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/20">
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-white text-2xl font-bold">${selectedProduct.price.toFixed(2)}</span>
-          <div className="flex items-center gap-1">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className={`w-4 h-4 ${i < selectedProduct.rating ? 'text-yellow-400' : 'text-white/40'}`} fill="currentColor" />
-            ))}
-            <span className="text-white/60 text-xs ml-1">({selectedProduct.rating})</span>
-          </div>
-        </div>
+    <motion.div
+      className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/20"
+      initial={{ x: 50, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ duration: 0.5, delay: 0.4 }}
+      whileHover={{
+        backgroundColor: "rgba(255, 255, 255, 0.12)",
+        borderColor: "rgba(255, 255, 255, 0.25)",
+        scale: 1.01,
+      }}
+    >
+      <motion.div
+        className="mb-4"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.5 }}
+      >
+        <motion.h2
+          className="text-white text-lg font-bold mb-2 leading-tight"
+          initial={{ y: -10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.6 }}
+        >
+          {selectedProduct.name}
+        </motion.h2>
 
-        <p className="text-white/70 text-xs mb-6 h-16 overflow-y-auto pr-2">
-          {selectedProduct.description}
-        </p>
-
-        <div className="flex items-center justify-between mb-6">
-          <span className="text-white font-medium">Quantity</span>
-          <div className="flex items-center gap-2 bg-white/10 rounded-lg p-1">
-            <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="w-6 h-6 bg-white/10 rounded-md flex items-center justify-center text-white/80 hover:bg-white/20">
-              <Minus className="w-3 h-3" />
-            </button>
-            <span className="text-white w-8 text-center font-medium">{quantity}</span>
-            <button onClick={() => setQuantity(q => q + 1)} className="w-6 h-6 bg-white/10 rounded-md flex items-center justify-center text-white/80 hover:bg-white/20">
-              <Plus className="w-3 h-3" />
-            </button>
-          </div>
-        </div>
-
-        <button onClick={handleAddToCart} className="w-full bg-indigo-500 text-white font-bold py-3 rounded-xl mb-6 hover:bg-indigo-600 transition-colors">
-          Add to Cart
-        </button>
-
-        <div className="space-y-3">
-          <div className="flex items-center justify-between px-4 py-3 bg-white/5 backdrop-blur-xl rounded-lg border border-white/5 hover:border-white/10 transition-colors cursor-pointer">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
-                <Truck className="w-4 h-4 text-white/70" />
-              </div>
-              <span className="text-white text-xs font-medium">Free shipping & returns</span>
+        <motion.div
+          className="flex items-center justify-between mb-3"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4, delay: 0.7 }}
+        >
+          <div className="flex items-center gap-2">
+            <div className="flex items-center">
+              {[...Array(5)].map((_, i) => (
+                <Star
+                  key={i}
+                  className={`w-3 h-3 ${
+                    i < selectedProduct.rating
+                      ? "text-yellow-400 fill-current"
+                      : "text-white/30"
+                  }`}
+                />
+              ))}
             </div>
-            <i className="fas fa-chevron-right text-white/60"></i>
+            <span className="text-white/60 text-xs">({selectedProduct.rating})</span>
           </div>
+          <div className="text-white text-xl font-bold">
+            ${selectedProduct.price}
+          </div>
+        </motion.div>
 
-          <div className="flex items-center justify-between px-4 py-3 bg-white/5 backdrop-blur-xl rounded-lg border border-white/5 hover:border-white/10 transition-colors cursor-pointer">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
-                <Store className="w-4 h-4 text-white/70" />
-              </div>
-              <span className="text-white text-xs font-medium">In store - Check stock</span>
-            </div>
-            <i className="fas fa-chevron-right text-white/60"></i>
-          </div>
+        {selectedProduct.description && (
+          <motion.p
+            className="text-white/70 text-xs mb-3 line-clamp-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.8 }}
+          >
+            {selectedProduct.description}
+          </motion.p>
+        )}
+      </motion.div>
+
+      <motion.div
+        className="bg-white/5 backdrop-blur-sm rounded-full px-4 py-2 border border-white/10"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.9 }}
+      >
+        <div className="flex items-center justify-center gap-2">
+          <motion.button
+            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+            className="w-6 h-6 bg-white/10 rounded-md flex items-center justify-center text-white/80 hover:bg-white/20 transition-all duration-200 border border-white/10"
+            whileHover={{
+              scale: 1.05,
+              backgroundColor: "rgba(255, 255, 255, 0.2)",
+            }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Minus className="w-2.5 h-2.5" />
+          </motion.button>
+
+          <motion.span
+            className="text-white text-sm font-bold px-2 min-w-[24px] text-center"
+            key={quantity}
+            initial={{ scale: 1.1 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.2 }}
+          >
+            {quantity}
+          </motion.span>
+
+          <motion.button
+            onClick={() => setQuantity(quantity + 1)}
+            className="w-6 h-6 bg-white/10 rounded-md flex items-center justify-center text-white/80 hover:bg-white/20 transition-all duration-200 border border-white/10"
+            whileHover={{
+              scale: 1.05,
+              backgroundColor: "rgba(255, 255, 255, 0.2)",
+            }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Plus className="w-2.5 h-2.5" />
+          </motion.button>
         </div>
-      </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

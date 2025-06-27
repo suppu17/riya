@@ -59,15 +59,32 @@ const TryOnDisplay: React.FC = () => {
       )}
 
       {tryOnResult && !isTryingOn && (
-        <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-xl px-3 py-1.5 rounded-xl">
-          <button
-            onClick={() => setTryOnResult(null)}
-            className="text-white text-xs font-medium flex items-center gap-1"
-          >
-            <i className="fas fa-times"></i>
-            Reset Try On
-          </button>
-        </div>
+        <>
+          {/* Try-on result image */}
+          <div className="relative w-full h-full flex items-center justify-center">
+            <img
+              src={tryOnResult}
+              alt="Virtual Try-On Result"
+              className="max-h-full max-w-full object-contain rounded-xl"
+              onError={(e) => {
+                console.error('Failed to load try-on result image:', tryOnResult);
+                setTryOnError('Failed to load try-on result image');
+                setTryOnResult(null);
+              }}
+            />
+          </div>
+          
+          {/* Reset button */}
+          <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-xl px-3 py-1.5 rounded-xl">
+            <button
+              onClick={() => setTryOnResult(null)}
+              className="text-white text-xs font-medium flex items-center gap-1 hover:bg-white/20 px-2 py-1 rounded transition-colors"
+            >
+              <i className="fas fa-times"></i>
+              Reset Try On
+            </button>
+          </div>
+        </>
       )}
     </>
   );
