@@ -152,7 +152,9 @@ const HomePage: React.FC = () => {
           break;
         case "failed":
           setTryOnError(
-            typeof data.error === 'string' ? data.error : JSON.stringify(data.error) || "The prediction failed."
+            typeof data.error === "string"
+              ? data.error
+              : JSON.stringify(data.error) || "The prediction failed."
           );
           setIsTryingOn(false);
           clearPolling();
@@ -238,7 +240,8 @@ const HomePage: React.FC = () => {
       }
     } catch (error) {
       console.error("Try on error:", error);
-      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      const errorMessage =
+        error instanceof Error ? error.message : "An unknown error occurred";
       setTryOnError(errorMessage);
       setIsTryingOn(false);
     }
@@ -326,10 +329,12 @@ const HomePage: React.FC = () => {
               <img
                 src={
                   tryOnResult ||
-                  selectedProduct.images?.[selectedImageIndex] ||
-                  selectedProduct.image
+                  selectedProduct?.images?.[selectedImageIndex] ||
+                  selectedProduct?.image
                 }
-                alt={tryOnResult ? "Try On Result" : selectedProduct.name}
+                alt={
+                  tryOnResult ? "Try On Result" : selectedProduct?.name || ""
+                }
                 className="w-full h-full object-cover rounded-2xl"
               />
 
