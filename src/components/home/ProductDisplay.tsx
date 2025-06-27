@@ -49,7 +49,7 @@ const ProductDisplay: React.FC = () => {
   return (
     <>
       <motion.div
-        className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 relative overflow-hidden"
+        className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 border border-white/20 relative overflow-hidden"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
@@ -61,13 +61,13 @@ const ProductDisplay: React.FC = () => {
         layout
       >
         <motion.div
-          className="relative h-[550px] flex items-center justify-center w-full"
+          className="relative h-[590px] flex items-center justify-center w-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.4 }}
         >
           <AnimatePresence mode="wait">
-            {tryOnResult ? (
+            {tryOnResult || isTryingOn ? (
               <motion.div
                 key="tryon"
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -78,26 +78,30 @@ const ProductDisplay: React.FC = () => {
                 <TryOnDisplay />
               </motion.div>
             ) : (
-              <motion.div className="relative w-full h-full flex items-center justify-center">
-                <motion.img
-                  key={`product-${selectedProduct.id}-${selectedImageIndex}`}
-                  src={
+              <motion.div
+                className="relative w-full h-full flex items-center justify-center  rounded-lg box-border"
+                key={`product-${selectedProduct.id}-${selectedImageIndex}`}
+                style={{
+                  backgroundImage: `url(${
                     selectedProduct.images && selectedProduct.images.length > 0
                       ? selectedProduct.images[selectedImageIndex]
                       : selectedProduct.image
-                  }
-                  alt={selectedProduct.name}
-                  className="max-h-full max-w-full object-contain rounded-xl mx-auto"
-                  initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                  whileHover={{
-                    scale: 1.02,
-                    filter: "brightness(1.03)",
-                  }}
-                />
-
+                  })`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "top",
+                  backgroundRepeat: "no-repeat",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  borderRadius: "8px",
+                }}
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                whileHover={{
+                  scale: 1.02,
+                  filter: "brightness(1.03)",
+                }}
+              >
                 {/* AI Try On Button Overlay */}
                 <div className="absolute top-4 right-4 group/tooltip">
                   <motion.button
@@ -224,7 +228,7 @@ const ProductDisplay: React.FC = () => {
                   {/* Selected Photo Thumbnail */}
                   {selectedModelId && (
                     <motion.div
-                      className="absolute top-16 left-1/2 transform -translate-x-1/2 z-10"
+                      className="absolute top-12 left-1/2 transform -translate-x-1/2 z-10"
                       initial={{ opacity: 0, scale: 0.8, y: -10 }}
                       animate={{ opacity: 1, scale: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.8, y: -10 }}
@@ -266,12 +270,12 @@ const ProductDisplay: React.FC = () => {
         {/* Thumbnail Navigation */}
         {selectedProduct.images && selectedProduct.images.length > 1 && (
           <motion.div
-            className="absolute bottom-8 right-5 transform -translate-x-1/2"
+            className="absolute bottom-8 right-7 transform -translate-x-1/2"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.4, delay: 0.6 }}
           >
-            <motion.div className="flex flex-col gap-2 bg-black/20 backdrop-blur-md rounded-full p-2">
+            <motion.div className="flex flex-col gap-2 bg-black/15 backdrop-blur-md rounded-full p-2">
               {selectedProduct.images.map((image, index) => (
                 <motion.button
                   key={index}

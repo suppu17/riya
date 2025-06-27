@@ -20,6 +20,17 @@ export interface ModelImage {
   isCustom?: boolean;
 }
 
+interface GeneratedImage {
+  id: string;
+  url: string;
+  productName: string;
+  productId: string;
+  productImage: string;
+  createdAt: string;
+  modelUsed: string;
+  modelId: string;
+}
+
 interface ShoppingContextType {
   products: Product[];
   cart: CartItem[];
@@ -46,10 +57,12 @@ interface ShoppingContextType {
   tryOnError: string | null;
   predictionId: string | null;
   tryOnStatus: string | null;
+  tryOnProgress: number;
   isTransitioning: boolean;
   fadeDirection: string;
   isImageTransitioning: boolean;
   modelImages: ModelImage[];
+  generatedImages: GeneratedImage[];
   handleImageChange: (index: number) => void;
   handleCategoryChange: (categoryId: string) => void;
   smoothProductChange: (product: Product) => void;
@@ -58,7 +71,11 @@ interface ShoppingContextType {
   setTryOnResult: (result: string | null) => void;
   setIsTryingOn: (isTryingOn: boolean) => void;
   setTryOnError: (error: string | null) => void;
+  setTryOnProgress: (progress: number) => void;
   addCustomPhoto?: (photo: ModelImage) => void;
+  saveGeneratedImage: (imageUrl: string) => void;
+  loadGeneratedImages: () => GeneratedImage[];
+  deleteGeneratedImage: (imageId: string) => void;
 }
 
 const ShoppingContext = createContext<ShoppingContextType | undefined>(
@@ -123,6 +140,7 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
   const [customPhotos, setCustomPhotos] = useState<ModelImage[]>([]);
+  const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
 
   // Try On feature states
   const [tryOnResult, setTryOnResult] = useState<string | null>(null);
@@ -130,6 +148,7 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
   const [tryOnError, setTryOnError] = useState<string | null>(null);
   const [predictionId, setPredictionId] = useState<string | null>(null);
   const [tryOnStatus, setTryOnStatus] = useState<string | null>(null);
+  const [tryOnProgress, setTryOnProgress] = useState<number>(0);
   const pollingTimeoutRef = useRef<number | null>(null);
 
   // Transition state to control smooth transitions
@@ -254,7 +273,14 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
           }
 
           console.log("Processed try-on result URL:", resultUrl);
+          setTryOnProgress(100);
           setTryOnResult(resultUrl);
+          
+          // Save the generated image to localStorage
+          if (resultUrl) {
+            saveGeneratedImage(resultUrl);
+          }
+          
           setIsTryingOn(false);
           clearPolling();
           break;
@@ -264,12 +290,28 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
               ? data.error
               : JSON.stringify(data.error) || "The prediction failed."
           );
+          setTryOnProgress(0);
           setIsTryingOn(false);
           clearPolling();
           break;
         case "starting":
+          setTryOnProgress(20);
+          // Continue polling
+          pollingTimeoutRef.current = window.setTimeout(
+            () => checkPredictionStatus(id),
+            3000
+          );
+          break;
         case "in_queue":
+          setTryOnProgress(10);
+          // Continue polling
+          pollingTimeoutRef.current = window.setTimeout(
+            () => checkPredictionStatus(id),
+            3000
+          );
+          break;
         case "processing":
+          setTryOnProgress(60);
           // Continue polling
           pollingTimeoutRef.current = window.setTimeout(
             () => checkPredictionStatus(id),
@@ -294,6 +336,12 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  // Load generated images from localStorage on mount
+  useEffect(() => {
+    const storedImages = loadGeneratedImages();
+    setGeneratedImages(storedImages);
+  }, []);
+
   // Clean up polling on component unmount
   useEffect(() => {
     return () => clearPolling();
@@ -306,6 +354,7 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
     setTryOnError(null);
     setTryOnResult(null);
     setTryOnStatus("Initializing...");
+    setTryOnProgress(0);
     setPredictionId(null);
     clearPolling(); // Ensure no previous polling is running
 
@@ -449,6 +498,39 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
     setCustomPhotos((prev) => [...prev, photo]);
   };
 
+  const saveGeneratedImage = (imageUrl: string) => {
+    const newImage: GeneratedImage = {
+      id: Date.now().toString(),
+      url: imageUrl,
+      productName: selectedProduct?.name || "Unknown Product",
+      productId: selectedProduct?.id || "unknown",
+      productImage: selectedProduct?.image || "",
+      createdAt: new Date().toISOString(),
+      modelUsed: selectedModelId ? `Model ${selectedModelId}` : "Default Model",
+      modelId: selectedModelId || "default"
+    };
+    
+    setGeneratedImages(prev => [newImage, ...prev]);
+    
+    // Save to localStorage
+    const existingImages = JSON.parse(localStorage.getItem('generatedImages') || '[]');
+    localStorage.setItem('generatedImages', JSON.stringify([newImage, ...existingImages]));
+  };
+
+  const loadGeneratedImages = (): GeneratedImage[] => {
+    const stored = localStorage.getItem('generatedImages');
+    return stored ? JSON.parse(stored) : [];
+  };
+
+  const deleteGeneratedImage = (imageId: string) => {
+    setGeneratedImages(prev => prev.filter(img => img.id !== imageId));
+    
+    // Update localStorage
+    const existingImages = JSON.parse(localStorage.getItem('generatedImages') || '[]');
+    const updatedImages = existingImages.filter((img: GeneratedImage) => img.id !== imageId);
+    localStorage.setItem('generatedImages', JSON.stringify(updatedImages));
+  };
+
   // Combine default model images with custom photos
   const allModelImages = [...modelImages, ...customPhotos];
 
@@ -480,10 +562,12 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
         tryOnError,
         predictionId,
         tryOnStatus,
+        tryOnProgress,
         isTransitioning,
         fadeDirection,
         isImageTransitioning,
         modelImages: allModelImages,
+        generatedImages,
         handleImageChange,
         handleCategoryChange,
         smoothProductChange,
@@ -492,7 +576,11 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
         setTryOnResult,
         setIsTryingOn,
         setTryOnError,
+        setTryOnProgress,
         addCustomPhoto,
+        saveGeneratedImage,
+        loadGeneratedImages,
+        deleteGeneratedImage,
       }}
     >
       {children}

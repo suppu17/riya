@@ -4,12 +4,7 @@ import { useShopping } from "../../contexts/ShoppingContext";
 import { Star, Plus, Minus, ShoppingBag } from "lucide-react";
 
 const ProductActions: React.FC = () => {
-  const {
-    selectedProduct,
-    quantity,
-    setQuantity,
-    addToCart,
-  } = useShopping();
+  const { selectedProduct, quantity, setQuantity, addToCart } = useShopping();
 
   if (!selectedProduct) {
     return (
@@ -87,7 +82,9 @@ const ProductActions: React.FC = () => {
                 />
               ))}
             </div>
-            <span className="text-white/60 text-xs">({selectedProduct.rating})</span>
+            <span className="text-white/60 text-xs">
+              ({selectedProduct.rating})
+            </span>
           </div>
           <div className="text-white text-xl font-bold">
             ${selectedProduct.price}
@@ -112,24 +109,22 @@ const ProductActions: React.FC = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.9 }}
       >
-        <motion.div
-          className="bg-white/5 backdrop-blur-sm rounded-full px-4 py-2 border border-white/10"
-        >
-          <div className="flex items-center justify-center gap-2">
+        <motion.div className="inline-flex bg-white/5 backdrop-blur-sm rounded-full px-3 py-1.5 border border-white/10">
+          <div className="flex items-center gap-1.5">
             <motion.button
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="w-6 h-6 bg-white/10 rounded-md flex items-center justify-center text-white/80 hover:bg-white/20 transition-all duration-200 border border-white/10"
+              className="w-5 h-5 bg-white/10 rounded-md flex items-center justify-center text-white/80 hover:bg-white/20 transition-all duration-200 border border-white/10"
               whileHover={{
                 scale: 1.05,
                 backgroundColor: "rgba(255, 255, 255, 0.2)",
               }}
               whileTap={{ scale: 0.95 }}
             >
-              <Minus className="w-2.5 h-2.5" />
+              <Minus className="w-2 h-2" />
             </motion.button>
 
             <motion.span
-              className="text-white text-sm font-bold px-2 min-w-[24px] text-center"
+              className="text-white text-xs font-bold px-1.5 min-w-[20px] text-center"
               key={quantity}
               initial={{ scale: 1.1 }}
               animate={{ scale: 1 }}
@@ -140,14 +135,14 @@ const ProductActions: React.FC = () => {
 
             <motion.button
               onClick={() => setQuantity(quantity + 1)}
-              className="w-6 h-6 bg-white/10 rounded-md flex items-center justify-center text-white/80 hover:bg-white/20 transition-all duration-200 border border-white/10"
+              className="w-5 h-5 bg-white/10 rounded-md flex items-center justify-center text-white/80 hover:bg-white/20 transition-all duration-200 border border-white/10"
               whileHover={{
                 scale: 1.05,
                 backgroundColor: "rgba(255, 255, 255, 0.2)",
               }}
               whileTap={{ scale: 0.95 }}
             >
-              <Plus className="w-2.5 h-2.5" />
+              <Plus className="w-2 h-2" />
             </motion.button>
           </div>
         </motion.div>
