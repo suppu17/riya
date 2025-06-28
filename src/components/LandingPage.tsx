@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import WallpaperSettings from "./WallpaperSettings";
 import LoginModal from "./LoginModal";
 import { useWallpaper } from "../contexts/WallpaperContext";
