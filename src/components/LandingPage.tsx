@@ -128,6 +128,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
         {/* Glassmorphism Main Card */}
         <div className="relative w-full max-w-7xl h-full max-h-[90vh] rounded-3xl backdrop-blur-xl bg-white/10 border border-white/20 shadow-2xl overflow-hidden">
           
+          {/* Circular Stamp */}
+          <div className="absolute top-6 bottom-6 w-32 h-32 rounded-full z-40">
+            {/* Curved text following the circle path - positioned outside */}
+           
+          </div>
+          
           {/* Header Section */}
           <div className="absolute top-0 left-0 right-0 p-6 md:p-8 flex justify-between items-center z-20">
             <div className={`opacity-0 ${showContent ? 'slide-in-left' : ''}`}>
@@ -137,7 +143,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
           </div>
 
           {/* Main Content Grid */}
-          <div className="absolute inset-0 pt-30 pb-45 px-6 md:px-12 flex items-center">
+          <div className="absolute inset-0 pt-30 pb-45 pl-6 md:pl-12 flex items-center">
             <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
               
               {/* Left Side - Text Content */}
@@ -161,10 +167,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
               </div>
 
               {/* Right Side - Large Fashion Image */}
-              <div className={`opacity-0 ${showCards ? 'slide-in-right' : ''}`} style={{animationDelay: '0.3s'}}>
-                <div className="relative pr-20 pt-16">
+              <div className={`opacity-0 relative ${showCards ? 'slide-in-right' : ''}`} style={{animationDelay: '0.3s'}}>
+                <div className="relative">
                   {/* Main Fashion Video Container - Adjusted for better integration */}
-                  <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden backdrop-blur-md bg-white/5 border border-white/20 shadow-xl">
                     <video 
                       className="w-full h-full object-cover"
                       autoPlay 
@@ -175,29 +180,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                       <source src="https://cdn.midjourney.com/video/5dfd741c-cc74-4ed4-bbfa-601bc946ae6e/0.mp4" type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
-                  </div>
-                  
-                  {/* Circular Stamp */}
-                  <div className="absolute -top-12 -right-16 w-32 h-32 rounded-full backdrop-blur-xl bg-white/10 border-4 border-white/60 relative overflow-visible z-30">
-                    {/* Curved text following the circle path - positioned outside */}
-                    <svg className="absolute -inset-8 w-[calc(100%+4rem)] h-[calc(100%+4rem)]" viewBox="0 0 144 144">
-                      <defs>
-                        <path id="outer-top-curve" d="M 16 72 A 56 56 0 0 1 128 72" />
-                        <path id="outer-bottom-curve" d="M 128 72 A 56 56 0 0 1 16 72" />
-                      </defs>
-                      <text className="fill-white font-black text-[12px]" textAnchor="middle" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
-                         <textPath href="#outer-top-curve" startOffset="50%">
-                           VOICE IT • SHOP IT
-                         </textPath>
-                       </text>
-                       <text className="fill-white font-black text-[12px]" textAnchor="middle" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
-                         <textPath href="#outer-bottom-curve" startOffset="50%">
-                           SLAY IT !
-                         </textPath>
-                       </text>
-                    </svg>
-                  </div>
                 </div>
+
+                 {/* stamp 
+          <svg className="absolute -inset-8 w-20 h-20" viewBox="0 0 144 144">
+              <defs>
+                <path id="circle-path" d="M 72 16 A 56 56 0 1 1 71.9999 16" />
+              </defs>
+              <text className="fill-white font-black text-[14px]" textAnchor="middle"></text>
+              <defs>
+                <path id="outer-top-curve" d="M 16 72 A 56 56 0 0 1 128 72" />
+              </defs>
+              <text className="fill-white font-black text-[14px]" textAnchor="middle" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
+                 <textPath href="#outer-top-curve" startOffset="50%">
+                   VOICE IT • SHOP IT • SLAY IT !  | VOICE IT • SHOP IT • SLAY IT !
+                 </textPath>
+               </text>
+            </svg> */}
+
               </div>
             </div>
           </div>
@@ -223,7 +223,11 @@ Some text
 </div>
             </div>
           </div>
+
+         
         </div>
+
+         
       </div>
 
       {/* Wallpaper Settings */}
