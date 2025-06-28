@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { motion } from "motion/react";
 import { useShopping } from "../../contexts/ShoppingContext";
 import { useNavigation } from "../../contexts/NavigationContext";
-import { Mic, ShoppingCart } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import { Mic, ShoppingCart, Bell, LogOut } from "lucide-react";
 import CartModal from "../CartModal";
 
 const TopNavigationBar: React.FC = () => {
   const { getCartItemCount } = useShopping();
   const { navigateToHome } = useNavigation();
+  const { logout } = useAuth();
   const cartCount = getCartItemCount();
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
 
@@ -74,6 +76,24 @@ const TopNavigationBar: React.FC = () => {
         </motion.button>
 
         <motion.button
+          className="w-8 h-8 bg-white/10 backdrop-blur-xl rounded-lg flex items-center justify-center text-white/80 hover:text-white transition-colors"
+          whileHover={{
+            scale: 1.1,
+            backgroundColor: "rgba(255, 255, 255, 0.2)",
+            rotate: 5,
+          }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ duration: 0.2 }}
+        >
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Bell className="w-4 h-4" />
+          </motion.div>
+        </motion.button>
+
+        <motion.button
           onClick={handleCartClick}
           className="flex items-center gap-2 bg-white/10 backdrop-blur-xl rounded-lg px-3 py-2 border border-white/20 cursor-pointer"
           whileHover={{
@@ -104,6 +124,26 @@ const TopNavigationBar: React.FC = () => {
           >
             {cartCount} items
           </motion.span>
+        </motion.button>
+
+        <motion.button
+          onClick={logout}
+          className="w-8 h-8 bg-white/10 backdrop-blur-xl rounded-lg flex items-center justify-center text-white/80 hover:text-white transition-colors"
+          whileHover={{
+            scale: 1.1,
+            backgroundColor: "rgba(255, 255, 255, 0.2)",
+            rotate: 5,
+          }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ duration: 0.2 }}
+          title="Logout"
+        >
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            transition={{ duration: 0.2 }}
+          >
+            <LogOut className="w-4 h-4" />
+          </motion.div>
         </motion.button>
       </motion.div>
 

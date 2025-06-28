@@ -10,17 +10,32 @@ import { VoiceProvider } from "./contexts/VoiceContext";
 import { WallpaperProvider, useWallpaper } from "./contexts/WallpaperContext";
 import { NavigationProvider } from "./contexts/NavigationContext";
 import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 
 const AppContent: React.FC = () => {
   const [currentView, setCurrentView] = useState("home");
+  const { isAuthenticated, loading } = useAuth();
   const [showLanding, setShowLanding] = useState(true);
   const { currentWallpaper } = useWallpaper();
   const { isDarkMode, currentTheme } = useTheme();
 
+  // Handle authentication state changes
+  React.useEffect(() => {
+    if (!loading) {
+      if (isAuthenticated) {
+        setShowLanding(false);
+      } else {
+        setShowLanding(true);
+      }
+    }
+  }, [isAuthenticated, loading]);
+
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Landing Page */}
-      {showLanding && <LandingPage onComplete={() => setShowLanding(false)} />}
+      {/* Landing Page - only show if not authenticated or still loading */}
+      {(showLanding && (!isAuthenticated || loading)) && (
+        <LandingPage onComplete={() => setShowLanding(false)} />
+      )}
 
       {/* Main App Content */}
       <div
@@ -83,15 +98,17 @@ const AppContent: React.FC = () => {
 
 function App() {
   return (
-    <ThemeProvider>
-      <WallpaperProvider>
-        <VoiceProvider>
-          <ShoppingProvider>
-            <AppContent />
-          </ShoppingProvider>
-        </VoiceProvider>
-      </WallpaperProvider>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <WallpaperProvider>
+          <VoiceProvider>
+            <ShoppingProvider>
+              <AppContent />
+            </ShoppingProvider>
+          </VoiceProvider>
+        </WallpaperProvider>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
 

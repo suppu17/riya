@@ -1,14 +1,17 @@
 import React, { useState } from "react";
-import { Search, Mic, Bell, ShoppingCart } from "lucide-react";
+import { Search, Mic, Bell, ShoppingCart, User, LogOut } from "lucide-react";
 import { useShopping } from "../contexts/ShoppingContext";
 import { useVoice } from "../contexts/VoiceContext";
+import { useAuth } from "../contexts/AuthContext";
 import CartModal from "./CartModal";
 
 const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const { getCartItemCount } = useShopping();
   const { startListening, isListening } = useVoice();
+  const { user, logout } = useAuth();
   const cartCount = getCartItemCount();
 
   const handleCartClick = () => {
@@ -66,7 +69,48 @@ const Header: React.FC = () => {
             </span>
           )}
         </button>
+
+        {/* User Profile Menu */}
+        <div className="relative">
+          <button
+            onClick={() => setShowUserMenu(!showUserMenu)}
+            className="flex items-center space-x-2 p-2 text-white/80 hover:text-white transition-colors rounded-lg hover:bg-white/10"
+          >
+            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+              <User className="w-4 h-4 text-white" />
+            </div>
+            <span className="text-sm font-medium">{user?.name || user?.email?.split('@')[0]}</span>
+          </button>
+
+          {/* User Dropdown Menu */}
+          {showUserMenu && (
+            <div className="absolute right-0 top-full mt-2 w-48 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl shadow-xl z-50">
+              <div className="p-3 border-b border-white/10">
+                <p className="text-white text-sm font-medium">{user?.name || 'User'}</p>
+                <p className="text-white/60 text-xs">{user?.email}</p>
+              </div>
+              <button
+                onClick={() => {
+                  logout();
+                  setShowUserMenu(false);
+                }}
+                className="w-full flex items-center space-x-2 p-3 text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="text-sm">Sign Out</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Click outside to close user menu */}
+      {showUserMenu && (
+        <div 
+          className="fixed inset-0 z-40" 
+          onClick={() => setShowUserMenu(false)}
+        ></div>
+      )}
 
       {/* Cart Modal */}
       <CartModal isOpen={isCartModalOpen} onClose={handleCloseCartModal} />

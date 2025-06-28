@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import WallpaperSettings from "./WallpaperSettings";
 import LoginModal from "./LoginModal";
 import { useWallpaper } from "../contexts/WallpaperContext";
+import { useAuth } from "../contexts/AuthContext";
 
 // Define keyframes for modern animations
 const modernAnimations = `
@@ -72,19 +73,11 @@ interface LandingPageProps {
 
 const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
   const { currentWallpaper } = useWallpaper();
+  const { isAuthenticated, loading } = useAuth();
   const [showContent, setShowContent] = useState(false);
   const [showCards, setShowCards] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  const handleLogin = (email: string, password: string) => {
-    // Simple authentication logic - in real app, this would call an API
-    if (email && password) {
-      setIsAuthenticated(true);
-      setShowLoginModal(false);
-    }
-  };
 
   useEffect(() => {
     // Create and inject the stylesheet
@@ -97,8 +90,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
     const timer2 = setTimeout(() => setShowCards(true), 800);
     const timer3 = setTimeout(() => setShowButton(true), 1200);
 
-    // Remove auto-proceed timer - user must authenticate first
-
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
@@ -107,7 +98,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
         document.head.removeChild(style);
       }
     };
-  }, [onComplete]);
+  }, []);
+
+  // Auto-proceed if already authenticated
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      const timer = setTimeout(() => {
+        onComplete();
+      }, 1500); // Small delay for smooth transition
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, loading, onComplete]);
 
   return (
     <div className="fixed inset-0 z-50">
@@ -135,7 +137,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
           </div>
 
           {/* Main Content Grid */}
-          <div className="absolute inset-0 pt-32 pb-20 px-6 md:px-12 flex items-center">
+          <div className="absolute inset-0 pt-30 pb-45 px-6 md:px-12 flex items-center">
             <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
               
               {/* Left Side - Text Content */}
@@ -160,11 +162,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
 
               {/* Right Side - Large Fashion Image */}
               <div className={`opacity-0 ${showCards ? 'slide-in-right' : ''}`} style={{animationDelay: '0.3s'}}>
-                <div className="relative">
-                  {/* Main Fashion Video Container */}
-                  <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden backdrop-blur-xl bg-white/10 border border-white/30 shadow-2xl">
-                    {/* Gradient overlay for better blending */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-pink-500/10 z-10"></div>
+                <div className="relative pr-20 pt-16">
+                  {/* Main Fashion Video Container - Adjusted for better integration */}
+                  <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden backdrop-blur-md bg-white/5 border border-white/20 shadow-xl">
                     <video 
                       className="w-full h-full object-cover"
                       autoPlay 
@@ -175,19 +175,22 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                       <source src="https://cdn.midjourney.com/video/5dfd741c-cc74-4ed4-bbfa-601bc946ae6e/0.mp4" type="video/mp4" />
                       Your browser does not support the video tag.
                     </video>
-                    {/* Inner glow effect */}
-                    <div className="absolute inset-0 rounded-3xl shadow-inner shadow-white/20 z-20 pointer-events-none"></div>
                   </div>
                   
                   {/* Circular Stamp */}
-                  <div className="absolute -top-4 -right-4 w-24 h-24 rounded-full backdrop-blur-xl bg-white/10 border border-white/20 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="text-white font-light text-xs leading-tight">
-                        <div>Voice It</div>
-                        <div>Shop It</div>
-                        <div>Slay It</div>
-                      </div>
-                    </div>
+                  <div className="absolute -top-12 -right-16 w-32 h-32 rounded-full backdrop-blur-xl bg-white/10 border-4 border-white/60 relative overflow-visible z-30">
+                    {/* Curved text following the circle path - positioned outside */}
+                    <svg className="absolute -inset-8 w-[calc(100%+4rem)] h-[calc(100%+4rem)]" viewBox="0 0 144 144">
+                      <defs>
+                        <path id="outer-top-curve" d="M 16 72 A 56 56 0 0 1 128 72" />
+                        <path id="outer-bottom-curve" d="M 128 72 A 56 56 0 0 1 16 72" />
+                      </defs>
+                      <text className="fill-white font-black text-[16px]" textAnchor="middle" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
+                         <textPath href="#outer-top-curve" startOffset="50%">
+                           VOICE IT, SHOP IT, SLAY IT !
+                         </textPath>
+                       </text>
+                    </svg>
                   </div>
                 </div>
               </div>
@@ -227,7 +230,10 @@ Some text
       <LoginModal 
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
-        onLogin={handleLogin}
+        onLoginSuccess={() => {
+          // Authentication context will handle the state update
+          // The useEffect above will automatically proceed to main app
+        }}
       />
     </div>
   );

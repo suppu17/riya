@@ -107,9 +107,9 @@ const RiyaVoiceAgent: React.FC = () => {
 
   return (
     <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-3 border border-white/20 flex flex-col items-center text-center relative">
-      <div className="w-full h-full aspect-square rounded-2xl overflow-hidden border-2 border-white/30">
+      <div className="w-full h-full aspect-square rounded-full overflow-hidden border-2 border-white/30">
         <video
-          src="https://cdn.dribbble.com/userupload/15697531/file/original-0242acdc69146d4472fc5e69b48616dc.mp4"
+          src="https://cdn.dribbble.com/userupload/16978372/file/original-0175361a02618362ea8408974d7f3769.mp4"
           autoPlay
           loop
           muted
@@ -120,7 +120,7 @@ const RiyaVoiceAgent: React.FC = () => {
       <div className="absolute bottom-8 left-0 right-0 text-center mt-2">
         <p className="font-bold text-sm mb-0">
           {conversation.status !== "connected"
-            ? <button onClick={navigateToHome} className="bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent font-black tracking-wider animate-pulse cursor-pointer border-none bg-transparent outline-none hover:scale-105 transition-transform" style={{fontFamily: "'Inter', 'Helvetica Neue', sans-serif"}}>SnapStyler</button>
+            ? <button onClick={navigateToHome} className="bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent font-black tracking-wider animate-pulse cursor-pointer border-none bg-transparent outline-none hover:scale-105 transition-transform" style={{fontFamily: "'Inter', 'Helvetica Neue', sans-serif"}}>Riya</button>
             : <span className="bg-gradient-to-r from-orange-400 to-amber-500 bg-clip-text text-transparent">{conversation.status !== "speaking" ? "listening" : "speaking"}</span>}
           <br />
         </p>
