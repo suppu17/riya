@@ -1,22 +1,7 @@
 import { useConversation } from "@elevenlabs/react";
 import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
 import React from "react";
-import { Mic, MicOff, Pause, Play } from "lucide-react";
-
-// Define Product type to be used as prop
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  category: string;
-  rating: number;
-  inStock: boolean;
-  description?: string;
-  designer?: string;
-  articleNumber?: string;
-  images?: string[];
-}
+import { Pause, Play } from "lucide-react";
 
 import { useShopping } from "../contexts/ShoppingContext";
 
@@ -28,6 +13,7 @@ const RiyaVoiceAgent: React.FC = () => {
     selectedProduct,
     setCurrentCategory,
   } = useShopping();
+  // No state needed for this component
   const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
 
   const conversation = useConversation({
@@ -104,24 +90,31 @@ const RiyaVoiceAgent: React.FC = () => {
   }
 
   return (
-    <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-3 border border-white/20 flex flex-col items-center text-center relative">
-      <div className="w-full h-full aspect-square rounded-2xl overflow-hidden border-2 border-white/30">
-        <video
-          src="https://cdn.dribbble.com/userupload/15697531/file/original-0242acdc69146d4472fc5e69b48616dc.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-full object-cover"
-        />
+    <div className="backdrop-blur-sm bg-transparent rounded-3xl p-3 border border-white/20 flex flex-col items-center text-center relative">
+      {/* Completely transparent background */}
+      <div className="absolute inset-0 rounded-3xl overflow-hidden bg-transparent"></div>
+      
+      {/* Riya assistant container */}
+      <div className="w-full h-full aspect-square rounded-2xl overflow-hidden z-10 relative">
+        {/* Animated pulsing ring */}
+        <div className="absolute inset-0 rounded-full border-2 border-orange-400/30 animate-pulse"></div>
+        
+        {/* Circular energy orb */}
+        <div className="relative w-full h-full flex items-center justify-center">
+          <div className="w-4/5 h-4/5 rounded-full bg-gradient-to-br from-orange-400/20 via-amber-300/10 to-orange-500/20 animate-pulse flex items-center justify-center">
+            <div className="w-3/4 h-3/4 rounded-full bg-gradient-to-br from-orange-400/30 via-amber-300/20 to-orange-500/30 animate-pulse flex items-center justify-center">
+              <div className="w-1/2 h-1/2 rounded-full bg-gradient-to-br from-orange-400/40 via-amber-300/30 to-orange-500/40 animate-pulse"></div>
+            </div>
+          </div>
+        </div>
       </div>
+      
+      {/* Status text */}
       <div className="absolute bottom-8 left-0 right-0 text-center mt-2">
         <p className="text-orange-500 font-medium text-sm mb-0 bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-amber-500">
-          {conversation.status !== "connected"
-            ? "Riya.ai"
-            : conversation.status !== "speaking"
+          {conversation.status === "connected" 
             ? "listening"
-            : "speaking"}
+            : "Riya.ai"}
           <br />
         </p>
       </div>

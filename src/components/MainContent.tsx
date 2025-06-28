@@ -16,6 +16,19 @@ const MainContent: React.FC<MainContentProps> = ({ currentView }) => {
   const renderPage = () => {
     switch (currentView) {
       case "home":
+        return (
+          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 text-center">
+            <h2 className="text-2xl font-semibold text-white mb-4">Welcome to Riya</h2>
+            <p className="text-white/80 mb-6">Your personal shopping assistant</p>
+            <button 
+              onClick={() => window.location.href = "#shop"} 
+              className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-lg font-medium transition-all duration-300"
+            >
+              Start Shopping
+            </button>
+          </div>
+        );
+      case "shop":
         return <HomePage />;
       case "search":
         return <SearchPage />;
@@ -53,7 +66,12 @@ const MainContent: React.FC<MainContentProps> = ({ currentView }) => {
           </div>
         );
       default:
-        return <HomePage />;
+        return (
+          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 text-center">
+            <h2 className="text-2xl font-semibold text-white mb-4">Welcome to Riya</h2>
+            <p className="text-white/80">Please select a valid view</p>
+          </div>
+        );
     }
   };
 

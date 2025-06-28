@@ -13,6 +13,7 @@ export type Product = {
   tryown?: boolean;
   categoryFlag?: boolean;
   keyWords?: string[];
+  moreInfo?: string;
 };
 export const sampleProducts: Product[] = [
   {
@@ -34,7 +35,8 @@ export const sampleProducts: Product[] = [
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Alma_BB/alma_bb_interior2.png",
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Alma_BB/alma_bb_cropped_worn.png",
     ],
-    keyWords: ["Iconic Handbag", "Louis Vuitton", "Timeless Appeal"],
+    keyWords: ["Iconic Handbag", "Louis Vuitton", "Small", "Cute", "Handy", "Original"],
+    moreInfo: "An iconic structured small handbag with original monogram color and a Louis Vuitton logo",
   },
   {
     id: "33",
@@ -55,6 +57,8 @@ export const sampleProducts: Product[] = [
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/OnTheGo_PM/onthego_pm_back.png",
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/OnTheGo_PM/onthego_pm_closeup.png",
     ],
+    keyWords: ["Premium Tote Bag", "Blue", "Monogram", "Denim","Louis Vuitton", "Officewear", "Sophisticated Design"],
+    moreInfo: "A blue denim tote bag with a monogrammed Louis Vuitton logo and a sophisticated design with ample space."
   },
   {
     id: "34",
@@ -75,6 +79,8 @@ export const sampleProducts: Product[] = [
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Hide_Away_MM/hide_away_mm_back.png",
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Hide_Away_MM/hide_away_mm_worn.png",
     ],
+    keyWords: ["Brown", "Monogram", "Canvas", "Louis Vuitton", "Hide Away", "Workwear", "Weekendwear"],
+    moreInfo: "Meet the Hide Away, a refined work-to-weekend model that combines sleek lines with Louis Vuitton heritage codes. Crafted from Monogram coated canvas, it is elevated with signature details including a gold-toned padlock and Toron handle, which recall archival styles from the 1930s. Use the hidden compartment inside to keep valuables secure."
   },
   {
     id: "35",
@@ -96,6 +102,8 @@ export const sampleProducts: Product[] = [
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Capucines_BB/capucines_bb_back.png",
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Capucines_BB/capucines_bb_other.png",
     ],
+    keyWords: ["Iconic, Rust Red, Gold-toned"],
+    moreInfo: "The iconic Capucines BB is reimagined for the season as part of the Chain On You collection. This edition is made from Taurillon leather, accented with a jewel-inspired, bi-galvanized chain that features delicate Monogram Flower details. Designed to be styled with the flap inside or out, this versatile model is sized to fit everyday essentials and includes several interior pockets. The rounded signature LV initials lend a sophisticated finish."
   },
   {
     id: "36",
@@ -263,81 +271,9 @@ export const sampleProducts: Product[] = [
     ],
   },
   {
-    id: "1",
-    name: "BVLGARI Allegra Baciami Eau De Parfum, 3.4 oz.",
-    price: 295,
-    image:
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/BVLGARI_Allegra_Baciami_Eau_De_Parfum_3.4_oz./bvlgari_allegra_baciami_eau_de_parfum_3.4_oz._m.png",
-    category: "Beauty",
-    rating: 4.8,
-    inStock: true,
-    description: "Luxurious eau de parfum with captivating floral notes",
-    designer: "BVLGARI",
-    articleNumber: "BV001",
-    images: [
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/BVLGARI_Allegra_Baciami_Eau_De_Parfum_3.4_oz./bvlgari_allegra_baciami_eau_de_parfum_3.4_oz._m.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/BVLGARI_Allegra_Baciami_Eau_De_Parfum_3.4_oz./bvlgari_allegra_baciami_eau_de_parfum_3.4_oz._c.png",
-    ],
-  },
-  {
-    id: "4",
-    name: "DIOR Dior Addict Lip Glow Butter",
-    price: 42,
-    image:
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/DIOR_Dior_Addict_Lip_Glow_Butter/dior_dior_addict_lip_glow_butter_n.png",
-    category: "Beauty",
-    rating: 4.6,
-    inStock: true,
-    description: "Nourishing lip balm with natural glow enhancement",
-    designer: "DIOR",
-    articleNumber: "DR001",
-    images: [
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/DIOR_Dior_Addict_Lip_Glow_Butter/dior_dior_addict_lip_glow_butter_n.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/DIOR_Dior_Addict_Lip_Glow_Butter/dior_dior_addict_lip_glow_butter_a.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/DIOR_Dior_Addict_Lip_Glow_Butter/dior_dior_addict_lip_glow_butter_d.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/DIOR_Dior_Addict_Lip_Glow_Butter/dior_dior_addict_lip_glow_butter_b.png",
-    ],
-  },
-  {
-    id: "5",
-    name: "DIOR Sauvage Eau de Parfum",
-    price: 157,
-    image:
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/DIOR_Sauvage_Eau_de_Parfum/dior_sauvage_eau_de_parfum_a.png",
-    category: "Beauty",
-    rating: 4.7,
-    inStock: true,
-    description: "Bold and sophisticated fragrance with woody notes",
-    designer: "DIOR",
-    articleNumber: "DR002",
-    images: [
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/DIOR_Sauvage_Eau_de_Parfum/dior_sauvage_eau_de_parfum_a.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/DIOR_Sauvage_Eau_de_Parfum/dior_sauvage_eau_de_parfum_b.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/DIOR_Sauvage_Eau_de_Parfum/dior_sauvage_eau_de_parfum_h.png",
-    ],
-  },
-  {
-    id: "6",
-    name: "DIOR Rouge Blush Colour & Glow",
-    price: 50,
-    image:
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/DIOR_Rouge_Blush_Colour_&_Glow/dior_rouge_blush_colour_&_glow_m.png",
-    category: "Beauty",
-    rating: 4.5,
-    inStock: true,
-    description: "Radiant blush for natural colour and luminous glow",
-    designer: "DIOR",
-    articleNumber: "DR003",
-    images: [
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/DIOR_Rouge_Blush_Colour_&_Glow/dior_rouge_blush_colour_&_glow_m.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/DIOR_Rouge_Blush_Colour_&_Glow/dior_rouge_blush_colour_&_glow_a.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/DIOR_Rouge_Blush_Colour_&_Glow/dior_rouge_blush_colour_&_glow_b.png",
-    ],
-  },
-  {
     id: "8",
-    name: "Louis Vuitton Floral Jacquard A-Line Dress",
-    price: 3050,
+    name: "Louis Vuitton Monogram Denim Dress",
+    price: 3250,
     image:
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Louis_Vuitton_Dresses_6.png",
     category: "Clothing",
@@ -355,6 +291,8 @@ export const sampleProducts: Product[] = [
     ],
     tryown: true,
     categoryFlag: true,
+    keyWords: ["Denim", "A-line Dress", "Louis Vuitton", "Dresses", "Clothing", "Elegant"],
+    moreInfo: "This fitted dress is a chic staple in casual washed denim finished with yellow topstitching and an allover Monogram motif. The top half is detailed with flattering princess seams and a rebellious raw-edge neckline, while a cinched waistline adds definition to the silhouette and an exposed golden zipper completes the look with a modern, sporty feel."
   },
   {
     id: "9",
@@ -372,24 +310,6 @@ export const sampleProducts: Product[] = [
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/LV_Isola_Flat_Mule/lv_isola_flat_mule_front.png",
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/LV_Isola_Flat_Mule/lv_isola_flat_mule_side.png",
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/LV_Isola_Flat_Mule/lv_isola_flat_mule_interior.png",
-    ],
-  },
-  {
-    id: "10",
-    name: "Louis Vuitton Capucines BB",
-    price: 7000,
-    image:
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Capucines_BB/capucines_bb_front.png",
-    category: "Bags",
-    rating: 4.9,
-    inStock: true,
-    description: "Iconic handbag with timeless elegance and craftsmanship",
-    designer: "Louis Vuitton",
-    articleNumber: "M24656",
-    images: [
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Capucines_BB/capucines_bb_front.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Capucines_BB/capucines_bb_side.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Capucines_BB/capucines_bb_interior.png",
     ],
   },
   {
@@ -451,14 +371,16 @@ export const sampleProducts: Product[] = [
     description: "Luxurious signature accent knit dress with refined details",
     designer: "Louis Vuitton",
     articleNumber: "1AI965",
-    keyWords: ["Signature Accent Knit Dress", "Louis Vuitton", "Elegant", "Refined Details"],
+    
     images: [
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/main_png.png",
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Signature_Accent_Knit_Dress/signature_accent_knit_dress_side.png",
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Signature_Accent_Knit_Dress/signature_accent_knit_dress_cropped.png",
+      "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/main_png.png",
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Signature_Accent_Knit_Dress/signature_accent_knit_dress_worn.png",
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Signature_Accent_Knit_Dress/signature_accent_knit_dress_ambiance.png",
     ],
+    keyWords: ["Knit Dress", "Navy", "Made in Italy", "Sleeveless", "Louis Vuitton", "Stylish", "Vintage"],
+    moreInfo: "This versatile mid-length dress has an elegant, modern air in a fitted shape spun from a soft cotton-blend knit in a ribbed finish. Tone-on-tone silk godet inserts add spirited volume around the hemline, while the bust is highlighted with metallic Monogram Flower embellishments for an understated signature accent."
   },
   {
     id: "14",
@@ -474,12 +396,13 @@ export const sampleProducts: Product[] = [
     designer: "Louis Vuitton",
     articleNumber: "1AHH09",
     images: [
+      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Striped_Lavalliere_Dress/striped_lavalliere_dress_front.png",
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Striped_Lavalliere_Dress/striped_lavalliere_dress_worn.png",
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Striped_Lavalliere_Dress/striped_lavalliere_dress_ambiance.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Striped_Lavalliere_Dress/striped_lavalliere_dress_front.png",
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Striped_Lavalliere_Dress/striped_lavalliere_dress_cropped.png",
     ],
-    keyWords: ["Red Color", "Louis Vuitton", "Elegant", "Sleeves"],
+    keyWords: ["Red Color", "Louis Vuitton", "silk", "Christmas", "Elegant", "Longdress", "fulllength","Sleeveless"],
+    moreInfo: "This dress exudes elegance in silk satin in a lustrous tone-on-tone striped finish. The top half discreetly emphasizes the geometric look with pleating and a cross-over front, while the skirt falls to the ankles with fluid lines. Metallic Monogram accents add a subtle signature to the lavallière neckline and the back is fastened with an exposed zipper." 
   },
   {
     id: "16",
@@ -498,6 +421,8 @@ export const sampleProducts: Product[] = [
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Embroidered_Accent_Denim_Jacket/embroidered_accent_denim_jacket_worn.png",
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Embroidered_Accent_Denim_Jacket/embroidered_accent_denim_jacket_ambiance.png",
     ],
+    keyWords: ["Denim", "pink", "Pinkandblack", "Jacket", "LV", "Cute", "trendy", "chic"], 
+    moreInfo: "This casual jacket is uplifted with elegant seasonal detailing for spirited everyday styling. Cut in a chic cropped shape from washed denim in a playful colorway, the shoulders are accented with intricately embroidered floral patches. Signed on the back with a Monogram Flower tab and a Louis Vuitton patch."
   },
   {
     id: "17",
@@ -517,6 +442,8 @@ export const sampleProducts: Product[] = [
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Long_Monogram_Parka/long_monogram_parka_cropped_worn.png",
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Long_Monogram_Parka/long_monogram_parka_ambiance.png",
     ],
+    keyWords: ["Beige", "Monogram"], 
+    moreInfo: "TThis classic parka is uplifted in a fresh seasonal colorway signed all over with a subtle Monogram motif that catches the light. The long silhouette is detailed with a fishtail hem and defined at the waist with an internal drawstring, while a high collar, a hood and secure flap pockets underscore the sporty spirit of the shape."
   },
   {
     id: "18",
@@ -542,11 +469,13 @@ export const sampleProducts: Product[] = [
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Tambour_Street_Diver/tambour_street_diver_back.png"
       
     ],
+    keyWords: ["steel", "white", "navy", "sporty"],
+    moreInfo: "This Pacific White model brings a feminine touch to the versatile Tambour Street Diver range. Casual and sporty, it combines traditional dive watch functions with the colorful, creative and unconventional style unique to Louis Vuitton. Its bright colors, contrasting finished, wateristant and luminescent indexes will add a modern twist to any outfit."
   },
   {
     id: "20",
-    name: "Tambour Taiko Spin Time Air Flying Tourbillon, Automatic, 42.5mm, White gold",
-    price: 50000,
+    name: "Tambour Taiko Spin Time Air, Automatic",
+    price: 85500,
     image:
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Tambour_Taiko_Spin_Time/tambour_taiko_spin_time_front.png",
    category: "Watches",
@@ -564,6 +493,8 @@ export const sampleProducts: Product[] = [
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Tambour_Taiko_Spin_Time/tambour_taiko_spin_time_detail.png",
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Tambour_Taiko_Spin_Time/tambour_taiko_spin_time_cropped.png",
     ],
+    keyWords: ["18-carat", "white gold", "spin time", "dolphin", "limited edition"],
+    moreInfo: "The limited edition Tambour Taiko Spin Time Air watch, the iconic and first patented movement of the house, with a Spin Time Air movement. Powered by the fully redesigned Caliber LFT ST13.01, which is housed in the Tambour Taiko case in 18-carat white gold, this piece is distinguished by a unique dolphin grey color interpreted with a sunray dial."
   },
   {
     id: "21",
@@ -576,7 +507,7 @@ export const sampleProducts: Product[] = [
     inStock: true,
     description:
       "Exceptional manual timepiece with galactic-inspired design in titanium and white gold",
-    designer: "Louis Vuitton",
+    designer: "Louis Vuitton", 
     articleNumber: "W9TI12",
     images: [
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Tambour_Taiko_Galactique/tambour_taiko_galactique_front.png",
@@ -585,6 +516,8 @@ export const sampleProducts: Product[] = [
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Tambour_Taiko_Galactique/tambour_taiko_galactique_back.png",
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Tambour_Taiko_Galactique/tambour_taiko_galactique_cropped.png",
     ],
+    keyWords: ["titanium", "white gold", "galactic", "astronaut", "blue", "engraving", "limited edition"],  
+    moreInfo: "The Tambour Taiko Galactique embarks on a bold space odyssey, where exploration meets innovation. This timepiece opens a new chapter in the journey of Louis Vuitton automata, housed in an all-new titanium and white gold case with a distinctly futuristic design and a crown positioned at 12 o’clock. Powered by the LFT AU14.02 calibre — combining a cathedral gong minute repeater with an automata — the watch comes to life through seven animations. Exceptional engraving work brings striking depth and realism to the astronautscene, while a fusion of enameling techniques creates a beautiful interplay of colors and textures."
   },
   {
     id: "22",
@@ -607,8 +540,10 @@ export const sampleProducts: Product[] = [
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Tambour_Bushido_Automata/tambour_bushido_automata_other2.png",
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Tambour_Bushido_Automata/tambour_bushido_automata_cropped.png",
     ],
-  },
-  {
+  keyWords: [" pink gold", "pirate", "samurai", "award-winning"], 
+  moreInfo: "Taking its name from the code of conduct of the Japanese Samurai, the Tambour Bashido Automata is an homage to strength, discipline and artistic expression. The dial, which is embellished with a striking Samurai mask, features five different animations. These are powered by the award-winning LV 525 caliber and it reveals the time on demand. The intricacy of enamelling and engraving pushes the boundaries of the Métiers d'Art to celebrate Japanese culture, all around the case."
+},
+    {
     id: "23",
     name: "LV BUTTERSOFT Sneaker",
     price: 1400,
@@ -754,24 +689,6 @@ export const sampleProducts: Product[] = [
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Run_Away_Sneaker/run_away_sneaker_worn.png",
     ],
   },
-  {
-    id: "30",
-    name: "LV Skate Sneaker (Black)",
-    price: 1320,
-    image:
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/LV_Skate_Sneaker/lv_skate_sneaker_front.png",
-    category: "Shoes",
-    rating: 4.8,
-    inStock: true,
-    description:
-      "Black edition skate sneaker with sleek design and premium construction",
-    designer: "Louis Vuitton",
-    articleNumber: "1ADE1K",
-    images: [
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/LV_Skate_Sneaker/lv_skate_sneaker_front.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/LV_Skate_Sneaker/lv_skate_sneaker_side.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/LV_Skate_Sneaker/lv_skate_sneaker_back.png",
-    ],
-  },
+
 ];
 

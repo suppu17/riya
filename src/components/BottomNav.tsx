@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Home, Camera, Settings, ShoppingBag, Check, User } from "lucide-react";
+import { Home, Camera, Settings, ShoppingBag, Check, User, ShoppingCart } from "lucide-react";
 import { useShopping } from "../contexts/ShoppingContext";
 import ModelOverlay from "./ModelOverlay";
 
@@ -16,6 +16,7 @@ const BottomNav: React.FC<BottomNavProps> = ({
   const [isModelOverlayOpen, setIsModelOverlayOpen] = useState(false);
   const navItems = [
     { id: "home", icon: Home, label: "Home" },
+    { id: "shop", icon: ShoppingCart, label: "Shop" },
     { id: "photos", icon: Camera, label: "Photos" },
     { id: "profile", icon: User, label: "Profile" },
     { id: "cart", icon: ShoppingBag, label: "Cart" },
