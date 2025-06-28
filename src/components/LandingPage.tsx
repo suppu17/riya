@@ -185,9 +185,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                         <path id="outer-top-curve" d="M 16 72 A 56 56 0 0 1 128 72" />
                         <path id="outer-bottom-curve" d="M 128 72 A 56 56 0 0 1 16 72" />
                       </defs>
-                      <text className="fill-white font-black text-[16px]" textAnchor="middle" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
+                      <text className="fill-white font-black text-[12px]" textAnchor="middle" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
                          <textPath href="#outer-top-curve" startOffset="50%">
-                           VOICE IT, SHOP IT, SLAY IT !
+                           VOICE IT • SHOP IT
+                         </textPath>
+                       </text>
+                       <text className="fill-white font-black text-[12px]" textAnchor="middle" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
+                         <textPath href="#outer-bottom-curve" startOffset="50%">
+                           SLAY IT !
                          </textPath>
                        </text>
                     </svg>
