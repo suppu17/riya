@@ -3,6 +3,65 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme Variables */
+:root {
+  --theme-primary: #A78BFA;
+  --theme-secondary: #F472B6;
+  --theme-accent: #22D3EE;
+  --theme-background: #0F0F23;
+  --theme-surface: #1A1A2E;
+  --theme-text: #F8FAFC;
+  --theme-text-secondary: #CBD5E1;
+  --theme-border: #334155;
+}
+
+/* Base styles */
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode styles */
+body.dark {
+  background-color: var(--theme-background);
+  color: var(--theme-text);
+}
+
+/* Light mode styles */
+body.light {
+  background-color: var(--theme-background);
+  color: var(--theme-text);
+}
+
+/* Theme-aware components */
+.theme-bg-primary {
+  background-color: var(--theme-primary);
+}
+
+.theme-bg-secondary {
+  background-color: var(--theme-secondary);
+}
+
+.theme-bg-surface {
+  background-color: var(--theme-surface);
+}
+
+.theme-text {
+  color: var(--theme-text);
+}
+
+.theme-text-secondary {
+  color: var(--theme-text-secondary);
+}
+
+.theme-border {
+  border-color: var(--theme-border);
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
 /* Hide scrollbar for webkit browsers */
 .scrollbar-hide {
   -ms-overflow-style: none;
@@ -11,4 +70,35 @@
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* Enhanced glassmorphism effects */
+.glass-light {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Theme-aware shadows */
+.shadow-theme {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+body.light .shadow-theme {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Gradient backgrounds */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, var(--theme-accent), var(--theme-primary));
 }

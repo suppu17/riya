@@ -10,7 +10,7 @@ interface CategoryImage {
 }
 
 const CategoryGallery: React.FC = () => {
-  const { products } = useShopping();
+  const { products, setSelectedProduct } = useShopping();
 
   const categoryImages: CategoryImage[] = useMemo(() => {
     const categoryMap = new Map<string, CategoryImage[]>();
@@ -58,7 +58,7 @@ const CategoryGallery: React.FC = () => {
       <h3 className="text-white font-semibold text-bold mb-3">Trending</h3>
       <div className="grid grid-cols-4 gap-2">
         {categoryImages.map((category, index) => (
-          <motion.div
+                    <motion.div
             key={category.id}
             className="relative group cursor-pointer"
             initial={{ opacity: 0, scale: 0.8 }}
@@ -66,6 +66,12 @@ const CategoryGallery: React.FC = () => {
             transition={{ duration: 0.3, delay: 0.7 + index * 0.05 }}
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              const product = products.find((p) => p.id === category.id);
+              if (product) {
+                setSelectedProduct(product);
+              }
+            }}
           >
             <div className="aspect-square rounded-2xl overflow-hidden">
               <img

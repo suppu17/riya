@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { motion } from "motion/react";
 import { useShopping } from "../../contexts/ShoppingContext";
+import { useNavigation } from "../../contexts/NavigationContext";
 import { Mic, ShoppingCart } from "lucide-react";
 import CartModal from "../CartModal";
 
 const TopNavigationBar: React.FC = () => {
   const { getCartItemCount } = useShopping();
+  const { navigateToHome } = useNavigation();
   const cartCount = getCartItemCount();
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
 
@@ -29,16 +31,22 @@ const TopNavigationBar: React.FC = () => {
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.1 }}
       >
-        <motion.span
-          className="text-white/60 text-lg pl-4 font-bold"
+        <motion.button
+          onClick={navigateToHome}
+          className="bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent text-xl pl-4 font-black tracking-wide cursor-pointer border-none bg-transparent outline-none"
           whileHover={{
-            color: "rgba(255, 255, 255, 0.9)",
-            scale: 1.05,
+            scale: 1.1,
+            filter: "brightness(1.2)",
           }}
-          transition={{ duration: 0.2 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ duration: 0.3 }}
+          style={{
+            fontFamily: "'Inter', 'Helvetica Neue', sans-serif",
+            textShadow: "0 0 20px rgba(168, 85, 247, 0.4)"
+          }}
         >
-          Shopbeauty.ai
-        </motion.span>
+          SnapStyler
+        </motion.button>
       </motion.div>
 
       <motion.div

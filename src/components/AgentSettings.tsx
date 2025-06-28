@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigation } from '../contexts/NavigationContext';
 
 const AgentSettings: React.FC = () => {
   const [agentId, setAgentId] = useState('agent_01jyncdvaxfqn8kdqk5rfn1jdt'); // Replace with your agent ID or load dynamically
@@ -6,6 +7,7 @@ const AgentSettings: React.FC = () => {
   const [tools, setTools] = useState('[]');
   const [isUpdating, setIsUpdating] = useState(false);
   const [message, setMessage] = useState('');
+  const { navigateToHome } = useNavigation();
 
   const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
 
@@ -55,7 +57,7 @@ const AgentSettings: React.FC = () => {
 
   return (
         <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10">
-      <h3 className="text-lg font-semibold mb-4">Fine-Tune Riya</h3>
+      <h3 className="text-lg font-semibold mb-4">Fine-Tune <button onClick={navigateToHome} className="bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent font-black tracking-wide cursor-pointer border-none bg-transparent outline-none hover:scale-105 transition-transform" style={{fontFamily: "'Inter', 'Helvetica Neue', sans-serif"}}>SnapStyler</button></h3>
       <form onSubmit={handleUpdate}>
         <div className="mb-4">
           <label htmlFor="agentId" className="block text-sm font-medium text-white/80 mb-1">Agent ID</label>

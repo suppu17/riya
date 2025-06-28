@@ -19,6 +19,7 @@ interface Product {
 }
 
 import { useShopping } from "../contexts/ShoppingContext";
+import { useNavigation } from "../contexts/NavigationContext";
 
 const RiyaVoiceAgent: React.FC = () => {
   const {
@@ -28,6 +29,7 @@ const RiyaVoiceAgent: React.FC = () => {
     selectedProduct,
     setCurrentCategory,
   } = useShopping();
+  const { navigateToHome } = useNavigation();
   const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
 
   const conversation = useConversation({
@@ -116,12 +118,10 @@ const RiyaVoiceAgent: React.FC = () => {
         />
       </div>
       <div className="absolute bottom-8 left-0 right-0 text-center mt-2">
-        <p className="text-orange-500 font-medium text-sm mb-0 bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-amber-500">
+        <p className="font-bold text-sm mb-0">
           {conversation.status !== "connected"
-            ? "Riya.ai"
-            : conversation.status !== "speaking"
-            ? "listening"
-            : "speaking"}
+            ? <button onClick={navigateToHome} className="bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent font-black tracking-wider animate-pulse cursor-pointer border-none bg-transparent outline-none hover:scale-105 transition-transform" style={{fontFamily: "'Inter', 'Helvetica Neue', sans-serif"}}>SnapStyler</button>
+            : <span className="bg-gradient-to-r from-orange-400 to-amber-500 bg-clip-text text-transparent">{conversation.status !== "speaking" ? "listening" : "speaking"}</span>}
           <br />
         </p>
       </div>

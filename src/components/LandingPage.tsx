@@ -118,7 +118,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
             }`}
           >
             <h1 className="text-4xl md:text-6xl font-bold mb-4 text-center">
-              Welcome to Riya
+              Welcome to <span className="bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent font-extrabold tracking-wider animate-pulse">SnapStyler</span>
             </h1>
             <p className="text-xl md:text-2xl text-center mb-8 max-w-md">
               Your personal shopping assistant
