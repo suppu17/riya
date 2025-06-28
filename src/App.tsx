@@ -38,10 +38,12 @@ const AppContent: React.FC = () => {
         <div 
           className={`absolute inset-0 transition-all duration-300 ${
             isDarkMode 
-              ? 'bg-gradient-to-br from-black/40 via-black/20 to-black/50' 
-              : 'bg-gradient-to-br from-white/20 via-white/10 to-white/30'
+              ? 'bg-gradient-to-br from-blue-900/30 via-purple-900/20 to-pink-900/30' 
+              : 'bg-gradient-to-br from-blue-900/30 via-purple-900/20 to-pink-900/30'
           }`}
         ></div>
+
+         {/* Gradient Overlays */}
         <div 
           className={`absolute inset-0 transition-all duration-300 ${
             isDarkMode 
