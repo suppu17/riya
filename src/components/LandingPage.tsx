@@ -137,7 +137,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
           {/* Header Section */}
           <div className="absolute top-0 left-0 right-0 p-6 md:p-8 flex justify-between items-center z-20">
             <div className={`opacity-0 ${showContent ? 'slide-in-left' : ''}`}>
-              <h2 className="text-2xl md:text-3xl font-light text-white tracking-wide">SnapStyler</h2>
+              <h2 className="text-xl font-bold text-white tracking-wide" style={{fontSize: '36px'}}>SnapStyler</h2>
               <div className="text-sm text-white/70 mt-1">+ menu</div>
             </div>
           </div>
@@ -160,8 +160,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
 
 
                 <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.6s'}}>
-                  <p className="text-white/80 text-lg leading-relaxed max-w-md">
-                    Discover our curated collection of contemporary fashion. Experience the future of personal styling with AI-powered recommendations.
+                  <p className="text-white/80 text-lg leading-relaxed max-w-2xl">
+                    SnapStyler is an AI-powered, voice-assisted app that offers a truly handsfree shopping journey, featuring ultra-realistic 8K HD virtual try-ons with its exclusive "Try Me" functionality. Users can showcase, save, and manage their looks in a built-in social media-style feed, with the freedom to instantly download or share generated images with friends for real-time feedback—even before making a purchase. Experience next-level interactive shopping, advanced AI styling, and a vibrant community, all in one platform.
                   </p>
                 </div>
               </div>
