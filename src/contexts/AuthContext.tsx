@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase, type Profile } from '../lib/supabase';
+import type { User as SupabaseUser, AuthError } from '@supabase/supabase-js';
 
 interface User {
   id: string;
@@ -19,99 +21,166 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   signup: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string }>;
-  logout: () => void;
+  logout: () => Promise<void>;
   updateProfile: (updates: Partial<User>) => Promise<{ success: boolean; error?: string }>;
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock user database (in production, this would be a real backend)
-const mockUsers: (User & { password: string })[] = [
-  {
-    id: '1',
-    email: 'demo@riya.ai',
-    password: 'demo123',
-    name: 'Demo User',
-    avatar: 'https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_1.png',
-    createdAt: '2024-01-01T00:00:00Z',
-    preferences: {
-      favoriteCategories: ['Clothing', 'Bags'],
-      size: 'M',
-      style: ['Modern', 'Elegant']
-    }
-  }
-];
-
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check for existing session on mount
+  // Convert Supabase user + profile to our User type
+  const convertToUser = (supabaseUser: SupabaseUser, profile?: Profile): User => {
+    return {
+      id: supabaseUser.id,
+      email: supabaseUser.email || '',
+      name: profile?.full_name || supabaseUser.user_metadata?.full_name || 'User',
+      avatar: profile?.avatar_url || supabaseUser.user_metadata?.avatar_url,
+      createdAt: supabaseUser.created_at,
+      preferences: profile?.preferences || {
+        favoriteCategories: [],
+        size: '',
+        style: []
+      }
+    };
+  };
+
+  // Fetch user profile from database
+  const fetchUserProfile = async (userId: string): Promise<Profile | null> => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      return null;
+    }
+  };
+
+  // Create user profile in database
+  const createUserProfile = async (supabaseUser: SupabaseUser, fullName: string): Promise<Profile | null> => {
+    try {
+      const profileData = {
+        id: supabaseUser.id,
+        email: supabaseUser.email || '',
+        full_name: fullName,
+        avatar_url: supabaseUser.user_metadata?.avatar_url || null,
+        preferences: {
+          favoriteCategories: [],
+          size: '',
+          style: []
+        }
+      };
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .insert(profileData)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating profile:', error);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error creating profile:', error);
+      return null;
+    }
+  };
+
+  // Initialize auth state
   useEffect(() => {
-    const checkAuthState = () => {
+    let mounted = true;
+
+    const initializeAuth = async () => {
       try {
-        const savedUser = localStorage.getItem('riya_user');
-        const sessionToken = localStorage.getItem('riya_session');
+        // Get initial session
+        const { data: { session }, error } = await supabase.auth.getSession();
         
-        if (savedUser && sessionToken) {
-          const userData = JSON.parse(savedUser);
-          // Verify session is still valid (in production, verify with backend)
-          const sessionData = JSON.parse(sessionToken);
-          const now = new Date().getTime();
-          
-          if (sessionData.expiresAt > now) {
-            setUser(userData);
-          } else {
-            // Session expired
-            localStorage.removeItem('riya_user');
-            localStorage.removeItem('riya_session');
-          }
+        if (error) {
+          console.error('Error getting session:', error);
+          return;
+        }
+
+        if (session?.user && mounted) {
+          const profile = await fetchUserProfile(session.user.id);
+          const userData = convertToUser(session.user, profile || undefined);
+          setUser(userData);
         }
       } catch (error) {
-        console.error('Error checking auth state:', error);
-        localStorage.removeItem('riya_user');
-        localStorage.removeItem('riya_session');
+        console.error('Error initializing auth:', error);
       } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
 
-    checkAuthState();
+    initializeAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (!mounted) return;
+
+        if (event === 'SIGNED_IN' && session?.user) {
+          const profile = await fetchUserProfile(session.user.id);
+          const userData = convertToUser(session.user, profile || undefined);
+          setUser(userData);
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+        }
+        
+        setIsLoading(false);
+      }
+    );
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
-    setIsLoading(true);
-    
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      setIsLoading(true);
       
-      // Find user in mock database
-      const foundUser = mockUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
-      
-      if (!foundUser) {
-        return { success: false, error: 'User not found. Please check your email or sign up.' };
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.toLowerCase().trim(),
+        password
+      });
+
+      if (error) {
+        return { 
+          success: false, 
+          error: error.message === 'Invalid login credentials' 
+            ? 'Invalid email or password. Please try again.'
+            : error.message 
+        };
       }
-      
-      if (foundUser.password !== password) {
-        return { success: false, error: 'Incorrect password. Please try again.' };
+
+      if (data.user) {
+        const profile = await fetchUserProfile(data.user.id);
+        const userData = convertToUser(data.user, profile || undefined);
+        setUser(userData);
+        return { success: true };
       }
-      
-      // Create user session
-      const { password: _, ...userWithoutPassword } = foundUser;
-      const sessionData = {
-        token: `session_${Date.now()}_${Math.random()}`,
-        expiresAt: new Date().getTime() + (7 * 24 * 60 * 60 * 1000) // 7 days
-      };
-      
-      // Save to localStorage (in production, use secure storage)
-      localStorage.setItem('riya_user', JSON.stringify(userWithoutPassword));
-      localStorage.setItem('riya_session', JSON.stringify(sessionData));
-      
-      setUser(userWithoutPassword);
-      return { success: true };
-      
+
+      return { success: false, error: 'Login failed. Please try again.' };
     } catch (error) {
       console.error('Login error:', error);
       return { success: false, error: 'An unexpected error occurred. Please try again.' };
@@ -121,57 +190,50 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const signup = async (email: string, password: string, name: string): Promise<{ success: boolean; error?: string }> => {
-    setIsLoading(true);
-    
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      
-      // Check if user already exists
-      const existingUser = mockUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
-      if (existingUser) {
-        return { success: false, error: 'An account with this email already exists.' };
-      }
-      
+      setIsLoading(true);
+
       // Validate inputs
       if (password.length < 6) {
         return { success: false, error: 'Password must be at least 6 characters long.' };
       }
-      
+
       if (!name.trim()) {
         return { success: false, error: 'Name is required.' };
       }
-      
-      // Create new user
-      const newUser: User & { password: string } = {
-        id: `user_${Date.now()}`,
-        email: email.toLowerCase(),
+
+      const { data, error } = await supabase.auth.signUp({
+        email: email.toLowerCase().trim(),
         password,
-        name: name.trim(),
-        createdAt: new Date().toISOString(),
-        preferences: {
-          favoriteCategories: [],
-          size: '',
-          style: []
+        options: {
+          data: {
+            full_name: name.trim()
+          }
         }
-      };
-      
-      // Add to mock database
-      mockUsers.push(newUser);
-      
-      // Create session
-      const { password: _, ...userWithoutPassword } = newUser;
-      const sessionData = {
-        token: `session_${Date.now()}_${Math.random()}`,
-        expiresAt: new Date().getTime() + (7 * 24 * 60 * 60 * 1000) // 7 days
-      };
-      
-      localStorage.setItem('riya_user', JSON.stringify(userWithoutPassword));
-      localStorage.setItem('riya_session', JSON.stringify(sessionData));
-      
-      setUser(userWithoutPassword);
-      return { success: true };
-      
+      });
+
+      if (error) {
+        if (error.message.includes('already registered')) {
+          return { success: false, error: 'An account with this email already exists.' };
+        }
+        return { success: false, error: error.message };
+      }
+
+      if (data.user) {
+        // Create profile in database
+        const profile = await createUserProfile(data.user, name.trim());
+        
+        if (profile) {
+          const userData = convertToUser(data.user, profile);
+          setUser(userData);
+          return { success: true };
+        } else {
+          // Profile creation failed, but user was created
+          return { success: false, error: 'Account created but profile setup failed. Please try logging in.' };
+        }
+      }
+
+      return { success: false, error: 'Signup failed. Please try again.' };
     } catch (error) {
       console.error('Signup error:', error);
       return { success: false, error: 'An unexpected error occurred. Please try again.' };
@@ -180,37 +242,46 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const logout = () => {
-    // Clear user state immediately
-    setUser(null);
-    
-    // Clear localStorage
-    localStorage.removeItem('riya_user');
-    localStorage.removeItem('riya_session');
-    
-    // Force page reload to reset all app state and redirect to landing
-    window.location.reload();
+  const logout = async (): Promise<void> => {
+    try {
+      setUser(null);
+      await supabase.auth.signOut();
+      // Force page reload to reset all app state
+      window.location.reload();
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Even if logout fails, clear local state and reload
+      setUser(null);
+      window.location.reload();
+    }
   };
 
   const updateProfile = async (updates: Partial<User>): Promise<{ success: boolean; error?: string }> => {
     if (!user) return { success: false, error: 'Not authenticated' };
-    
+
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 800));
+      const profileUpdates: any = {};
       
-      const updatedUser = { ...user, ...updates };
+      if (updates.name) profileUpdates.full_name = updates.name;
+      if (updates.avatar) profileUpdates.avatar_url = updates.avatar;
+      if (updates.preferences) profileUpdates.preferences = updates.preferences;
       
-      // Update mock database
-      const userIndex = mockUsers.findIndex(u => u.id === user.id);
-      if (userIndex !== -1) {
-        mockUsers[userIndex] = { ...mockUsers[userIndex], ...updates };
+      profileUpdates.updated_at = new Date().toISOString();
+
+      const { error } = await supabase
+        .from('profiles')
+        .update(profileUpdates)
+        .eq('id', user.id);
+
+      if (error) {
+        console.error('Profile update error:', error);
+        return { success: false, error: 'Failed to update profile. Please try again.' };
       }
-      
-      // Update local storage
-      localStorage.setItem('riya_user', JSON.stringify(updatedUser));
+
+      // Update local user state
+      const updatedUser = { ...user, ...updates };
       setUser(updatedUser);
-      
+
       return { success: true };
     } catch (error) {
       console.error('Profile update error:', error);
@@ -220,18 +291,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const resetPassword = async (email: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const foundUser = mockUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
-      if (!foundUser) {
-        return { success: false, error: 'No account found with this email address.' };
+      const { error } = await supabase.auth.resetPasswordForEmail(email.toLowerCase().trim(), {
+        redirectTo: `${window.location.origin}/reset-password`
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
       }
-      
-      // In production, this would send an actual email
-      console.log(`Password reset email sent to ${email}`);
+
       return { success: true };
-      
     } catch (error) {
       console.error('Password reset error:', error);
       return { success: false, error: 'Failed to send reset email. Please try again.' };

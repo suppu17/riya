@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Mail, Lock, User, Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
+import { X, Mail, Lock, User, Eye, EyeOff, Loader2, ArrowLeft, CheckCircle, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
   initialMode?: 'login' | 'signup';
 }
 
 type AuthMode = 'login' | 'signup' | 'forgot-password';
 
-const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'login' }) => {
+const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initialMode = 'login' }) => {
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -24,6 +25,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const { login, signup, resetPassword } = useAuth();
 
@@ -32,6 +34,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
     setErrors({});
     setSuccessMessage('');
     setIsSubmitting(false);
+    setShowSuccess(false);
   };
 
   const handleModeChange = (newMode: AuthMode) => {
@@ -89,8 +92,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
         case 'login':
           result = await login(formData.email, formData.password);
           if (result.success) {
-            onClose();
-            resetForm();
+            setShowSuccess(true);
+            setSuccessMessage('Welcome back! Redirecting to dashboard...');
+            setTimeout(() => {
+              onSuccess?.();
+              onClose();
+              resetForm();
+            }, 1500);
           } else {
             setErrors({ submit: result.error || 'Login failed' });
           }
@@ -99,8 +107,13 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
         case 'signup':
           result = await signup(formData.email, formData.password, formData.name);
           if (result.success) {
-            onClose();
-            resetForm();
+            setShowSuccess(true);
+            setSuccessMessage('Account created successfully! Welcome to Riya!');
+            setTimeout(() => {
+              onSuccess?.();
+              onClose();
+              resetForm();
+            }, 1500);
           } else {
             setErrors({ submit: result.error || 'Signup failed' });
           }
@@ -161,7 +174,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
           onClick={(e) => {
-            if (e.target === e.currentTarget) {
+            if (e.target === e.currentTarget && !showSuccess) {
               onClose();
             }
           }}
@@ -174,223 +187,260 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
             transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-3">
-                {mode === 'forgot-password' && (
+            {/* Success State */}
+            {showSuccess ? (
+              <motion.div
+                className="text-center py-8"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
+              >
+                <motion.div
+                  className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 300 }}
+                >
+                  <CheckCircle className="w-8 h-8 text-white" />
+                </motion.div>
+                <h2 className="text-2xl font-bold text-white mb-2">Success!</h2>
+                <p className="text-white/80">{successMessage}</p>
+                <div className="mt-6">
+                  <div className="w-8 h-8 border-4 border-white/20 border-t-white rounded-full animate-spin mx-auto" />
+                </div>
+              </motion.div>
+            ) : (
+              <>
+                {/* Header */}
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-3">
+                    {mode === 'forgot-password' && (
+                      <button
+                        onClick={() => handleModeChange('login')}
+                        className="p-2 text-white/60 hover:text-white transition-colors rounded-full hover:bg-white/10"
+                      >
+                        <ArrowLeft className="w-4 h-4" />
+                      </button>
+                    )}
+                    <div>
+                      <h2 className="text-2xl font-bold text-white">{getTitle()}</h2>
+                      <p className="text-white/60 text-sm mt-1">{getSubtitle()}</p>
+                    </div>
+                  </div>
                   <button
-                    onClick={() => handleModeChange('login')}
+                    onClick={onClose}
                     className="p-2 text-white/60 hover:text-white transition-colors rounded-full hover:bg-white/10"
                   >
-                    <ArrowLeft className="w-4 h-4" />
+                    <X className="w-5 h-5" />
                   </button>
+                </div>
+
+                {/* Success Message */}
+                {successMessage && !showSuccess && (
+                  <motion.div
+                    className="mb-6 p-4 bg-green-500/20 border border-green-500/30 rounded-2xl flex items-center gap-3"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                  >
+                    <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+                    <p className="text-green-300 text-sm">{successMessage}</p>
+                  </motion.div>
                 )}
-                <div>
-                  <h2 className="text-2xl font-bold text-white">{getTitle()}</h2>
-                  <p className="text-white/60 text-sm mt-1">{getSubtitle()}</p>
-                </div>
-              </div>
-              <button
-                onClick={onClose}
-                className="p-2 text-white/60 hover:text-white transition-colors rounded-full hover:bg-white/10"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
 
-            {/* Success Message */}
-            {successMessage && (
-              <motion.div
-                className="mb-6 p-4 bg-green-500/20 border border-green-500/30 rounded-2xl"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <p className="text-green-300 text-sm">{successMessage}</p>
-              </motion.div>
-            )}
-
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Name Field (Signup only) */}
-              {mode === 'signup' && (
-                <div>
-                  <label className="block text-white/80 text-sm font-medium mb-2">
-                    Full Name
-                  </label>
-                  <div className="relative">
-                    <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => handleInputChange('name', e.target.value)}
-                      className={`w-full pl-12 pr-4 py-4 bg-white/10 backdrop-blur-xl border rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all ${
-                        errors.name ? 'border-red-500/50' : 'border-white/20'
-                      }`}
-                      placeholder="Enter your full name"
-                      disabled={isSubmitting}
-                    />
-                  </div>
-                  {errors.name && (
-                    <p className="text-red-400 text-xs mt-2">{errors.name}</p>
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Name Field (Signup only) */}
+                  {mode === 'signup' && (
+                    <div>
+                      <label className="block text-white/80 text-sm font-medium mb-2">
+                        Full Name
+                      </label>
+                      <div className="relative">
+                        <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
+                        <input
+                          type="text"
+                          value={formData.name}
+                          onChange={(e) => handleInputChange('name', e.target.value)}
+                          className={`w-full pl-12 pr-4 py-4 bg-white/10 backdrop-blur-xl border rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all ${
+                            errors.name ? 'border-red-500/50' : 'border-white/20'
+                          }`}
+                          placeholder="Enter your full name"
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                      {errors.name && (
+                        <p className="text-red-400 text-xs mt-2 flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" />
+                          {errors.name}
+                        </p>
+                      )}
+                    </div>
                   )}
-                </div>
-              )}
 
-              {/* Email Field */}
-              <div>
-                <label className="block text-white/80 text-sm font-medium mb-2">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    className={`w-full pl-12 pr-4 py-4 bg-white/10 backdrop-blur-xl border rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all ${
-                      errors.email ? 'border-red-500/50' : 'border-white/20'
-                    }`}
-                    placeholder="Enter your email"
+                  {/* Email Field */}
+                  <div>
+                    <label className="block text-white/80 text-sm font-medium mb-2">
+                      Email Address
+                    </label>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
+                      <input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
+                        className={`w-full pl-12 pr-4 py-4 bg-white/10 backdrop-blur-xl border rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all ${
+                          errors.email ? 'border-red-500/50' : 'border-white/20'
+                        }`}
+                        placeholder="Enter your email"
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                    {errors.email && (
+                      <p className="text-red-400 text-xs mt-2 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        {errors.email}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Password Field (not for forgot password) */}
+                  {mode !== 'forgot-password' && (
+                    <div>
+                      <label className="block text-white/80 text-sm font-medium mb-2">
+                        Password
+                      </label>
+                      <div className="relative">
+                        <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          value={formData.password}
+                          onChange={(e) => handleInputChange('password', e.target.value)}
+                          className={`w-full pl-12 pr-12 py-4 bg-white/10 backdrop-blur-xl border rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all ${
+                            errors.password ? 'border-red-500/50' : 'border-white/20'
+                          }`}
+                          placeholder="Enter your password"
+                          disabled={isSubmitting}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/40 hover:text-white/60 transition-colors"
+                        >
+                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                      </div>
+                      {errors.password && (
+                        <p className="text-red-400 text-xs mt-2 flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" />
+                          {errors.password}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Confirm Password Field (Signup only) */}
+                  {mode === 'signup' && (
+                    <div>
+                      <label className="block text-white/80 text-sm font-medium mb-2">
+                        Confirm Password
+                      </label>
+                      <div className="relative">
+                        <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          value={formData.confirmPassword}
+                          onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                          className={`w-full pl-12 pr-4 py-4 bg-white/10 backdrop-blur-xl border rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all ${
+                            errors.confirmPassword ? 'border-red-500/50' : 'border-white/20'
+                          }`}
+                          placeholder="Confirm your password"
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                      {errors.confirmPassword && (
+                        <p className="text-red-400 text-xs mt-2 flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" />
+                          {errors.confirmPassword}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Submit Error */}
+                  {errors.submit && (
+                    <motion.div
+                      className="p-4 bg-red-500/20 border border-red-500/30 rounded-2xl flex items-center gap-3"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                      <p className="text-red-300 text-sm">{errors.submit}</p>
+                    </motion.div>
+                  )}
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
                     disabled={isSubmitting}
-                  />
-                </div>
-                {errors.email && (
-                  <p className="text-red-400 text-xs mt-2">{errors.email}</p>
-                )}
-              </div>
-
-              {/* Password Field (not for forgot password) */}
-              {mode !== 'forgot-password' && (
-                <div>
-                  <label className="block text-white/80 text-sm font-medium mb-2">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={formData.password}
-                      onChange={(e) => handleInputChange('password', e.target.value)}
-                      className={`w-full pl-12 pr-12 py-4 bg-white/10 backdrop-blur-xl border rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all ${
-                        errors.password ? 'border-red-500/50' : 'border-white/20'
-                      }`}
-                      placeholder="Enter your password"
-                      disabled={isSubmitting}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/40 hover:text-white/60 transition-colors"
-                    >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
-                  </div>
-                  {errors.password && (
-                    <p className="text-red-400 text-xs mt-2">{errors.password}</p>
-                  )}
-                </div>
-              )}
-
-              {/* Confirm Password Field (Signup only) */}
-              {mode === 'signup' && (
-                <div>
-                  <label className="block text-white/80 text-sm font-medium mb-2">
-                    Confirm Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={formData.confirmPassword}
-                      onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                      className={`w-full pl-12 pr-4 py-4 bg-white/10 backdrop-blur-xl border rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all ${
-                        errors.confirmPassword ? 'border-red-500/50' : 'border-white/20'
-                      }`}
-                      placeholder="Confirm your password"
-                      disabled={isSubmitting}
-                    />
-                  </div>
-                  {errors.confirmPassword && (
-                    <p className="text-red-400 text-xs mt-2">{errors.confirmPassword}</p>
-                  )}
-                </div>
-              )}
-
-              {/* Submit Error */}
-              {errors.submit && (
-                <motion.div
-                  className="p-4 bg-red-500/20 border border-red-500/30 rounded-2xl"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                >
-                  <p className="text-red-300 text-sm">{errors.submit}</p>
-                </motion.div>
-              )}
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-semibold rounded-2xl transition-all duration-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    {mode === 'login' ? 'Signing In...' : mode === 'signup' ? 'Creating Account...' : 'Sending Email...'}
-                  </>
-                ) : (
-                  <>
-                    {mode === 'login' ? 'Sign In' : mode === 'signup' ? 'Create Account' : 'Send Reset Email'}
-                  </>
-                )}
-              </button>
-            </form>
-
-            {/* Footer Links */}
-            <div className="mt-8 text-center space-y-4">
-              {mode === 'login' && (
-                <>
-                  <button
-                    onClick={() => handleModeChange('forgot-password')}
-                    className="text-white/60 hover:text-white text-sm transition-colors"
+                    className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-semibold rounded-2xl transition-all duration-300 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
-                    Forgot your password?
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        {mode === 'login' ? 'Signing In...' : mode === 'signup' ? 'Creating Account...' : 'Sending Email...'}
+                      </>
+                    ) : (
+                      <>
+                        {mode === 'login' ? 'Sign In' : mode === 'signup' ? 'Create Account' : 'Send Reset Email'}
+                      </>
+                    )}
                   </button>
-                  <div className="text-white/60 text-sm">
-                    Don't have an account?{' '}
-                    <button
-                      onClick={() => handleModeChange('signup')}
-                      className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
-                    >
-                      Sign up
-                    </button>
+                </form>
+
+                {/* Footer Links */}
+                <div className="mt-8 text-center space-y-4">
+                  {mode === 'login' && (
+                    <>
+                      <button
+                        onClick={() => handleModeChange('forgot-password')}
+                        className="text-white/60 hover:text-white text-sm transition-colors"
+                      >
+                        Forgot your password?
+                      </button>
+                      <div className="text-white/60 text-sm">
+                        Don't have an account?{' '}
+                        <button
+                          onClick={() => handleModeChange('signup')}
+                          className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
+                        >
+                          Sign up
+                        </button>
+                      </div>
+                    </>
+                  )}
+
+                  {mode === 'signup' && (
+                    <div className="text-white/60 text-sm">
+                      Already have an account?{' '}
+                      <button
+                        onClick={() => handleModeChange('login')}
+                        className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
+                      >
+                        Sign in
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Supabase Info */}
+                  <div className="mt-6 p-4 bg-blue-500/20 border border-blue-500/30 rounded-2xl">
+                    <p className="text-blue-300 text-xs font-medium mb-2">🚀 Powered by Supabase</p>
+                    <p className="text-blue-200 text-xs">
+                      Secure authentication with real-time database
+                    </p>
                   </div>
-                </>
-              )}
-
-              {mode === 'signup' && (
-                <div className="text-white/60 text-sm">
-                  Already have an account?{' '}
-                  <button
-                    onClick={() => handleModeChange('login')}
-                    className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
-                  >
-                    Sign in
-                  </button>
                 </div>
-              )}
-
-              {/* Demo Account Info */}
-              {mode === 'login' && (
-                <div className="mt-6 p-4 bg-blue-500/20 border border-blue-500/30 rounded-2xl">
-                  <p className="text-blue-300 text-xs font-medium mb-2">Demo Account</p>
-                  <p className="text-blue-200 text-xs">
-                    Email: demo@riya.ai<br />
-                    Password: demo123
-                  </p>
-                </div>
-              )}
-            </div>
+              </>
+            )}
           </motion.div>
         </motion.div>
       )}
