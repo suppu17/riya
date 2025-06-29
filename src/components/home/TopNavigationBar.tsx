@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useShopping } from "../../contexts/ShoppingContext";
 import { useAuth } from "../../contexts/AuthContext";
-import { Mic, ShoppingCart, User, LogIn, LogOut, Settings, ChevronDown } from "lucide-react";
+import { ShoppingCart, User, LogIn, LogOut, Settings, ChevronDown } from "lucide-react";
 import CartModal from "../CartModal";
 import AuthModal from "../auth/AuthModal";
 import UserProfile from "../UserProfile";
@@ -57,6 +57,10 @@ const TopNavigationBar: React.FC = () => {
     setIsDropdownOpen(false);
   };
 
+  const handleDirectLogout = () => {
+    logout();
+  };
+
   const handleSettingsClick = () => {
     // Navigate to settings page or open settings modal
     setIsDropdownOpen(false);
@@ -92,23 +96,33 @@ const TopNavigationBar: React.FC = () => {
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.2 }}
       >
-        <motion.button
-          className="w-8 h-8 bg-white/10 backdrop-blur-xl rounded-lg flex items-center justify-center text-white/80 hover:text-white transition-colors"
-          whileHover={{
-            scale: 1.1,
-            backgroundColor: "rgba(255, 255, 255, 0.2)",
-            rotate: 5,
-          }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ duration: 0.2 }}
-        >
-          <motion.div
-            whileHover={{ scale: 1.1 }}
+        {/* Direct Logout Button (only show when authenticated) */}
+        {isAuthenticated && (
+          <motion.button
+            onClick={handleDirectLogout}
+            className="flex items-center gap-2 bg-red-600/20 hover:bg-red-600/30 backdrop-blur-xl rounded-lg px-3 py-2 border border-red-500/30 hover:border-red-500/50 cursor-pointer transition-all duration-200"
+            whileHover={{
+              scale: 1.05,
+              backgroundColor: "rgba(239, 68, 68, 0.3)",
+            }}
+            whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.2 }}
           >
-            <Mic className="w-4 h-4" />
-          </motion.div>
-        </motion.button>
+            <motion.div
+              whileHover={{ rotate: [0, -10, 10, 0] }}
+              transition={{ duration: 0.5 }}
+            >
+              <LogOut className="w-4 h-4 text-red-400" />
+            </motion.div>
+            <motion.span
+              className="text-red-400 text-sm font-medium"
+              whileHover={{ color: "rgba(248, 113, 113, 1)" }}
+              transition={{ duration: 0.2 }}
+            >
+              Logout
+            </motion.span>
+          </motion.button>
+        )}
 
         {/* User Profile/Auth Button with Dropdown */}
         <div className="relative" ref={dropdownRef}>
@@ -221,18 +235,6 @@ const TopNavigationBar: React.FC = () => {
                   >
                     <Settings className="w-4 h-4" />
                     <span className="text-sm">Settings</span>
-                  </motion.button>
-
-                  <div className="my-2 border-t border-white/10" />
-
-                  <motion.button
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all duration-200 text-left"
-                    whileHover={{ x: 4 }}
-                    transition={{ duration: 0.1 }}
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span className="text-sm">Sign Out</span>
                   </motion.button>
                 </div>
               </motion.div>
