@@ -31,6 +31,21 @@ export interface Database {
           email: string
           full_name: string | null
           avatar_url: string | null
+          bio: string | null
+          location: string | null
+          join_date: string | null
+          membership_type: string | null
+          social_links: {
+            instagram?: string
+            twitter?: string
+            linkedin?: string
+            website?: string
+          } | null
+          stats: {
+            posts?: number
+            followers?: number
+            following?: number
+          } | null
           created_at: string
           updated_at: string
           preferences: {
@@ -44,6 +59,21 @@ export interface Database {
           email: string
           full_name?: string | null
           avatar_url?: string | null
+          bio?: string | null
+          location?: string | null
+          join_date?: string | null
+          membership_type?: string | null
+          social_links?: {
+            instagram?: string
+            twitter?: string
+            linkedin?: string
+            website?: string
+          } | null
+          stats?: {
+            posts?: number
+            followers?: number
+            following?: number
+          } | null
           created_at?: string
           updated_at?: string
           preferences?: {
@@ -57,6 +87,21 @@ export interface Database {
           email?: string
           full_name?: string | null
           avatar_url?: string | null
+          bio?: string | null
+          location?: string | null
+          join_date?: string | null
+          membership_type?: string | null
+          social_links?: {
+            instagram?: string
+            twitter?: string
+            linkedin?: string
+            website?: string
+          } | null
+          stats?: {
+            posts?: number
+            followers?: number
+            following?: number
+          } | null
           created_at?: string
           updated_at?: string
           preferences?: {

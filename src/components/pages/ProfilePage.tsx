@@ -27,9 +27,11 @@ import {
   Move,
   ShoppingBag,
   Crown,
+  Edit3,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useShopping } from "../../contexts/ShoppingContext";
+import { useAuth } from "../../contexts/AuthContext";
 import TopNavigationBar from "../home/TopNavigationBar";
 import { demoGeneratedImages, GeneratedImageData } from "../../data/demo";
 
@@ -132,9 +134,11 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isAct
 
 const ProfilePage: React.FC = () => {
   const {} = useShopping();
+  const { user, profile, uploadProfileImageFromBase64, updateProfile, refreshProfile } = useAuth();
   const [reelPosts, setReelPosts] = useState<ReelPost[]>([]);
   const [activeReel, setActiveReel] = useState(0);
-  const [profilePicture, setProfilePicture] = useState<string>('https://i.pravatar.cc/150?u=supriya');
+  const [profilePicture, setProfilePicture] = useState<string>(profile?.avatar_url || 'https://i.pravatar.cc/150?u=supriya');
+  const [isUploading, setIsUploading] = useState(false);
   const [showCropModal, setShowCropModal] = useState(false);
   const [tempImage, setTempImage] = useState<string>('');
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
@@ -142,6 +146,8 @@ const ProfilePage: React.FC = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [isEnhancing, setIsEnhancing] = useState(false);
+  const [isEditingBio, setIsEditingBio] = useState(false);
+  const [bioText, setBioText] = useState(profile?.bio || 'Welcome to my fashion profile! I love exploring new styles and creating unique looks.');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cropImageRef = useRef<HTMLImageElement>(null);
@@ -165,23 +171,44 @@ const ProfilePage: React.FC = () => {
     }
   }, [reelPosts]);
 
+  // Update bioText when profile changes
+  useEffect(() => {
+    if (profile?.bio !== undefined) {
+      setBioText(profile.bio);
+    }
+  }, [profile?.bio]);
+
   // Handle profile picture upload
-  const handleProfilePictureUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfilePictureUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        setTempImage(result);
-        setImagePosition({ x: 0, y: 0 });
-        setImageScale(1);
-        setShowCropModal(true);
-        // Clear the input value to allow re-uploading the same file
-        if (event.target) {
-          event.target.value = '';
-        }
-      };
-      reader.readAsDataURL(file);
+      setIsUploading(true);
+      try {
+        // For direct upload without cropping, use this:
+        // const result = await uploadProfileImage(file);
+        // if (result.success && result.url) {
+        //   setProfilePicture(result.url);
+        // }
+        
+        // For cropping workflow, read as data URL first
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const result = e.target?.result as string;
+          setTempImage(result);
+          setImagePosition({ x: 0, y: 0 });
+          setImageScale(1);
+          setShowCropModal(true);
+          setIsUploading(false);
+          // Clear the input value to allow re-uploading the same file
+          if (event.target) {
+            event.target.value = '';
+          }
+        };
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Error preparing image:', error);
+        setIsUploading(false);
+      }
     }
   };
 
@@ -222,17 +249,40 @@ const ProfilePage: React.FC = () => {
     setImageScale(1);
   };
 
-  // Enhance image to 8K quality
-  const enhanceImageTo8K = (imageSrc: string): Promise<string> => {
+  // Handle bio update
+  const handleBioUpdate = async () => {
+    try {
+      const result = await updateProfile({ bio: bioText });
+      if (result.success) {
+        setIsEditingBio(false);
+        // Refresh profile to get updated data
+        await refreshProfile();
+      } else {
+        console.error('Failed to update bio:', result.error);
+      }
+    } catch (error) {
+      console.error('Error updating bio:', error);
+    }
+  };
+
+  // Cancel bio edit
+  const cancelBioEdit = () => {
+    setBioText(profile?.bio || 'Welcome to my fashion profile! I love exploring new styles and creating unique looks.');
+    setIsEditingBio(false);
+  };
+
+  // Enhance image with optimized dimensions (1024x1024 max)
+  const enhanceImageOptimized = (imageSrc: string): Promise<string> => {
     return new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         
-        // Set 8K dimensions (7680x4320 for 16:9 aspect ratio)
-        const targetWidth = 7680;
-        const targetHeight = 4320;
+        // Set optimized dimensions (max 1024x1024 for profile pictures)
+        const maxSize = 1024;
+        const targetWidth = maxSize;
+        const targetHeight = maxSize;
         
         canvas.width = targetWidth;
         canvas.height = targetHeight;
@@ -242,14 +292,14 @@ const ProfilePage: React.FC = () => {
           ctx.imageSmoothingEnabled = true;
           ctx.imageSmoothingQuality = 'high';
           
-          // Fill canvas with white background to prevent black corners
+          // Fill canvas with white background
           ctx.fillStyle = '#FFFFFF';
           ctx.fillRect(0, 0, targetWidth, targetHeight);
           
           // The crop area dimensions (from the modal)
           const cropAreaHeight = 300;
-          const cropAreaAspect = targetWidth / targetHeight;
-          const cropAreaWidth = cropAreaHeight * cropAreaAspect;
+          const cropAreaAspect = 1; // Square aspect ratio for profile pictures
+          const cropAreaWidth = 300;
           
           // Calculate how the image should be scaled to fit the crop area initially
           const imgAspect = img.width / img.height;
@@ -269,7 +319,7 @@ const ProfilePage: React.FC = () => {
           const scaledFitWidth = baseFitWidth * imageScale;
           const scaledFitHeight = baseFitHeight * imageScale;
           
-          // Scale everything up to 8K canvas
+          // Scale to canvas size
           const scaleToCanvas = targetWidth / cropAreaWidth;
           const finalWidth = scaledFitWidth * scaleToCanvas;
           const finalHeight = scaledFitHeight * scaleToCanvas;
@@ -278,7 +328,7 @@ const ProfilePage: React.FC = () => {
           const finalX = imagePosition.x * scaleToCanvas;
           const finalY = imagePosition.y * scaleToCanvas;
           
-          // Draw the enhanced image
+          // Draw the optimized image
           ctx.drawImage(
             img,
             finalX,
@@ -287,9 +337,9 @@ const ProfilePage: React.FC = () => {
             finalHeight
           );
           
-          // Convert to high-quality JPEG (0.95 quality)
-          const enhancedImage = canvas.toDataURL('image/jpeg', 0.95);
-          resolve(enhancedImage);
+          // Convert to optimized JPEG (0.85 quality for smaller file size)
+          const optimizedImage = canvas.toDataURL('image/jpeg', 0.85);
+          resolve(optimizedImage);
         } else {
           resolve(imageSrc);
         }
@@ -298,19 +348,33 @@ const ProfilePage: React.FC = () => {
     });
   };
 
-  // Apply cropped image with 8K enhancement
+  // Apply cropped image with enhancement and upload to Supabase
   const applyCroppedImage = async () => {
     setIsEnhancing(true);
     try {
-      const enhancedImage = await enhanceImageTo8K(tempImage);
-      setProfilePicture(enhancedImage);
-      localStorage.setItem('profilePicture', enhancedImage);
-      setShowCropModal(false);
+      // Create a smaller, optimized version instead of 8K to avoid storage quota issues
+      const optimizedImage = await enhanceImageOptimized(tempImage);
+      
+      // Upload to Supabase Storage
+      const result = await uploadProfileImageFromBase64(optimizedImage);
+      
+      if (result.success && result.url) {
+        setProfilePicture(result.url);
+        setShowCropModal(false);
+      } else {
+        throw new Error(result.error || 'Upload failed');
+      }
     } catch (error) {
-      console.error('Error enhancing image:', error);
-      // Fallback to original image if enhancement fails
-      setProfilePicture(tempImage);
-      localStorage.setItem('profilePicture', tempImage);
+      console.error('Error processing image:', error);
+      // Fallback: try uploading original cropped image
+      try {
+        const result = await uploadProfileImageFromBase64(tempImage);
+        if (result.success && result.url) {
+          setProfilePicture(result.url);
+        }
+      } catch (fallbackError) {
+        console.error('Fallback upload failed:', fallbackError);
+      }
       setShowCropModal(false);
     } finally {
       setIsEnhancing(false);
@@ -327,13 +391,12 @@ const ProfilePage: React.FC = () => {
     fileInputRef.current?.click();
   };
 
-  // Load profile picture from localStorage
+  // Load profile picture from Supabase profile data
   useEffect(() => {
-    const savedProfilePicture = localStorage.getItem('profilePicture');
-    if (savedProfilePicture) {
-      setProfilePicture(savedProfilePicture);
+    if (profile?.avatar_url) {
+      setProfilePicture(profile.avatar_url);
     }
-  }, []);
+  }, [profile]);
 
   // Load data from demo.ts and localStorage
   useEffect(() => {
@@ -360,7 +423,7 @@ const ProfilePage: React.FC = () => {
         comments: Math.floor(Math.random() * 50) + 5,
         shares: Math.floor(Math.random() * 20) + 2,
         isLiked: Math.random() > 0.7,
-        username: 'Supriya Korukonda',
+        username: profile?.full_name || user?.name || 'User',
         avatar: profilePicture,
         caption: `Loving this ${image.productName}! Generated with AI fashion technology. What do you think? ✨ #AIFashion #Style #${image.modelUsed.replace(/\s+/g, '')}`
       }));
@@ -370,13 +433,7 @@ const ProfilePage: React.FC = () => {
 
     loadReelData();
 
-    // Listen for localStorage changes
-    const handleStorageChange = () => {
-      loadReelData();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    // Note: No longer using localStorage for images
   }, [profilePicture]);
 
   return (
@@ -433,9 +490,18 @@ const ProfilePage: React.FC = () => {
                     e.stopPropagation();
                     triggerFileInput();
                   }}
-                  className="bg-gray-800/90 hover:bg-gray-700 text-white p-3 rounded-full shadow-lg transition-all duration-200 backdrop-blur-sm border border-white/30 hover:scale-110"
+                  disabled={isUploading || isEnhancing}
+                  className={`bg-gray-800/90 hover:bg-gray-700 text-white p-3 rounded-full shadow-lg transition-all duration-200 backdrop-blur-sm border border-white/30 hover:scale-110 ${
+                    isUploading || isEnhancing ? 'cursor-not-allowed opacity-50' : ''
+                  }`}
                 >
-                  <Camera className="w-5 h-5" />
+                  {isUploading ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  ) : isEnhancing ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  ) : (
+                    <Camera className="w-5 h-5" />
+                  )}
                 </button>
               </div>
               
@@ -445,6 +511,7 @@ const ProfilePage: React.FC = () => {
                 accept="image/*"
                 onChange={handleProfilePictureUpload}
                 className="hidden"
+                disabled={isUploading || isEnhancing}
               />
             </motion.div>
 
@@ -455,26 +522,70 @@ const ProfilePage: React.FC = () => {
 
               <div className="mb-6 text-left">
                 <h2 className="text-2xl font-bold text-white mb-1">
-                  Supriya Korukonda
+                  {profile?.full_name || user?.name || 'User'}
                 </h2>
                 <p className="text-white/60 text-sm flex items-center gap-2">
                   <Star className="w-4 h-4 text-yellow-400" />
-                  Premium Member
+                  {profile?.membership_type === 'premium' ? 'Premium Member' : 'Member'}
                 </p>
 
                 <div className="text-white/60 text-sm mt-4">
-                  <p className="leading-relaxed">
-                    Hi! I'm passionate about fashion and technology. I love
-                    exploring new styles and creating unique looks using AI.
-                  </p>
+                  <div className="relative group">
+                    {!isEditingBio ? (
+                      <>
+                        <p className="leading-relaxed pr-8">
+                          {profile?.bio || 'Welcome to my fashion profile! I love exploring new styles and creating unique looks.'}
+                        </p>
+                        <button
+                          onClick={() => setIsEditingBio(true)}
+                          className="absolute top-0 right-0 p-1 text-white/40 hover:text-white/80 opacity-0 group-hover:opacity-100 transition-opacity"
+                          title="Edit bio"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                      </>
+                    ) : (
+                      <div className="space-y-3">
+                        <textarea
+                          value={bioText}
+                          onChange={(e) => setBioText(e.target.value)}
+                          className="w-full bg-white/10 border border-white/20 rounded-lg p-3 text-white placeholder-white/40 resize-none focus:outline-none focus:border-white/40 transition-colors"
+                          placeholder="Tell us about yourself..."
+                          rows={3}
+                          maxLength={200}
+                        />
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-white/40">
+                            {bioText.length}/200 characters
+                          </span>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={cancelBioEdit}
+                              className="px-3 py-1 text-xs bg-white/10 hover:bg-white/20 text-white rounded-md transition-colors"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={handleBioUpdate}
+                              className="px-3 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors"
+                            >
+                              Save
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   <div className="flex items-center gap-4 mt-4">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-white/40" />
-                      <span>New York, USA</span>
-                    </div>
+                    {profile?.location && (
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-white/40" />
+                        <span>{profile.location}</span>
+                      </div>
+                    )}
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-white/40" />
-                      <span>Joined 2023</span>
+                      <span>Joined {profile?.join_date ? new Date(profile.join_date).getFullYear() : new Date(user?.createdAt || '').getFullYear()}</span>
                     </div>
                   </div>
                 </div>

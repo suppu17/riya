@@ -13,7 +13,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
     name: user?.name || '',
-    email: user?.email || ''
+    email: user?.email || '',
+    bio: profile?.bio || '',
+    location: profile?.location || ''
   });
   const [preferences, setPreferences] = useState({
     favoriteCategories: user?.preferences?.favoriteCategories || [],
@@ -27,7 +29,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
     setIsEditing(true);
     setEditData({
       name: user?.name || '',
-      email: user?.email || ''
+      email: user?.email || '',
+      bio: profile?.bio || '',
+      location: profile?.location || ''
     });
     setPreferences({
       favoriteCategories: user?.preferences?.favoriteCategories || [],
@@ -40,7 +44,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
     setIsEditing(false);
     setEditData({
       name: user?.name || '',
-      email: user?.email || ''
+      email: user?.email || '',
+      bio: profile?.bio || '',
+      location: profile?.location || ''
     });
     setPreferences({
       favoriteCategories: user?.preferences?.favoriteCategories || [],
@@ -58,7 +64,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
     // Update profile
     const profileResult = await updateProfile({
       name: editData.name,
-      email: editData.email
+      email: editData.email,
+      bio: editData.bio,
+      location: editData.location
     });
 
     // Update preferences
@@ -257,6 +265,32 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                       disabled
                     />
                     <p className="text-white/40 text-xs mt-1">Email cannot be changed</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-white/80 text-sm font-medium mb-2">
+                      Bio
+                    </label>
+                    <textarea
+                      value={editData.bio}
+                      onChange={(e) => setEditData(prev => ({ ...prev, bio: e.target.value }))}
+                      className="w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none"
+                      placeholder="Tell us about yourself..."
+                      rows={3}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-white/80 text-sm font-medium mb-2">
+                      Location
+                    </label>
+                    <input
+                      type="text"
+                      value={editData.location}
+                      onChange={(e) => setEditData(prev => ({ ...prev, location: e.target.value }))}
+                      className="w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                      placeholder="City, Country"
+                    />
                   </div>
                 </div>
 

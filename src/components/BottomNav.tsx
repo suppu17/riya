@@ -12,8 +12,8 @@ const BottomNav: React.FC<BottomNavProps> = ({
   const { selectedModelId } = useShopping();
   const navItems = [
     { id: "home", icon: Home, label: "Home" },
-    { id: "photos", icon: Camera, label: "Photos" },
     { id: "profile", icon: User, label: "Profile" },
+    { id: "photos", icon: Camera, label: "Photos" },
     { id: "cart", icon: ShoppingBag, label: "Cart" },
     { id: "settings", icon: Settings, label: "Settings" },
   ];

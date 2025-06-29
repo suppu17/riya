@@ -118,7 +118,7 @@ const RiyaVoiceAgent: React.FC = () => {
       <div className="absolute bottom-8 left-0 right-0 text-center mt-2">
         <p className="text-orange-500 font-medium text-sm mb-0 bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-amber-500">
           {conversation.status !== "connected"
-            ? "Riya.ai"
+            ? "Riya"
             : conversation.status !== "speaking"
             ? "listening"
             : "speaking"}

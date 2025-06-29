@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase, type Profile, profileService } from '../lib/supabase';
+import { storageService, type UploadResult } from '../lib/storage';
 import type { User as SupabaseUser, AuthError } from '@supabase/supabase-js';
 
 interface User {
@@ -26,6 +27,8 @@ interface AuthContextType {
   logout: () => Promise<void>;
   updateProfile: (updates: Partial<User>) => Promise<{ success: boolean; error?: string }>;
   updatePreferences: (preferences: { favoriteCategories?: string[]; size?: string; style?: string[] }) => Promise<{ success: boolean; error?: string }>;
+  uploadProfileImage: (file: File) => Promise<UploadResult>;
+  uploadProfileImageFromBase64: (base64Data: string) => Promise<UploadResult>;
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
   refreshProfile: () => Promise<void>;
 }
@@ -486,7 +489,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const updateProfile = async (updates: Partial<User>): Promise<{ success: boolean; error?: string }> => {
+  const updateProfile = async (updates: Partial<User & { bio?: string; location?: string }>): Promise<{ success: boolean; error?: string }> => {
     if (!user) return { success: false, error: 'Not authenticated' };
 
     try {
@@ -495,6 +498,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (updates.name) profileUpdates.full_name = updates.name;
       if (updates.avatar) profileUpdates.avatar_url = updates.avatar;
       if (updates.preferences) profileUpdates.preferences = updates.preferences;
+      if (updates.bio !== undefined) profileUpdates.bio = updates.bio;
+      if (updates.location !== undefined) profileUpdates.location = updates.location;
 
       const result = await profileService.updateProfile(user.id, profileUpdates);
       
@@ -529,6 +534,56 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (error) {
       console.error('❌ Preferences update error:', error);
       return { success: false, error: 'Failed to update preferences. Please try again.' };
+    }
+  };
+
+  const uploadProfileImage = async (file: File): Promise<UploadResult> => {
+    if (!user) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    try {
+      // Compress image before upload
+      const compressedFile = await storageService.compressImage(file, 1024, 0.8);
+      
+      // Upload to Supabase Storage
+      const result = await storageService.uploadProfileImage(user.id, compressedFile);
+      
+      if (result.success && result.url) {
+        // Update profile with new avatar URL
+        await updateProfile({ avatar: result.url });
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('Profile image upload error:', error);
+      return { success: false, error: 'Failed to upload profile image' };
+    }
+  };
+
+  const uploadProfileImageFromBase64 = async (base64Data: string): Promise<UploadResult> => {
+    if (!user) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    try {
+      // Upload base64 image to Supabase Storage
+      const result = await storageService.uploadBase64Image(user.id, base64Data);
+      
+      if (result.success && result.url) {
+        // Delete old profile image if it exists and is from our storage
+        if (profile?.avatar_url && profile.avatar_url.includes('profile-images')) {
+          await storageService.deleteProfileImage(profile.avatar_url);
+        }
+        
+        // Update profile with new avatar URL
+        await updateProfile({ avatar: result.url });
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('Base64 image upload error:', error);
+      return { success: false, error: 'Failed to upload profile image' };
     }
   };
 
@@ -584,6 +639,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     logout,
     updateProfile,
     updatePreferences,
+    uploadProfileImage,
+    uploadProfileImageFromBase64,
     resetPassword,
     refreshProfile
   };
