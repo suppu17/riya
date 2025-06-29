@@ -75,87 +75,63 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
 
       {/* Main Glass Container - Full Width */}
       <div
-        className={`relative w-[95vw] h-[90vh] max-w-7xl transition-all duration-1000 ${
+        className={`relative w-[90vw] h-[90vh] max-w-none transition-all duration-1000 ${
           showContent ? "opacity-100 scale-100" : "opacity-0 scale-95"
         }`}
       >
         {/* Crystal Glass Morphism Container */}
         <div className="relative w-full h-full bg-white/10 backdrop-blur-xl border border-cyan-200/20 rounded-[3rem] overflow-hidden shadow-2xl flex">
-          {/* Header - Positioned Above Content */}
-          <div className="absolute top-8 left-8 right-8 flex items-center justify-between z-30">
-            <div className="text-2xl font-light text-white tracking-wider">
-              riya
-            </div>
-            <div className="flex items-center gap-6">
-              
-              {/* Authentication Section with Crystal Accents */}
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={handleUserClick}
-                  className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-xl rounded-full border border-cyan-200/20 hover:bg-white/15 transition-all duration-300 group"
-                >
-                  {isAuthenticated ? (
-                    <>
-                      {user?.avatar ? (
-                        <img
-                          src={user.avatar}
-                          alt={user.name}
-                          className="w-6 h-6 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-6 h-6 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-full flex items-center justify-center">
-                          <User className="w-3 h-3 text-white" />
-                        </div>
-                      )}
-                      <span className="text-white text-sm font-medium">
-                        {user?.name?.split(' ')[0] || 'User'}
-                      </span>
-                      <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
-                    </>
-                  ) : (
-                    <>
-                      <LogIn className="w-4 h-4 text-white/80 group-hover:text-white transition-colors" />
-                      <span className="text-white/80 group-hover:text-white text-sm font-medium transition-colors">
-                        Sign In
-                      </span>
-                    </>
-                  )}
-                </button>
-                
+          {/* Left Side - Content Section */}
+          <div className="w-1/2 relative flex flex-col justify-center px-16 py-20">
+            {/* Header with Menu */}
+            <div className="absolute top-8 left-8 flex items-center gap-4 z-30">
+              <div className="text-3xl font-bold text-white tracking-wide">
+                SnapStyler
+                <span className="text-sm text-white/80 font-medium">.app</span>
               </div>
             </div>
-          </div>
 
-          {/* Success Message for Logged In Users */}
-          {isAuthenticated && user && (
-            <div className="absolute top-24 right-8 z-30">
-              <div className="bg-cyan-500/20 backdrop-blur-xl border border-cyan-400/30 rounded-2xl px-4 py-2">
-                <p className="text-cyan-200 text-sm font-medium">
-                  Welcome back, {user.name?.split(' ')[0]}! Redirecting to dashboard...
-                </p>
-              </div>
-            </div>
-          )}
+            
 
-           {/* Left Side - Text Content */}
-              <div className="space-y-8">
-                <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.2s'}}>
-                  <div className="text-lg uppercase tracking-widest text-white/60 mb-4">EXHIBITION</div>
-                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-extralight text-white leading-tight">
-                    OF CONTEMPORARY
-                    <br />
-                    <span className="font-light">AI FASHION</span>
-                  </h1>
-                </div>
-                
-
-
-                <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.6s'}}>
-                  <p className="text-white/80 text-lg leading-relaxed max-w-md">
-                    Discover our curated collection of contemporary fashion. Experience the future of personal styling with AI-powered recommendations.
+            {/* Success Message for Logged In Users */}
+            {isAuthenticated && user && (
+              <div className="absolute top-24 left-8 z-30">
+                <div className="bg-cyan-500/20 backdrop-blur-xl border border-cyan-400/30 rounded-2xl px-4 py-2">
+                  <p className="text-cyan-200 text-sm font-medium">
+                    Welcome back, {user.name?.split(' ')[0]}! Redirecting to dashboard...
                   </p>
                 </div>
               </div>
+            )}
+
+            {/* Main Content */}
+            <div className="space-y-8">
+              <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.2s'}}>
+                <div className="text-sm uppercase tracking-[0.3em] text-white/90 mb-6 font-semibold">NEXT-GEN FASHION</div>
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[0.9] tracking-tight">
+                  YOUR<br />
+                  PERSONAL<br />
+                  <span className="font-semibold"> AI STYLIST</span>
+                </h1>
+              </div>
+
+              <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.4s'}}>
+                <p className="text-white/90 text-base leading-relaxed max-w-xxl font-light">
+                  Meet SnapStyler, the revolutionary app that transforms shopping into a seamless, hands-free experience, powered by cutting-edge conversational AI. 
+                </p>
+              </div>
+
+              <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.6s'}}>
+                <button
+                  onClick={handleEnterExperience}
+                  className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-full px-8 py-3 text-white font-light text-sm tracking-wide hover:bg-white/15 transition-all duration-300 group"
+                >
+                  {isAuthenticated ? 'Enter Experience' : 'Sign In to Experience'}
+                </button>
+              </div>
+
+            </div>
+          </div>
 
           {/* Right Section - Clean Video Only */}
           <div className="w-1/2 relative">
@@ -176,34 +152,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
           </div>
 
           {/* Bottom Navigation Dots with Crystal Accent */}
-          <div className="absolute bottom-8 left-1/4 transform -translate-x-1/2 flex gap-3 z-30">
-            <div className="w-2 h-2 bg-cyan-300 rounded-full" />
-            <div className="w-2 h-2 bg-cyan-200/40 rounded-full" />
-            <div className="w-2 h-2 bg-cyan-200/40 rounded-full" />
-            <div className="w-2 h-2 bg-cyan-200/40 rounded-full" />
+          <div className="absolute bottom-8 left-1/4 transform -translate-x-1/2 z-30">
+            <div className="text-white/70 text-sm mb-2 text-left">App Powered by:</div>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-center gap-3">
+                <div className="i-bolt-supabase text-white"></div>
+                <div className="i-bolt-elevenlabs text-white"></div>
+                <div className="i-bolt-netlify"></div>
+                <div className="i-bolt-entri text-white"></div>
+                <div className="i-bolt-expo text-white"></div>
+                <div className="i-bolt-revenuecat text-white"></div>
+              </div>
+            </div>
           </div>
 
-          {/* Floating Particles - Only on Left Side with Crystal Glow */}
+          {/* Sponsers*/}
           <div className="absolute inset-0 pointer-events-none w-1/2">
-            {[...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute w-1 h-1 bg-cyan-300/20 rounded-full animate-pulse"
-                style={{
-                  left: `${20 + i * 15}%`,
-                  top: `${30 + (i % 3) * 20}%`,
-                  animationDelay: `${i * 0.5}s`,
-                  animationDuration: `${2 + i * 0.3}s`,
-                }}
-              />
-            ))}
           </div>
         </div>
-      </div>
-
-      {/* Wallpaper Settings */}
-      <div className="absolute top-6 right-6 z-50">
-        <WallpaperSettings />
       </div>
 
       {/* Auth Modal */}
@@ -218,6 +184,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
         isOpen={isProfileOpen}
         onClose={() => setIsProfileOpen(false)}
       />
+
+        <div className="fixed top-5 right-12 z-99">
+                <img 
+                  src="./bolt.svg" 
+                  alt="Badge" 
+                  className="w-20 h-20"
+                />
+            </div>
     </div>
   );
 };

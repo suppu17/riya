@@ -12,6 +12,11 @@ const WallpaperContext = createContext<WallpaperContextType | undefined>(
 
 const wallpapers = [
   {
+    id: "luxury-living",
+    name: "Luxury Living Room",
+    url: "https://cdn.midjourney.com/53ba0ea5-ebe4-41de-b24e-bea50de22b17/0_0.png",
+  },
+  {
     id: "modern-apartment",
     name: "Modern Apartment",
     url: "https://cdn.midjourney.com/fc57f582-fdd5-4cfc-b3fc-a677709cda82/0_0.png",
@@ -20,11 +25,6 @@ const wallpapers = [
     id: "white-interior",
     name: "White Interior",
     url: "https://cdn.midjourney.com/8cc34dd7-3dc9-4024-b871-2eb973ad742a/0_0.png",
-  },
-  {
-    id: "luxury-living",
-    name: "Luxury Living Room",
-    url: "https://cdn.midjourney.com/53ba0ea5-ebe4-41de-b24e-bea50de22b17/0_0.png",
   },
   {
     id: "minimalist",
