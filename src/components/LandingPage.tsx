@@ -122,7 +122,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                   )}
                 </button>
                 
-                <div className="text-6xl font-light text-white/60">01</div>
               </div>
             </div>
           </div>
