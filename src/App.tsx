@@ -40,7 +40,7 @@ const AppContent: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-blue-900/30 via-transparent to-cyan-800/15" />
 
         {/* Main Loading Container */}
-        <div className="relative w-[90vw] h-[90vh] max-w-none">
+        <div className="relative w-[90vw] h-[90vh] max-w-none transition-all duration-1000 opacity-100 scale-100">
           {/* Crystal Glass Morphism Container */}
           <div className="relative w-full h-full bg-white/10 backdrop-blur-xl border border-cyan-200/20 rounded-[3rem] overflow-hidden shadow-2xl flex items-center justify-center">
             {/* Loading Content */}
