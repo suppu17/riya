@@ -519,19 +519,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                         </motion.div>
                       )}
 
-                      {/* Submit Button */}
+                      {/* Submit Button - Updated to match app style */}
                       <motion.button
                         type="submit"
                         disabled={isSubmitting}
-                        className="relative w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-semibold rounded-2xl transition-all duration-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 group overflow-hidden"
+                        className="relative w-full py-4 bg-white/20 hover:bg-white/30 disabled:bg-white/10 backdrop-blur-xl border border-white/30 hover:border-white/50 disabled:border-white/20 text-white font-semibold rounded-2xl transition-all duration-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 group overflow-hidden"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.9 }}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
-                        {/* Button Glow Effect */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-purple-400/50 to-pink-400/50 blur-xl group-hover:blur-2xl transition-all duration-300" />
+                        {/* Glass morphism glow effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         
                         <div className="relative flex items-center gap-2">
                           {isSubmitting ? (
@@ -568,7 +568,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                             Don't have an account?{' '}
                             <button
                               onClick={() => handleModeChange('signup')}
-                              className="text-purple-400 hover:text-purple-300 font-medium transition-colors hover:underline"
+                              className="text-pink-400 hover:text-pink-300 font-medium transition-colors hover:underline"
                             >
                               Sign up
                             </button>
@@ -581,7 +581,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                           Already have an account?{' '}
                           <button
                             onClick={() => handleModeChange('login')}
-                            className="text-purple-400 hover:text-purple-300 font-medium transition-colors hover:underline"
+                            className="text-pink-400 hover:text-pink-300 font-medium transition-colors hover:underline"
                           >
                             Sign in
                           </button>
