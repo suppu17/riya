@@ -628,19 +628,16 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                 )}
               </div>
 
-              {/* Right Section - Video */}
+              {/* Right Section - Custom Image */}
               <div className="relative w-1/2 overflow-hidden">
-                {/* Video Background */}
-                <video
-                  src="https://cdn.midjourney.com/video/5dfd741c-cc74-4ed4-bbfa-601bc946ae6e/0.mp4"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
+                {/* Custom Image Background */}
+                <img
+                  src="https://cdn.midjourney.com/39d6ab8a-ced7-415e-9089-9ba8239780e3/0_0.png"
+                  alt="Login Background"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
                 
-                {/* Minimal Video Overlay */}
+                {/* Minimal Image Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-l from-transparent via-cyan-900/5 to-cyan-900/10" />
               </div>
 
