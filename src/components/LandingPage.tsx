@@ -63,16 +63,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 overflow-hidden">
-      {/* Dynamic Background */}
-      <div
-        className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
-        style={{ backgroundImage: `url('${currentWallpaper}')` }}
-      />
-
-      {/* Gradient Overlays */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-400/30 via-purple-500/20 to-pink-400/30" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
-
       {/* Main Glass Container */}
       <div
         className={`relative w-[95vw] h-[90vh] max-w-7xl transition-all duration-1000 ${
@@ -81,10 +71,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
       >
         {/* Glass Morphism Container */}
         <div className="relative w-full h-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-[3rem] overflow-hidden shadow-2xl">
-          {/* Header */}
-          <div className="absolute top-8 left-8 right-8 flex items-center justify-between z-20">
+          {/* Header - Positioned on top of everything */}
+          <div className="absolute top-8 left-8 right-8 flex items-center justify-between z-30">
             <div className="text-2xl font-light text-white tracking-wider">
-              riya
+              fuse
             </div>
             <div className="flex items-center gap-6">
               <button className="text-white/80 hover:text-white transition-colors text-sm">
@@ -235,31 +225,25 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                 )}
               </div>
 
-              {/* Right Section - Video Background */}
-              <div className="col-span-3 relative overflow-hidden rounded-3xl">
-                {/* Video Background - Edge to Edge */}
+              {/* Right Section - Video Background (Edge to Edge) */}
+              <div className="col-span-3 relative overflow-hidden">
+                {/* Video Background - Full Coverage */}
                 <video
                   src="https://cdn.midjourney.com/video/67efa2d7-f26b-4593-bc87-c511cb9c012d/2.mp4"
                   autoPlay
                   loop
                   muted
                   playsInline
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover rounded-3xl"
                 />
                 
                 {/* Video Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/10 to-black/30" />
+                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/10 to-black/30 rounded-3xl" />
                 
                 {/* Content Overlay */}
                 <div className="relative z-10 h-full flex flex-col justify-between p-8">
-                  {/* Top Right - Menu and Number */}
-                  <div className="flex justify-between items-start">
-                    <div className="text-white/80 text-sm font-light">+ menu</div>
-                    <div className="text-6xl font-light text-white/90">01</div>
-                  </div>
-
                   {/* Center Content */}
-                  <div className="text-center">
+                  <div className="flex-1 flex flex-col justify-center text-center">
                     <h1 className="text-3xl font-light text-white leading-tight tracking-wide mb-4">
                       EXHIBITION<br />
                       OF CONTEMPORARY<br />
@@ -295,7 +279,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
           </div>
 
           {/* Bottom Navigation Dots */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-3">
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-3 z-20">
             <div className="w-2 h-2 bg-white rounded-full" />
             <div className="w-2 h-2 bg-white/40 rounded-full" />
             <div className="w-2 h-2 bg-white/40 rounded-full" />
