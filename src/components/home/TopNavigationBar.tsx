@@ -64,7 +64,7 @@ const TopNavigationBar: React.FC = () => {
 
   return (
     <motion.div
-      className="flex items-center justify-between mb-8 bg-white/10 backdrop-blur-xl rounded-2xl p-2 border border-white/20"
+      className="flex items-center justify-between mb-8 bg-white/10 backdrop-blur-xl rounded-2xl p-2 border border-white/20 relative"
       whileHover={{ scale: 1.01 }}
       transition={{ duration: 0.2 }}
     >
@@ -165,15 +165,16 @@ const TopNavigationBar: React.FC = () => {
             )}
           </motion.button>
 
-          {/* Dropdown Menu */}
+          {/* Dropdown Menu - Fixed Z-Index */}
           <AnimatePresence>
             {isAuthenticated && isDropdownOpen && (
               <motion.div
-                className="absolute top-full right-0 mt-2 w-48 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl z-50"
+                className="absolute top-full right-0 mt-2 w-48 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl z-[10000]"
                 initial={{ opacity: 0, scale: 0.95, y: -10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
                 transition={{ duration: 0.2 }}
+                style={{ zIndex: 10000 }}
               >
                 {/* User Info Header */}
                 <div className="p-4 border-b border-white/10">
