@@ -165,21 +165,16 @@ const TopNavigationBar: React.FC = () => {
             )}
           </motion.button>
 
-          {/* Dropdown Menu - Maximum Z-Index */}
+          {/* Dropdown Menu - Fixed Z-Index */}
           <AnimatePresence>
             {isAuthenticated && isDropdownOpen && (
               <motion.div
-                className="absolute top-full right-0 mt-2 w-48 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl"
+                className="absolute top-full right-0 mt-2 w-48 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl z-[10000]"
                 initial={{ opacity: 0, scale: 0.95, y: -10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
                 transition={{ duration: 0.2 }}
-                style={{ 
-                  zIndex: 99999,
-                  position: 'fixed',
-                  top: '80px',
-                  right: '20px'
-                }}
+                style={{ zIndex: 10000 }}
               >
                 {/* User Info Header */}
                 <div className="p-4 border-b border-white/10">
