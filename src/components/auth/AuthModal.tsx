@@ -26,7 +26,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
-  const [showDebugInfo, setShowDebugInfo] = useState(false);
 
   const { login, signup, resetPassword, loginWithGoogle } = useAuth();
 
@@ -101,14 +100,36 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
               resetForm();
             }, 1500);
           } else {
-            // Enhanced error handling for login
-            if (result.error?.includes('Invalid login credentials') || result.error?.includes('Invalid email or password')) {
+            // Enhanced error handling for login with user-friendly messages
+            const errorMessage = result.error || '';
+            
+            if (errorMessage.includes('Invalid login credentials') || 
+                errorMessage.includes('Invalid email or password') ||
+                errorMessage.includes('invalid_credentials')) {
               setErrors({ 
-                submit: 'The email or password you entered is incorrect. Please check your credentials and try again.',
-                hint: 'If you don\'t have an account yet, please sign up below. If you forgot your password, use the "Forgot your password?" link.'
+                submit: '❌ Incorrect email or password',
+                hint: 'Please double-check your credentials. If you don\'t have an account, click "Sign up" below.'
+              });
+            } else if (errorMessage.includes('Email not confirmed')) {
+              setErrors({ 
+                submit: '📧 Please verify your email',
+                hint: 'Check your inbox for a verification email and click the link to activate your account.'
+              });
+            } else if (errorMessage.includes('Too many requests')) {
+              setErrors({ 
+                submit: '⏰ Too many attempts',
+                hint: 'Please wait a few minutes before trying again for security reasons.'
+              });
+            } else if (errorMessage.includes('Network error') || errorMessage.includes('fetch')) {
+              setErrors({ 
+                submit: '🌐 Connection problem',
+                hint: 'Please check your internet connection and try again.'
               });
             } else {
-              setErrors({ submit: result.error || 'Login failed' });
+              setErrors({ 
+                submit: errorMessage || 'Login failed',
+                hint: 'If this problem persists, please contact support.'
+              });
             }
           }
           break;
@@ -124,7 +145,31 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
               resetForm();
             }, 1500);
           } else {
-            setErrors({ submit: result.error || 'Signup failed' });
+            // Enhanced error handling for signup
+            const errorMessage = result.error || '';
+            
+            if (errorMessage.includes('User already registered') || 
+                errorMessage.includes('already registered')) {
+              setErrors({ 
+                submit: '👤 Account already exists',
+                hint: 'An account with this email already exists. Try signing in instead, or use "Forgot password" if needed.'
+              });
+            } else if (errorMessage.includes('Password should be')) {
+              setErrors({ 
+                submit: '🔒 Password too weak',
+                hint: 'Please choose a stronger password with at least 6 characters.'
+              });
+            } else if (errorMessage.includes('Invalid email')) {
+              setErrors({ 
+                submit: '📧 Invalid email format',
+                hint: 'Please enter a valid email address.'
+              });
+            } else {
+              setErrors({ 
+                submit: errorMessage || 'Signup failed',
+                hint: 'Please try again or contact support if the problem persists.'
+              });
+            }
           }
           break;
 
@@ -136,12 +181,18 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
               handleModeChange('login');
             }, 3000);
           } else {
-            setErrors({ submit: result.error || 'Failed to send reset email' });
+            setErrors({ 
+              submit: result.error || 'Failed to send reset email',
+              hint: 'Please check that the email address is correct and try again.'
+            });
           }
           break;
       }
     } catch (error) {
-      setErrors({ submit: 'An unexpected error occurred. Please try again.' });
+      setErrors({ 
+        submit: '🚨 Unexpected error occurred',
+        hint: 'Please try again. If the problem persists, contact support.'
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -157,10 +208,16 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
         // OAuth redirect will handle the rest
         setSuccessMessage('Redirecting to Google...');
       } else {
-        setErrors({ submit: result.error || 'Google sign-in failed' });
+        setErrors({ 
+          submit: result.error || 'Google sign-in failed',
+          hint: 'Please try again or use email/password login instead.'
+        });
       }
     } catch (error) {
-      setErrors({ submit: 'An unexpected error occurred. Please try again.' });
+      setErrors({ 
+        submit: '🚨 Google sign-in error',
+        hint: 'Please try again or use email/password login instead.'
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -168,7 +225,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
+    // Clear field-specific error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -549,25 +606,29 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                         </motion.div>
                       )}
 
-                      {/* Submit Error */}
+                      {/* Enhanced Submit Error Display */}
                       {errors.submit && (
                         <motion.div
                           className="p-4 bg-red-500/20 border border-red-500/30 rounded-2xl backdrop-blur-sm space-y-3"
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
                         >
-                          <div className="flex items-center gap-3">
-                            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
-                            <p className="text-red-300 text-sm">{errors.submit}</p>
-                          </div>
-                          
-                          {/* Additional hint for login errors */}
-                          {errors.hint && (
-                            <div className="flex items-start gap-3 pt-2 border-t border-red-500/20">
-                              <Info className="w-4 h-4 text-red-300 flex-shrink-0 mt-0.5" />
-                              <p className="text-red-200/80 text-xs leading-relaxed">{errors.hint}</p>
+                          <div className="flex items-start gap-3">
+                            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                            <div className="flex-1">
+                              <p className="text-red-300 text-sm font-medium">{errors.submit}</p>
+                              
+                              {/* Additional helpful hint */}
+                              {errors.hint && (
+                                <div className="mt-2 pt-2 border-t border-red-500/20">
+                                  <div className="flex items-start gap-2">
+                                    <Info className="w-4 h-4 text-red-300/80 flex-shrink-0 mt-0.5" />
+                                    <p className="text-red-200/90 text-xs leading-relaxed">{errors.hint}</p>
+                                  </div>
+                                </div>
+                              )}
                             </div>
-                          )}
+                          </div>
                         </motion.div>
                       )}
 
@@ -638,35 +699,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                               Sign in
                             </button>
                         </div>
-                      )}
-
-                      {/* Debug Toggle for Development */}
-                      {process.env.NODE_ENV === 'development' && (
-                        <button
-                          onClick={() => setShowDebugInfo(!showDebugInfo)}
-                          className="text-white/40 hover:text-white/60 text-xs transition-colors"
-                        >
-                          {showDebugInfo ? 'Hide' : 'Show'} Debug Info
-                        </button>
-                      )}
-
-                      {/* Debug Information */}
-                      {showDebugInfo && process.env.NODE_ENV === 'development' && (
-                        <motion.div
-                          className="mt-4 p-3 bg-gray-900/50 border border-gray-600/30 rounded-xl backdrop-blur-sm text-left"
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                        >
-                          <h4 className="text-white/80 text-xs font-medium mb-2">Debug Information:</h4>
-                          <div className="text-white/60 text-xs space-y-1">
-                            <p>• To test login, you need an existing account</p>
-                            <p>• Try signing up first if you don't have an account</p>
-                            <p>• Check your Supabase dashboard for registered users</p>
-                            <p>• Email: {formData.email || 'Not entered'}</p>
-                            <p>• Mode: {mode}</p>
-                          </div>
-                        </motion.div>
                       )}
 
                       {/* Powered by Supabase with Cyan Theme */}
