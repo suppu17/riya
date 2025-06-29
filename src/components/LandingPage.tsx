@@ -141,7 +141,25 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
             </div>
           )}
 
-         
+           {/* Left Side - Text Content */}
+              <div className="space-y-8">
+                <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.2s'}}>
+                  <div className="text-lg uppercase tracking-widest text-white/60 mb-4">EXHIBITION</div>
+                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-extralight text-white leading-tight">
+                    OF CONTEMPORARY
+                    <br />
+                    <span className="font-light">AI FASHION</span>
+                  </h1>
+                </div>
+                
+
+
+                <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.6s'}}>
+                  <p className="text-white/80 text-lg leading-relaxed max-w-md">
+                    Discover our curated collection of contemporary fashion. Experience the future of personal styling with AI-powered recommendations.
+                  </p>
+                </div>
+              </div>
 
           {/* Right Section - Clean Video Only */}
           <div className="w-1/2 relative">
