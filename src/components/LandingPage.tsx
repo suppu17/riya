@@ -51,11 +51,11 @@ interface LandingPageProps {
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
+  const { currentWallpaper } = useWallpaper();
   // Set initial states to true to ensure elements are visible immediately
   const [showContent, setShowContent] = useState(true);
   const [showContainer, setShowContainer] = useState(true);
   const [showButton, setShowButton] = useState(true);
-  
   // Animation sequence - only for stylesheet injection and auto-proceed
   useEffect(() => {
     // Create and inject the stylesheet
@@ -76,107 +76,66 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      {/* Dynamic Background - Using a beautiful portrait similar to the reference */}
+      {/* Dynamic Background - Same as main app */}
       <div
         className="absolute inset-0 bg-cover bg-center"
-        style={{ 
-          backgroundImage: `url('https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2064&q=80')` 
-        }}
+        style={{ backgroundImage: `url('${currentWallpaper}')` }}
       ></div>
 
-      {/* Multiple Shadow/Dark Overlays for Better Contrast */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-black/30 to-black/60"></div>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/40"></div>
-      <div className="absolute inset-0 bg-black/25"></div>
+      {/* Multiple Shadow/Dark Overlays for Better Contrast - Same as main app */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/20 to-black/50"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30"></div>
+      <div className="absolute inset-0 bg-black/20"></div>
 
       {/* Full screen container */}
       <div className="relative w-full h-full flex items-center justify-center z-10">
-        {/* Main content container with glassmorphism effect */}
+        {/* Square video container with blur effect */}
         <div
-          className={`relative w-[90vmin] max-w-4xl overflow-hidden rounded-3xl opacity-0 ${
+          className={`relative aspect-square w-[90vmin] max-w-3xl overflow-hidden rounded-3xl opacity-0 ${
             showContainer ? "elastic-appear" : ""
           }`}
         >
-          {/* Glassmorphism overlay */}
-          <div className="absolute inset-0 backdrop-blur-xl bg-white/10 border border-white/20 z-10"></div>
+          {/* Blur overlay on top of the video */}
+          <div className="absolute inset-0 backdrop-blur-md bg-black/30 z-10"></div>
+
+          {/* Video element that fills the container */}
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            {/* Replace with your actual video path */}
+            <source src="/assets/landing-video.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
 
           {/* Content overlay */}
           <div
-            className={`relative z-20 flex flex-col items-center justify-center p-12 text-white opacity-0 min-h-[60vh] ${
+            className={`absolute inset-0 z-20 flex flex-col items-center justify-center p-8 text-white opacity-0 ${
               showContent ? "fade-in" : ""
             }`}
           >
-            {/* Logo/Brand */}
-            <div className="mb-8">
-              <h1 className="text-6xl md:text-8xl font-bold mb-4 text-center bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
-                Riya
-              </h1>
-              <div className="w-24 h-1 bg-gradient-to-r from-purple-400 to-pink-400 mx-auto rounded-full"></div>
-            </div>
-
-            {/* Main heading */}
-            <h2 className="text-2xl md:text-4xl font-light mb-6 text-center max-w-3xl leading-relaxed">
-              Your Personal AI Shopping Assistant
-            </h2>
-
-            {/* Subtitle */}
-            <p className="text-lg md:text-xl text-center mb-12 max-w-2xl text-white/90 leading-relaxed">
-              Experience the future of fashion with AI-powered virtual try-ons, 
-              personalized recommendations, and seamless shopping experiences.
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-center">
+              Welcome to Riya
+            </h1>
+            <p className="text-xl md:text-2xl text-center mb-8 max-w-md">
+              Your personal shopping assistant
             </p>
 
-            {/* Feature highlights */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 w-full max-w-4xl">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold mb-2">Virtual Try-On</h3>
-                <p className="text-sm text-white/80">See how clothes look on you with AI</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold mb-2">Voice Shopping</h3>
-                <p className="text-sm text-white/80">Shop hands-free with voice commands</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold mb-2">Smart Recommendations</h3>
-                <p className="text-sm text-white/80">Personalized suggestions just for you</p>
-              </div>
-            </div>
-
-            {/* CTA Button */}
+            {/* Skip button */}
             <button
               onClick={onComplete}
-              className={`group relative px-12 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 ${showButton ? "float" : ""}`}
+              className="mt-8 px-8 py-3 bg-white/20 hover:bg-white/30 text-white rounded-full backdrop-blur-sm transition-all duration-300 elastic-appear float"
             >
-              <span className="relative z-10">Enter Riya</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              Enter App
             </button>
-
-            {/* Skip option */}
-            <p className="text-sm text-white/70 mt-6">
-              Auto-entering in 15 seconds...
-            </p>
           </div>
         </div>
       </div>
 
-      {/* Wallpaper Settings */}
+      {/* Wallpaper Settings - Same as main app */}
       <div className="relative z-20">
         <WallpaperSettings />
       </div>
