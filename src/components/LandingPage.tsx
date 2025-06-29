@@ -237,9 +237,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
             </div>
           </div>
 
-          {/* Right Section - Full Video Coverage Edge to Edge */}
+          {/* Right Section - Clean Video Only */}
           <div className="w-1/2 relative">
-            {/* Video Background - Absolute positioning to cover entire right half */}
+            {/* Video Background - Full Coverage */}
             <div className="absolute inset-0 overflow-hidden">
               <video
                 src="https://cdn.midjourney.com/video/67efa2d7-f26b-4593-bc87-c511cb9c012d/0.mp4"
@@ -251,8 +251,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
               />
             </div>
             
-            {/* Minimal Video Overlay with Pink Tint */}
-            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-pink-900/5 to-pink-900/20" />
+            {/* Minimal Video Overlay - Very Subtle */}
+            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-pink-900/5 to-pink-900/10" />
           </div>
 
           {/* Bottom Navigation Dots with Pink Accent */}
