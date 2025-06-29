@@ -242,7 +242,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
             {/* Video Background - Absolute positioning to cover entire right half */}
             <div className="absolute inset-0 overflow-hidden">
               <video
-                src="https://cdn.midjourney.com/video/67efa2d7-f26b-4593-bc87-c511cb9c012d/2.mp4"
+                src="https://cdn.midjourney.com/video/67efa2d7-f26b-4593-bc87-c511cb9c012d/0.mp4"
                 autoPlay
                 loop
                 muted
