@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MainContent from "./components/MainContent";
 import VoiceAssistant from "./components/VoiceAssistant";
 import BottomNav from "./components/BottomNav";
 import WallpaperSettings from "./components/WallpaperSettings";
 import LandingPage from "./components/LandingPage";
+
 
 import { ShoppingProvider } from "./contexts/ShoppingContext";
 import { VoiceProvider } from "./contexts/VoiceContext";
@@ -15,6 +16,13 @@ const AppContent: React.FC = () => {
   const [showLanding, setShowLanding] = useState(true);
   const { currentWallpaper } = useWallpaper();
   const { isAuthenticated, isLoading } = useAuth();
+
+  // Reset showLanding when user becomes authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      setShowLanding(false);
+    }
+  }, [isAuthenticated]);
 
   // Show loading screen while checking authentication
   if (isLoading) {
@@ -28,8 +36,8 @@ const AppContent: React.FC = () => {
     );
   }
 
-  // Always show landing page if not authenticated or if showLanding is true
-  if (!isAuthenticated || showLanding) {
+  // Show landing page only if not authenticated
+  if (!isAuthenticated) {
     return <LandingPage onComplete={() => setShowLanding(false)} />;
   }
 
@@ -59,6 +67,8 @@ const AppContent: React.FC = () => {
 
       {/* Wallpaper Settings */}
       <WallpaperSettings />
+      
+
     </div>
   );
 };

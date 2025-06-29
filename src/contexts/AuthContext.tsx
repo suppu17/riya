@@ -31,6 +31,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [profilesTableExists, setProfilesTableExists] = useState<boolean | null>(null);
 
   // Convert Supabase user + profile to our User type
   const convertToUser = (supabaseUser: SupabaseUser, profile?: Profile): User => {
@@ -50,6 +51,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Fetch user profile from database
   const fetchUserProfile = async (userId: string): Promise<Profile | null> => {
+    // If we already know the profiles table doesn't exist, don't make the API call
+    if (profilesTableExists === false) {
+      return null;
+    }
+
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -58,10 +64,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         .single();
 
       if (error) {
+        // If profiles table doesn't exist, return null gracefully
+        if (error.code === '42P01') {
+          console.warn('Profiles table does not exist. User will authenticate without profile data.');
+          setProfilesTableExists(false);
+          return null;
+        }
         console.error('Error fetching profile:', error);
         return null;
       }
 
+      // If we successfully fetched data, the table exists
+      setProfilesTableExists(true);
       return data;
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -71,6 +85,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Create user profile in database
   const createUserProfile = async (supabaseUser: SupabaseUser, fullName: string): Promise<Profile | null> => {
+    // If we already know the profiles table doesn't exist, don't make the API call
+    if (profilesTableExists === false) {
+      return null;
+    }
+
     try {
       const profileData = {
         id: supabaseUser.id,
@@ -91,10 +110,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         .single();
 
       if (error) {
+        // If profiles table doesn't exist, return null gracefully
+        if (error.code === '42P01') {
+          console.warn('Profiles table does not exist. Profile creation skipped.');
+          setProfilesTableExists(false);
+          return null;
+        }
         console.error('Error creating profile:', error);
         return null;
       }
 
+      // If we successfully created data, the table exists
+      setProfilesTableExists(true);
       return data;
     } catch (error) {
       console.error('Error creating profile:', error);
@@ -159,17 +186,40 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       setIsLoading(true);
       
+      // Validate input before making request
+      if (!email || !password) {
+        return { success: false, error: 'Email and password are required.' };
+      }
+
+      if (!/\S+@\S+\.\S+/.test(email)) {
+        return { success: false, error: 'Please enter a valid email address.' };
+      }
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.toLowerCase().trim(),
         password
       });
 
       if (error) {
+        console.error('Supabase auth error:', error);
+        
+        // Handle specific error cases
+        if (error.message === 'Invalid login credentials') {
+          return { success: false, error: 'Invalid email or password. Please check your credentials and try again.' };
+        }
+        
+        if (error.message.includes('Email not confirmed')) {
+          return { success: false, error: 'Please check your email and confirm your account before signing in.' };
+        }
+        
+        if (error.message.includes('Too many requests')) {
+          return { success: false, error: 'Too many login attempts. Please wait a moment and try again.' };
+        }
+        
+        // Generic error handling
         return { 
           success: false, 
-          error: error.message === 'Invalid login credentials' 
-            ? 'Invalid email or password. Please try again.'
-            : error.message 
+          error: error.message || 'Authentication failed. Please try again.' 
         };
       }
 
@@ -183,7 +233,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return { success: false, error: 'Login failed. Please try again.' };
     } catch (error) {
       console.error('Login error:', error);
-      return { success: false, error: 'An unexpected error occurred. Please try again.' };
+      return { 
+        success: false, 
+        error: 'Network error. Please check your connection and try again.' 
+      };
     } finally {
       setIsLoading(false);
     }
@@ -194,6 +247,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setIsLoading(true);
 
       // Validate inputs
+      if (!email || !password || !name) {
+        return { success: false, error: 'All fields are required.' };
+      }
+
+      if (!/\S+@\S+\.\S+/.test(email)) {
+        return { success: false, error: 'Please enter a valid email address.' };
+      }
+
       if (password.length < 6) {
         return { success: false, error: 'Password must be at least 6 characters long.' };
       }
@@ -213,10 +274,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
 
       if (error) {
-        if (error.message.includes('already registered')) {
-          return { success: false, error: 'An account with this email already exists.' };
+        console.error('Supabase signup error:', error);
+        
+        // Handle specific error cases
+        if (error.message.includes('User already registered') || error.message.includes('already registered')) {
+          return { success: false, error: 'An account with this email already exists. Please sign in instead.' };
         }
-        return { success: false, error: error.message };
+        
+        if (error.message.includes('Password should be')) {
+          return { success: false, error: 'Password does not meet security requirements. Please choose a stronger password.' };
+        }
+        
+        if (error.message.includes('Invalid email')) {
+          return { success: false, error: 'Please enter a valid email address.' };
+        }
+        
+        return { success: false, error: error.message || 'Account creation failed. Please try again.' };
       }
 
       if (data.user) {
@@ -236,7 +309,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       return { success: false, error: 'Signup failed. Please try again.' };
     } catch (error) {
       console.error('Signup error:', error);
-      return { success: false, error: 'An unexpected error occurred. Please try again.' };
+      return { 
+        success: false, 
+        error: 'Network error. Please check your connection and try again.' 
+      };
     } finally {
       setIsLoading(false);
     }
