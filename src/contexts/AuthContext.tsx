@@ -21,6 +21,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   signup: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string }>;
+  loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   updateProfile: (updates: Partial<User>) => Promise<{ success: boolean; error?: string }>;
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
@@ -38,8 +39,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return {
       id: supabaseUser.id,
       email: supabaseUser.email || '',
-      name: profile?.full_name || supabaseUser.user_metadata?.full_name || 'User',
-      avatar: profile?.avatar_url || supabaseUser.user_metadata?.avatar_url,
+      name: profile?.full_name || supabaseUser.user_metadata?.full_name || supabaseUser.user_metadata?.name || 'User',
+      avatar: profile?.avatar_url || supabaseUser.user_metadata?.avatar_url || supabaseUser.user_metadata?.picture,
       createdAt: supabaseUser.created_at,
       preferences: profile?.preferences || {
         favoriteCategories: [],
@@ -84,7 +85,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   // Create user profile in database
-  const createUserProfile = async (supabaseUser: SupabaseUser, fullName: string): Promise<Profile | null> => {
+  const createUserProfile = async (supabaseUser: SupabaseUser, fullName?: string): Promise<Profile | null> => {
     // If we already know the profiles table doesn't exist, don't make the API call
     if (profilesTableExists === false) {
       return null;
@@ -94,8 +95,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const profileData = {
         id: supabaseUser.id,
         email: supabaseUser.email || '',
-        full_name: fullName,
-        avatar_url: supabaseUser.user_metadata?.avatar_url || null,
+        full_name: fullName || supabaseUser.user_metadata?.full_name || supabaseUser.user_metadata?.name || 'User',
+        avatar_url: supabaseUser.user_metadata?.avatar_url || supabaseUser.user_metadata?.picture || null,
         preferences: {
           favoriteCategories: [],
           size: '',
@@ -165,7 +166,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (!mounted) return;
 
         if (event === 'SIGNED_IN' && session?.user) {
-          const profile = await fetchUserProfile(session.user.id);
+          // Check if profile exists, if not create one
+          let profile = await fetchUserProfile(session.user.id);
+          if (!profile && profilesTableExists !== false) {
+            profile = await createUserProfile(session.user);
+          }
           const userData = convertToUser(session.user, profile || undefined);
           setUser(userData);
         } else if (event === 'SIGNED_OUT') {
@@ -318,6 +323,42 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const loginWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
+    try {
+      setIsLoading(true);
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
+        }
+      });
+
+      if (error) {
+        console.error('Google OAuth error:', error);
+        return { 
+          success: false, 
+          error: error.message || 'Google sign-in failed. Please try again.' 
+        };
+      }
+
+      // OAuth redirect will handle the rest
+      return { success: true };
+    } catch (error) {
+      console.error('Google login error:', error);
+      return { 
+        success: false, 
+        error: 'Network error. Please check your connection and try again.' 
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = async (): Promise<void> => {
     try {
       setUser(null);
@@ -388,6 +429,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     isLoading,
     login,
     signup,
+    loginWithGoogle,
     logout,
     updateProfile,
     resetPassword
