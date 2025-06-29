@@ -87,6 +87,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
               riya
             </div>
             <div className="flex items-center gap-6">
+              <button className="text-white/80 hover:text-white transition-colors text-sm">
+                + menu
+              </button>
               
               {/* Authentication Section with Crystal Accents */}
               <div className="flex items-center gap-4">
@@ -122,6 +125,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                   )}
                 </button>
                 
+                <div className="text-6xl font-light text-white/60">01</div>
               </div>
             </div>
           </div>
@@ -137,54 +141,177 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
             </div>
           )}
 
-           {/* Left Side - Text Content */}
-              <div className="space-y-8">
-                <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.2s'}}>
-                  <div className="text-lg uppercase tracking-widest text-white/60 mb-4">EXHIBITION</div>
-                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-extralight text-white leading-tight">
-                    OF CONTEMPORARY
-                    <br />
-                    <span className="font-light">AI FASHION</span>
-                  </h1>
-                </div>
-                
+          {/* Main Content Grid */}
+          <div className="absolute inset-0 p-8 pt-24">
+            <div className="grid grid-cols-12 gap-8 h-full">
+              {/* Left Section - Video Preview */}
+              <div className="col-span-4 flex flex-col justify-center">
+                <div className="relative">
+                  {/* Decorative Circles */}
+                  <div className="absolute -top-12 -left-8 flex gap-2">
+                    <div className="w-8 h-8 bg-white/20 rounded-full backdrop-blur-sm" />
+                    <div className="w-8 h-8 bg-white/15 rounded-full backdrop-blur-sm" />
+                    <div className="w-8 h-8 bg-white/10 rounded-full backdrop-blur-sm" />
+                    <div className="w-8 h-8 bg-white/5 rounded-full backdrop-blur-sm" />
+                  </div>
 
+                  {/* Video Container */}
+                  <div className="relative bg-white/15 backdrop-blur-xl rounded-3xl p-6 border border-cyan-200/20 aspect-[4/5] overflow-hidden group cursor-pointer hover:bg-white/20 transition-all duration-500">
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-blue-500/20" />
+                    
+                    {/* Model Image */}
+                    <div className="relative w-full h-full rounded-2xl overflow-hidden">
+                      <img
+                        src="https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_1.png"
+                        alt="AI Fashion Model"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                    </div>
 
-                <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.6s'}}>
-                  <p className="text-white/80 text-lg leading-relaxed max-w-md">
-                    Discover our curated collection of contemporary fashion. Experience the future of personal styling with AI-powered recommendations.
-                  </p>
+                    {/* Play Button */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-16 h-16 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center border border-cyan-200/30 group-hover:scale-110 transition-transform duration-300">
+                        <Play className="w-6 h-6 text-white ml-1" fill="white" />
+                      </div>
+                    </div>
+
+                    {/* Floating Elements */}
+                    <div className="absolute top-4 right-4 w-3 h-3 bg-cyan-300/40 rounded-full animate-pulse" />
+                    <div className="absolute bottom-6 left-4 w-2 h-2 bg-cyan-200/30 rounded-full animate-pulse delay-1000" />
+                  </div>
                 </div>
               </div>
 
-          {/* Right Section - Clean Video Only */}
-          <div className="w-1/2 relative">
-            {/* Video Background - Full Coverage */}
-            <div className="absolute inset-0 overflow-hidden">
-              <video
-                src="https://cdn.midjourney.com/video/5dfd741c-cc74-4ed4-bbfa-601bc946ae6e/0.mp4"
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover"
-              />
+              {/* Center Section - Main Content */}
+              <div className="col-span-5 flex flex-col justify-center items-center text-center">
+                {/* Large R Logo */}
+                <div className="relative mb-8">
+                  <div className="text-[12rem] font-light text-white/90 leading-none select-none">
+                    R
+                  </div>
+                  <div className="absolute inset-0 text-[12rem] font-light text-cyan-300/20 leading-none select-none transform translate-x-2 translate-y-2">
+                    R
+                  </div>
+                </div>
+
+                {/* Main Heading */}
+                <div className="space-y-2 mb-8">
+                  <h1 className="text-4xl font-light text-white leading-tight tracking-wide">
+                    EXPERIENCE
+                  </h1>
+                  <h1 className="text-4xl font-light text-white leading-tight tracking-wide">
+                    OF AI-POWERED
+                  </h1>
+                  <h1 className="text-4xl font-light text-white leading-tight tracking-wide">
+                    FASHION
+                  </h1>
+                </div>
+
+                {/* Description */}
+                <div className="max-w-md text-white/80 text-sm leading-relaxed mb-8">
+                  Discover our revolutionary AI shopping experience. 
+                  Try on luxury fashion virtually with cutting-edge technology. 
+                  Explore trends and realities through our intelligent 
+                  virtual try-on system powered by advanced AI.
+                </div>
+
+                {/* CTA Button */}
+                <button
+                  onClick={handleEnterExperience}
+                  className="group flex items-center gap-3 px-8 py-4 bg-white/15 backdrop-blur-xl rounded-full border border-cyan-200/30 text-white hover:bg-white/25 transition-all duration-300 hover:scale-105"
+                >
+                  <span className="text-sm font-medium">
+                    {isAuthenticated ? 'Continue to Dashboard' : 'Enter Experience'}
+                  </span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                </button>
+
+                {/* Sign In Prompt for Non-Authenticated Users */}
+                {!isAuthenticated && (
+                  <p className="text-white/60 text-xs mt-4">
+                    Sign in required to access the full experience
+                  </p>
+                )}
+              </div>
+
+              {/* Right Section - Text Content */}
+              <div className="col-span-3 flex flex-col justify-center">
+                <div className="relative">
+                  {/* Main Text Content */}
+                  <div className="space-y-8">
+                    {/* Header */}
+                    <div className="space-y-4">
+                      <div className="text-sm uppercase tracking-[0.3em] text-cyan-300/80 font-light">
+                        SnapStyler
+                      </div>
+                      <div className="text-xs uppercase tracking-[0.2em] text-white/60 font-light">
+                        + menu
+                      </div>
+                    </div>
+
+                    {/* Main Title */}
+                    <div className="space-y-2">
+                      <div className="text-sm uppercase tracking-[0.2em] text-white/70 font-light">
+                        EXHIBITION
+                      </div>
+                      <h2 className="text-3xl font-light text-white leading-tight tracking-wide">
+                        OF
+                      </h2>
+                      <h2 className="text-3xl font-light text-white leading-tight tracking-wide">
+                        CONTEMPORARY
+                      </h2>
+                      <h2 className="text-3xl font-light text-white leading-tight tracking-wide">
+                        AI FASHION
+                      </h2>
+                    </div>
+
+                    {/* Description */}
+                    <div className="space-y-4">
+                      <p className="text-white/70 text-sm leading-relaxed font-light">
+                        Discover our curated collection of contemporary fashion. Experience the future of personal styling with AI-powered recommendations.
+                      </p>
+                    </div>
+
+                    {/* CTA Button */}
+                    <div className="pt-4">
+                      <button
+                        onClick={handleEnterExperience}
+                        className="group flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-xl rounded-full border border-cyan-200/20 text-white hover:bg-white/20 transition-all duration-300 text-sm font-light"
+                      >
+                        <span>Sign In to Continue</span>
+                        <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform duration-300" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Decorative Elements */}
+                  <div className="absolute -right-8 top-1/2 transform -translate-y-1/2">
+                    <div className="text-6xl font-light text-cyan-300/20 select-none">
+                      #9
+                    </div>
+                  </div>
+
+                  {/* Decorative Arrow */}
+                  <div className="absolute -left-12 top-1/2 transform -translate-y-1/2">
+                    <div className="w-16 h-0.5 bg-cyan-300/30" />
+                    <div className="absolute right-0 top-0 w-0 h-0 border-l-4 border-l-cyan-300/30 border-t-2 border-b-2 border-t-transparent border-b-transparent transform -translate-y-1/2" />
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            {/* Minimal Video Overlay - Crystal Clear */}
-            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-cyan-900/5 to-blue-900/10" />
           </div>
 
           {/* Bottom Navigation Dots with Crystal Accent */}
-          <div className="absolute bottom-8 left-1/4 transform -translate-x-1/2 flex gap-3 z-30">
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-3 z-30">
             <div className="w-2 h-2 bg-cyan-300 rounded-full" />
             <div className="w-2 h-2 bg-cyan-200/40 rounded-full" />
             <div className="w-2 h-2 bg-cyan-200/40 rounded-full" />
             <div className="w-2 h-2 bg-cyan-200/40 rounded-full" />
           </div>
 
-          {/* Floating Particles - Only on Left Side with Crystal Glow */}
-          <div className="absolute inset-0 pointer-events-none w-1/2">
+          {/* Floating Particles - Crystal Glow */}
+          <div className="absolute inset-0 pointer-events-none">
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
