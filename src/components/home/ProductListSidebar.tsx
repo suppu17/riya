@@ -14,13 +14,13 @@ const ProductListSidebar: React.FC = () => {
 
   return (
     <motion.div
-      className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 h-fit"
+      className="bg-pink-100/10 backdrop-blur-xl rounded-2xl p-6 border border-pink-200/20 h-fit"
       initial={{ x: -50, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.3 }}
       whileHover={{
-        backgroundColor: "rgba(255, 255, 255, 0.12)",
-        borderColor: "rgba(255, 255, 255, 0.25)",
+        backgroundColor: "rgba(255, 182, 193, 0.12)",
+        borderColor: "rgba(255, 182, 193, 0.25)",
       }}
     >
       <motion.h3

@@ -68,7 +68,7 @@ const TopNavigationBar: React.FC = () => {
 
   return (
     <motion.div
-      className="flex items-center justify-between mb-8 bg-white/10 backdrop-blur-xl rounded-2xl p-2 border border-white/20 relative"
+      className="flex items-center justify-between mb-8 bg-pink-100/10 backdrop-blur-xl rounded-2xl p-2 border border-pink-200/20 relative"
       whileHover={{ scale: 1.01 }}
       transition={{ duration: 0.2 }}
     >
@@ -128,11 +128,11 @@ const TopNavigationBar: React.FC = () => {
         <div className="relative" ref={dropdownRef}>
           <motion.button
             onClick={handleUserClick}
-            className="flex items-center gap-2 bg-white/10 backdrop-blur-xl rounded-lg px-3 py-2 border border-white/20 cursor-pointer"
+            className="flex items-center gap-2 bg-pink-100/10 backdrop-blur-xl rounded-lg px-3 py-2 border border-pink-200/20 cursor-pointer"
             whileHover={{
               scale: 1.05,
-              backgroundColor: "rgba(255, 255, 255, 0.15)",
-              borderColor: "rgba(255, 255, 255, 0.3)",
+              backgroundColor: "rgba(255, 182, 193, 0.15)",
+              borderColor: "rgba(255, 182, 193, 0.3)",
             }}
             whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.2 }}
@@ -183,7 +183,7 @@ const TopNavigationBar: React.FC = () => {
           <AnimatePresence>
             {isAuthenticated && isDropdownOpen && (
               <motion.div
-                className="absolute top-full right-0 mt-2 w-48 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl z-[10000]"
+                className="absolute top-full right-0 mt-2 w-48 bg-pink-100/10 backdrop-blur-xl rounded-2xl border border-pink-200/20 shadow-2xl z-[10000]"
                 initial={{ opacity: 0, scale: 0.95, y: -10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
@@ -191,9 +191,9 @@ const TopNavigationBar: React.FC = () => {
                 style={{ zIndex: 10000 }}
               >
                 {/* User Info Header */}
-                <div className="p-4 border-b border-white/10">
+                <div className="p-4 border-b border-pink-200/10">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center overflow-hidden">
+                    <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-rose-500 rounded-full flex items-center justify-center overflow-hidden">
                       {user?.avatar ? (
                         <img
                           src={user.avatar}
@@ -219,7 +219,7 @@ const TopNavigationBar: React.FC = () => {
                 <div className="p-2">
                   <motion.button
                     onClick={handleProfileClick}
-                    className="w-full flex items-center gap-3 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 text-left"
+                    className="w-full flex items-center gap-3 px-3 py-2 text-white/80 hover:text-white hover:bg-pink-100/10 rounded-xl transition-all duration-200 text-left"
                     whileHover={{ x: 4 }}
                     transition={{ duration: 0.1 }}
                   >
@@ -229,7 +229,7 @@ const TopNavigationBar: React.FC = () => {
 
                   <motion.button
                     onClick={handleSettingsClick}
-                    className="w-full flex items-center gap-3 px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 text-left"
+                    className="w-full flex items-center gap-3 px-3 py-2 text-white/80 hover:text-white hover:bg-pink-100/10 rounded-xl transition-all duration-200 text-left"
                     whileHover={{ x: 4 }}
                     transition={{ duration: 0.1 }}
                   >
@@ -244,11 +244,11 @@ const TopNavigationBar: React.FC = () => {
 
         <motion.button
           onClick={handleCartClick}
-          className="flex items-center gap-2 bg-white/10 backdrop-blur-xl rounded-lg px-3 py-2 border border-white/20 cursor-pointer"
+          className="flex items-center gap-2 bg-pink-100/10 backdrop-blur-xl rounded-lg px-3 py-2 border border-pink-200/20 cursor-pointer"
           whileHover={{
             scale: 1.05,
-            backgroundColor: "rgba(255, 255, 255, 0.15)",
-            borderColor: "rgba(255, 255, 255, 0.3)",
+            backgroundColor: "rgba(255, 182, 193, 0.15)",
+            borderColor: "rgba(255, 182, 193, 0.3)",
           }}
           whileTap={{ scale: 0.98 }}
           transition={{ duration: 0.2 }}

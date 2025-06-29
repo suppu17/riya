@@ -9,7 +9,7 @@ const ProductActions: React.FC = () => {
   if (!selectedProduct) {
     return (
       <motion.div
-        className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/20"
+        className="bg-pink-100/10 backdrop-blur-xl rounded-3xl p-6 border border-pink-200/20"
         initial={{ x: 50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.4 }}
@@ -21,7 +21,7 @@ const ProductActions: React.FC = () => {
           transition={{ duration: 0.4, delay: 0.6 }}
         >
           <motion.div
-            className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4"
+            className="w-16 h-16 bg-pink-100/10 rounded-full flex items-center justify-center mx-auto mb-4"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.3, delay: 0.7 }}
@@ -38,13 +38,13 @@ const ProductActions: React.FC = () => {
 
   return (
     <motion.div
-      className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/20"
+      className="bg-pink-100/10 backdrop-blur-xl rounded-3xl p-6 border border-pink-200/20"
       initial={{ x: 50, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.4 }}
       whileHover={{
-        backgroundColor: "rgba(255, 255, 255, 0.12)",
-        borderColor: "rgba(255, 255, 255, 0.25)",
+        backgroundColor: "rgba(255, 182, 193, 0.12)",
+        borderColor: "rgba(255, 182, 193, 0.25)",
         scale: 1.01,
       }}
     >
@@ -76,7 +76,7 @@ const ProductActions: React.FC = () => {
                   key={i}
                   className={`w-3 h-3 ${
                     i < selectedProduct.rating
-                      ? "text-yellow-400 fill-current"
+                      ? "text-pink-400 fill-current"
                       : "text-white/30"
                   }`}
                 />
@@ -109,14 +109,14 @@ const ProductActions: React.FC = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.9 }}
       >
-        <motion.div className="inline-flex bg-white/5 backdrop-blur-sm rounded-full px-3 py-1.5 border border-white/10">
+        <motion.div className="inline-flex bg-pink-100/5 backdrop-blur-sm rounded-full px-3 py-1.5 border border-pink-200/10">
           <div className="flex items-center gap-1.5">
             <motion.button
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="w-5 h-5 bg-white/10 rounded-md flex items-center justify-center text-white/80 hover:bg-white/20 transition-all duration-200 border border-white/10"
+              className="w-5 h-5 bg-pink-100/10 rounded-md flex items-center justify-center text-white/80 hover:bg-pink-100/20 transition-all duration-200 border border-pink-200/10"
               whileHover={{
                 scale: 1.05,
-                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                backgroundColor: "rgba(255, 182, 193, 0.2)",
               }}
               whileTap={{ scale: 0.95 }}
             >
@@ -135,10 +135,10 @@ const ProductActions: React.FC = () => {
 
             <motion.button
               onClick={() => setQuantity(quantity + 1)}
-              className="w-5 h-5 bg-white/10 rounded-md flex items-center justify-center text-white/80 hover:bg-white/20 transition-all duration-200 border border-white/10"
+              className="w-5 h-5 bg-pink-100/10 rounded-md flex items-center justify-center text-white/80 hover:bg-pink-100/20 transition-all duration-200 border border-pink-200/10"
               whileHover={{
                 scale: 1.05,
-                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                backgroundColor: "rgba(255, 182, 193, 0.2)",
               }}
               whileTap={{ scale: 0.95 }}
             >
@@ -152,7 +152,7 @@ const ProductActions: React.FC = () => {
             addToCart(selectedProduct);
             setQuantity(1);
           }}
-          className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full py-3 px-6 text-white font-semibold transition-all duration-300 border border-white/20 hover:border-white/40 flex items-center justify-center gap-2 group"
+          className="w-full bg-gradient-to-r from-pink-500/20 to-rose-500/20 hover:from-pink-500/30 hover:to-rose-500/30 backdrop-blur-sm rounded-full py-3 px-6 text-white font-semibold transition-all duration-300 border border-pink-300/20 hover:border-pink-300/40 flex items-center justify-center gap-2 group"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >

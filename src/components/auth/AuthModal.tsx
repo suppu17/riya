@@ -188,11 +188,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
             transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Glass Morphism Container */}
-            <div className="relative w-full h-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-[3rem] overflow-hidden shadow-2xl flex">
-              {/* Gradient Overlays */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-purple-500/10 to-pink-400/20" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10" />
+            {/* Glass Morphism Container with Pink Tints */}
+            <div className="relative w-full h-full bg-pink-100/10 backdrop-blur-xl border border-pink-200/20 rounded-[3rem] overflow-hidden shadow-2xl flex">
+              {/* Gradient Overlays with Pink Tones */}
+              <div className="absolute inset-0 bg-gradient-to-br from-pink-400/20 via-rose-500/10 to-pink-600/20" />
+              <div className="absolute inset-0 bg-gradient-to-t from-pink-900/20 via-transparent to-pink-800/10" />
 
               {/* Left Section - Authentication */}
               <div className="relative z-10 w-1/2 flex flex-col justify-center p-12">
@@ -214,7 +214,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                   {mode === 'forgot-password' && (
                     <motion.button
                       onClick={() => handleModeChange('login')}
-                      className="absolute top-8 left-8 p-3 text-white/60 hover:text-white transition-colors rounded-full hover:bg-white/10"
+                      className="absolute top-8 left-8 p-3 text-white/60 hover:text-white transition-colors rounded-full hover:bg-pink-100/10"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.2 }}
@@ -226,7 +226,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                   {/* Close Button */}
                   <motion.button
                     onClick={onClose}
-                    className="absolute top-8 right-8 p-3 text-white/60 hover:text-white transition-colors rounded-full hover:bg-white/10"
+                    className="absolute top-8 right-8 p-3 text-white/60 hover:text-white transition-colors rounded-full hover:bg-pink-100/10"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2 }}
@@ -262,7 +262,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                       animate={{ scale: 1 }}
                       transition={{ delay: 0.2, type: "spring", stiffness: 300 }}
                     >
-                      <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-pink-400 to-rose-500 rounded-full" />
                       <div className="absolute inset-0 bg-white/20 rounded-full animate-pulse" />
                       <div className="absolute inset-0 flex items-center justify-center">
                         <CheckCircle className="w-10 h-10 text-white" />
@@ -293,9 +293,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.6 }}
                     >
-                      <div className="w-2 h-2 bg-white/60 rounded-full animate-pulse" />
-                      <div className="w-2 h-2 bg-white/60 rounded-full animate-pulse delay-100" />
-                      <div className="w-2 h-2 bg-white/60 rounded-full animate-pulse delay-200" />
+                      <div className="w-2 h-2 bg-pink-300/60 rounded-full animate-pulse" />
+                      <div className="w-2 h-2 bg-pink-300/60 rounded-full animate-pulse delay-100" />
+                      <div className="w-2 h-2 bg-pink-300/60 rounded-full animate-pulse delay-200" />
                     </motion.div>
                   </motion.div>
                 ) : (
@@ -303,12 +303,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                     {/* Success Message */}
                     {successMessage && !showSuccess && (
                       <motion.div
-                        className="mb-6 p-4 bg-green-500/20 border border-green-500/30 rounded-2xl flex items-center gap-3 backdrop-blur-sm"
+                        className="mb-6 p-4 bg-pink-500/20 border border-pink-400/30 rounded-2xl flex items-center gap-3 backdrop-blur-sm"
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                       >
-                        <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
-                        <p className="text-green-300 text-sm">{successMessage}</p>
+                        <CheckCircle className="w-5 h-5 text-pink-300 flex-shrink-0" />
+                        <p className="text-pink-200 text-sm">{successMessage}</p>
                       </motion.div>
                     )}
 
@@ -331,15 +331,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                             Full Name
                           </label>
                           <div className="relative group">
-                            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl blur-xl group-focus-within:blur-2xl transition-all duration-300" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 to-rose-500/20 rounded-2xl blur-xl group-focus-within:blur-2xl transition-all duration-300" />
                             <div className="relative">
                               <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-white/60 transition-colors" />
                               <input
                                 type="text"
                                 value={formData.name}
                                 onChange={(e) => handleInputChange('name', e.target.value)}
-                                className={`w-full pl-12 pr-4 py-4 bg-white/10 backdrop-blur-xl border rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all ${
-                                  errors.name ? 'border-red-500/50' : 'border-white/20'
+                                className={`w-full pl-12 pr-4 py-4 bg-pink-100/10 backdrop-blur-xl border rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all ${
+                                  errors.name ? 'border-red-500/50' : 'border-pink-200/20'
                                 }`}
                                 placeholder="Enter your full name"
                                 disabled={isSubmitting}
@@ -369,15 +369,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                           Email Address
                         </label>
                         <div className="relative group">
-                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl blur-xl group-focus-within:blur-2xl transition-all duration-300" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 to-rose-500/20 rounded-2xl blur-xl group-focus-within:blur-2xl transition-all duration-300" />
                           <div className="relative">
                             <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-white/60 transition-colors" />
                             <input
                               type="email"
                               value={formData.email}
                               onChange={(e) => handleInputChange('email', e.target.value)}
-                              className={`w-full pl-12 pr-4 py-4 bg-white/10 backdrop-blur-xl border rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all ${
-                                errors.email ? 'border-red-500/50' : 'border-white/20'
+                              className={`w-full pl-12 pr-4 py-4 bg-pink-100/10 backdrop-blur-xl border rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all ${
+                                errors.email ? 'border-red-500/50' : 'border-pink-200/20'
                               }`}
                               placeholder="Enter your email"
                               disabled={isSubmitting}
@@ -407,15 +407,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                             Password
                           </label>
                           <div className="relative group">
-                            <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-2xl blur-xl group-focus-within:blur-2xl transition-all duration-300" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 to-rose-500/20 rounded-2xl blur-xl group-focus-within:blur-2xl transition-all duration-300" />
                             <div className="relative">
                               <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-white/60 transition-colors" />
                               <input
                                 type={showPassword ? 'text' : 'password'}
                                 value={formData.password}
                                 onChange={(e) => handleInputChange('password', e.target.value)}
-                                className={`w-full pl-12 pr-12 py-4 bg-white/10 backdrop-blur-xl border rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all ${
-                                  errors.password ? 'border-red-500/50' : 'border-white/20'
+                                className={`w-full pl-12 pr-12 py-4 bg-pink-100/10 backdrop-blur-xl border rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all ${
+                                  errors.password ? 'border-red-500/50' : 'border-pink-200/20'
                                 }`}
                                 placeholder="Enter your password"
                                 disabled={isSubmitting}
@@ -453,15 +453,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                             Confirm Password
                           </label>
                           <div className="relative group">
-                            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-2xl blur-xl group-focus-within:blur-2xl transition-all duration-300" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 to-rose-500/20 rounded-2xl blur-xl group-focus-within:blur-2xl transition-all duration-300" />
                             <div className="relative">
                               <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-white/60 transition-colors" />
                               <input
                                 type={showPassword ? 'text' : 'password'}
                                 value={formData.confirmPassword}
                                 onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                                className={`w-full pl-12 pr-4 py-4 bg-white/10 backdrop-blur-xl border rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all ${
-                                  errors.confirmPassword ? 'border-red-500/50' : 'border-white/20'
+                                className={`w-full pl-12 pr-4 py-4 bg-pink-100/10 backdrop-blur-xl border rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all ${
+                                  errors.confirmPassword ? 'border-red-500/50' : 'border-pink-200/20'
                                 }`}
                                 placeholder="Confirm your password"
                                 disabled={isSubmitting}
@@ -493,19 +493,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                         </motion.div>
                       )}
 
-                      {/* Submit Button - Glass morphism style */}
+                      {/* Submit Button - Pink Glass morphism style */}
                       <motion.button
                         type="submit"
                         disabled={isSubmitting}
-                        className="relative w-full py-4 bg-white/20 hover:bg-white/30 disabled:bg-white/10 backdrop-blur-xl border border-white/30 hover:border-white/50 disabled:border-white/20 text-white font-semibold rounded-2xl transition-all duration-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 group overflow-hidden"
+                        className="relative w-full py-4 bg-gradient-to-r from-pink-500/20 to-rose-500/20 hover:from-pink-500/30 hover:to-rose-500/30 disabled:from-pink-500/10 disabled:to-rose-500/10 backdrop-blur-xl border border-pink-300/30 hover:border-pink-300/50 disabled:border-pink-300/20 text-white font-semibold rounded-2xl transition-all duration-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 group overflow-hidden"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.9 }}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                       >
-                        {/* Glass morphism glow effect */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        {/* Pink morphism glow effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-rose-500/20 to-pink-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         
                         <div className="relative flex items-center gap-2">
                           {isSubmitting ? (
@@ -542,7 +542,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                             Don't have an account?{' '}
                             <button
                               onClick={() => handleModeChange('signup')}
-                              className="text-pink-400 hover:text-pink-300 font-medium transition-colors hover:underline"
+                              className="text-pink-300 hover:text-pink-200 font-medium transition-colors hover:underline"
                             >
                               Sign up
                             </button>
@@ -555,21 +555,21 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                           Already have an account?{' '}
                           <button
                             onClick={() => handleModeChange('login')}
-                            className="text-pink-400 hover:text-pink-300 font-medium transition-colors hover:underline"
+                            className="text-pink-300 hover:text-pink-200 font-medium transition-colors hover:underline"
                           >
                             Sign in
                           </button>
                         </div>
                       )}
 
-                      {/* Powered by Supabase */}
-                      <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-2xl backdrop-blur-sm">
+                      {/* Powered by Supabase with Pink Theme */}
+                      <div className="mt-6 p-4 bg-pink-500/10 border border-pink-400/20 rounded-2xl backdrop-blur-sm">
                         <div className="flex items-center justify-center gap-2 mb-2">
-                          <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
-                          <p className="text-blue-300 text-xs font-medium">Powered by Supabase</p>
-                          <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-500" />
+                          <div className="w-2 h-2 bg-pink-400 rounded-full animate-pulse" />
+                          <p className="text-pink-300 text-xs font-medium">Powered by Supabase</p>
+                          <div className="w-2 h-2 bg-pink-400 rounded-full animate-pulse delay-500" />
                         </div>
-                        <p className="text-blue-200/80 text-xs">
+                        <p className="text-pink-200/80 text-xs">
                           Secure authentication with real-time database
                         </p>
                       </div>
@@ -590,8 +590,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                   className="absolute inset-0 w-full h-full object-cover"
                 />
                 
-                {/* Video Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/10 to-black/30" />
+                {/* Video Overlay with Pink Tint */}
+                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-pink-900/10 to-pink-900/30" />
                 
                 {/* Content Overlay */}
                 <div className="relative z-10 h-full flex flex-col justify-between p-12">
@@ -642,20 +642,20 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
 
                 {/* Decorative Elements */}
                 <div className="absolute top-1/2 left-8 transform -translate-y-1/2">
-                  <div className="w-32 h-32 bg-white/10 backdrop-blur-sm rounded-3xl flex items-center justify-center">
-                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                  <div className="w-32 h-32 bg-pink-100/10 backdrop-blur-sm rounded-3xl flex items-center justify-center">
+                    <div className="w-8 h-8 bg-pink-200/20 rounded-full flex items-center justify-center">
                       <div className="w-0 h-0 border-l-4 border-l-white border-t-2 border-b-2 border-t-transparent border-b-transparent ml-1"></div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Floating Particles */}
+              {/* Floating Particles with Pink Glow */}
               <div className="absolute inset-0 pointer-events-none">
                 {[...Array(8)].map((_, i) => (
                   <motion.div
                     key={i}
-                    className="absolute w-1 h-1 bg-white/30 rounded-full"
+                    className="absolute w-1 h-1 bg-pink-300/30 rounded-full"
                     style={{
                       left: `${15 + i * 12}%`,
                       top: `${20 + (i % 4) * 20}%`,
