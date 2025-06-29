@@ -57,62 +57,13 @@ const TopNavigationBar: React.FC = () => {
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.2 }}
       >
-        {/* User Profile Icon with Username */}
-        {isAuthenticated && (
-          <motion.div
-            className="flex items-center gap-3 bg-gradient-to-r from-white/15 to-white/5 backdrop-blur-xl rounded-xl px-4 py-2.5 border border-white/30 shadow-xl"
-            whileHover={{
-              scale: 1.02,
-              backgroundColor: "rgba(255, 255, 255, 0.2)",
-              borderColor: "rgba(255, 255, 255, 0.4)",
-            }}
-            transition={{ duration: 0.2 }}
-          >
-            <motion.div
-              className="relative"
-              animate={{
-                rotate: [0, -10, 10, 0],
-              }}
-              transition={{
-                duration: 0.5,
-                repeat: 1,
-              }}
-            >
-              {user?.avatar ? (
-                <div className="relative">
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className="w-8 h-8 rounded-full object-cover border-2 border-white/30 shadow-lg"
-                  />
-                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow-sm"></div>
-                </div>
-              ) : (
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center border-2 border-white/30 shadow-lg">
-                  <User className="w-4 h-4 text-white" />
-                </div>
-              )}
-            </motion.div>
-            <motion.span
-              className="text-white text-sm font-medium"
-              initial={{ scale: 1.2, color: "rgba(34, 197, 94, 1)" }}
-              animate={{ scale: 1, color: "rgba(255, 255, 255, 1)" }}
-              transition={{ duration: 0.3 }}
-            >
-              {user?.name?.split(' ')[0] || 'User'}
-            </motion.span>
-          </motion.div>
-        )}
+      
 
         {/* Sign Off (Logout) Icon */}
         {isAuthenticated && (
           <motion.button
             onClick={handleDirectLogout}
-            className="flex items-center justify-center w-10 h-10 bg-red-600/20 hover:bg-red-600/30 backdrop-blur-xl rounded-full border border-red-500/30 hover:border-red-500/50 cursor-pointer transition-all duration-200"
-            whileHover={{
-              scale: 1.1,
-              backgroundColor: "rgba(239, 68, 68, 0.3)",
-            }}
+            className="flex items-center justify-center w-10 h-10 bg-white-600/20 hover:bg-white-600/30 backdrop-blur-xl rounded-full border border-white-500/30 hover:border-white-500/50 cursor-pointer transition-all duration-200"
             whileTap={{ scale: 0.95 }}
             transition={{ duration: 0.2 }}
             title="Sign Out"
@@ -121,7 +72,7 @@ const TopNavigationBar: React.FC = () => {
               whileHover={{ rotate: [0, -10, 10, 0] }}
               transition={{ duration: 0.5 }}
             >
-              <LogOut className="w-4 h-4 text-red-400" />
+              <LogOut className="w-4 h-4 text-white" />
             </motion.div>
           </motion.button>
         )}
@@ -161,12 +112,12 @@ const TopNavigationBar: React.FC = () => {
           transition={{ duration: 0.2 }}
         >
           <div className="relative">
-            <div className="w-8 h-8 bg-gradient-to-br from-orange-500/20 to-red-600/20 rounded-xl flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-orange-500/20 to-white-600/20 rounded-xl flex items-center justify-center">
               <ShoppingCart className="w-4 h-4 text-white" />
             </div>
             {cartCount > 0 && (
               <motion.div
-                className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-lg border-2 border-white"
+                className="absolute -top-2 -right-2 bg-gradient-to-r from-white-500 to-pink-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-lg border-2 border-white"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}

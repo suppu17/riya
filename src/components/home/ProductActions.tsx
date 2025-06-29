@@ -147,18 +147,6 @@ const ProductActions: React.FC = () => {
           </div>
         </motion.div>
 
-        <motion.button
-          onClick={() => {
-            addToCart(selectedProduct);
-            setQuantity(1);
-          }}
-          className="w-full bg-gradient-to-r from-white/20 to-white/10 hover:from-white/30 hover:to-white/20 backdrop-blur-sm rounded-full py-3 px-6 text-white font-semibold transition-all duration-300 border border-white/30 hover:border-white/50 flex items-center justify-center gap-2 group shadow-lg hover:shadow-xl"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <ShoppingBag className="w-5 h-5 text-white/80 group-hover:text-white transition-colors" />
-          Add to Cart
-        </motion.button>
 
         {/* Delivery Information */}
         <motion.div
@@ -193,6 +181,20 @@ const ProductActions: React.FC = () => {
             </div>
           </motion.div>
         </motion.div>
+        
+        <motion.button
+          onClick={() => {
+            addToCart(selectedProduct);
+            setQuantity(1);
+          }}
+          className="w-full bg-gradient-to-r from-white/20 to-white/10 hover:from-white/30 hover:to-white/20 backdrop-blur-sm rounded-full py-3 px-6 text-white font-semibold transition-all duration-300 border border-white/30 hover:border-white/50 flex items-center justify-center gap-2 group shadow-lg hover:shadow-xl"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <ShoppingBag className="w-5 h-5 text-white/80 group-hover:text-white transition-colors" />
+          Add to Cart
+        </motion.button>
+
       </motion.div>
     </motion.div>
   );

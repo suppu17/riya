@@ -37,7 +37,7 @@ const BottomNav: React.FC<BottomNavProps> = ({
                 <Icon className="w-5 h-5 mb-1" />
                 <span className="text-xs">{item.label}</span>
                 {item.id === "photos" && selectedModelId && (
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
                     <Check className="w-2.5 h-2.5 text-white" />
                   </div>
                 )}

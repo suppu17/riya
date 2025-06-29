@@ -26,7 +26,7 @@ const PhotosPage: React.FC = () => {
       <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 h-full">
         <div className="mb-6">
           <h2 className="text-2xl font-semibold text-white mb-2">
-            Model Gallery
+            Photo Gallery
           </h2>
           <p className="text-white/60 text-sm">
             Select a model for virtual try-on
@@ -56,7 +56,7 @@ const PhotosPage: React.FC = () => {
                   <h3 className="text-white text-lg font-semibold mb-1">
                     {selectedPhoto.name}
                   </h3>
-                  <p className="text-white/80 text-sm">Click to change model</p>
+                  <p className="text-white/80 text-sm">Click to Change Photo</p>
                 </div>
               </div>
             </motion.div>
@@ -68,7 +68,7 @@ const PhotosPage: React.FC = () => {
               whileTap={{ scale: 0.98 }}
             >
               <Users className="w-16 h-16 mb-4" />
-              <span className="text-lg font-medium">Select Model</span>
+              <span className="text-lg font-medium">Select Photo</span>
               <span className="text-sm text-white/60 mt-2">Choose a model for photo selection</span>
             </motion.button>
           )}

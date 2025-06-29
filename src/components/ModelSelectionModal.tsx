@@ -38,7 +38,7 @@ const ModelSelectionModal: React.FC<ModelSelectionModalProps> = ({ isOpen, onClo
     <div className="fixed inset-0 bg-black/50 backdrop-blur-md z-50 flex items-center justify-center p-4">
       <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-white">Select Model</h2>
+          <h2 className="text-xl font-semibold text-white">Select Photo</h2>
           <button
             onClick={onClose}
             className="w-8 h-8 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center text-white/80 hover:text-white transition-colors"
