@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, LogOut, Settings, Edit3, Save, X, Heart, Star, Package, Edit, ChevronRight } from 'lucide-react';
+import { User, LogOut, Settings, Edit3, Save, X, Heart, Star, Package, Edit, ChevronRight, Compass, TrendingUp, Users, Award } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -447,64 +447,130 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                   </div>
                 )}
 
-                {/* Action Buttons */}
-                <div className="space-y-4">
+                {/* Profile Action Buttons */}
+                <div className="space-y-3">
                   <motion.button
                     onClick={() => setIsEditing(true)}
-                    className="group w-full bg-gradient-to-r from-blue-500 via-purple-600 to-indigo-600 hover:from-blue-600 hover:via-purple-700 hover:to-indigo-700 text-white py-5 px-6 rounded-2xl font-semibold transition-all duration-300 flex items-center justify-between shadow-2xl hover:shadow-blue-500/25 border border-blue-400/30 backdrop-blur-xl"
-                    whileHover={{ scale: 1.02, y: -3 }}
+                    className="group w-full bg-gradient-to-r from-blue-500 via-purple-600 to-indigo-600 hover:from-blue-600 hover:via-purple-700 hover:to-indigo-700 text-white py-4 px-6 rounded-2xl font-semibold transition-all duration-300 flex items-center justify-between shadow-2xl hover:shadow-blue-500/25 border border-blue-400/30 backdrop-blur-xl"
+                    whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-colors">
-                        <Edit className="w-5 h-5" />
+                      <div className="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                        <Edit className="w-4 h-4" />
                       </div>
                       <div className="text-left">
-                        <div className="font-semibold">Edit Profile & Preferences</div>
-                        <div className="text-sm text-white/70">Update your personal information</div>
+                        <div className="font-medium">Edit Profile</div>
+                        <div className="text-xs text-white/70">Update your information</div>
                       </div>
                      </div>
-                     <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                     <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                    </motion.button>
 
                   <motion.button
                     onClick={() => {/* Navigate to settings */}}
-                    className="group w-full bg-gradient-to-r from-gray-600 via-slate-700 to-gray-800 hover:from-gray-700 hover:via-slate-800 hover:to-gray-900 text-white py-5 px-6 rounded-2xl font-semibold transition-all duration-300 flex items-center justify-between shadow-2xl hover:shadow-gray-500/25 border border-gray-400/30 backdrop-blur-xl"
-                    whileHover={{ scale: 1.02, y: -3 }}
+                    className="group w-full bg-gradient-to-r from-gray-600 via-slate-700 to-gray-800 hover:from-gray-700 hover:via-slate-800 hover:to-gray-900 text-white py-4 px-6 rounded-2xl font-semibold transition-all duration-300 flex items-center justify-between shadow-2xl hover:shadow-gray-500/25 border border-gray-400/30 backdrop-blur-xl"
+                    whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-colors">
-                        <Settings className="w-5 h-5" />
+                      <div className="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                        <Settings className="w-4 h-4" />
                       </div>
                       <div className="text-left">
-                        <div className="font-semibold">Settings</div>
-                        <div className="text-sm text-white/70">Manage app preferences</div>
+                        <div className="font-medium">Settings</div>
+                        <div className="text-xs text-white/70">App preferences</div>
                       </div>
                      </div>
-                     <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                   </motion.button>
-
-                   <motion.button
-                     onClick={handleLogout}
-                    className="group w-full bg-gradient-to-r from-red-500 via-rose-600 to-red-700 hover:from-red-600 hover:via-rose-700 hover:to-red-800 text-white py-5 px-6 rounded-2xl font-semibold transition-all duration-300 flex items-center justify-between shadow-2xl hover:shadow-red-500/25 border border-red-400/30 backdrop-blur-xl"
-                    whileHover={{ scale: 1.02, y: -3 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-colors">
-                        <LogOut className="w-5 h-5" />
-                      </div>
-                      <div className="text-left">
-                        <div className="font-semibold">Sign Out</div>
-                        <div className="text-sm text-white/70">End your current session</div>
-                      </div>
-                     </div>
-                     <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                     <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                    </motion.button>
                  </div>
               </div>
             )}
+
+            {/* Divider */}
+            <div className="my-8">
+              <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+            </div>
+
+            {/* Explore Section */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center">
+                  <Compass className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white">Explore</h3>
+                  <p className="text-white/60 text-sm">Discover new features and trends</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <motion.button
+                  onClick={() => {/* Navigate to trending */}}
+                  className="group bg-gradient-to-br from-orange-500/20 to-red-500/20 backdrop-blur-xl rounded-2xl p-4 border border-orange-500/30 text-center hover:from-orange-500/30 hover:to-red-500/30 transition-all duration-300"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <TrendingUp className="w-6 h-6 text-orange-400 mx-auto mb-2" />
+                  <div className="text-sm font-medium text-white">Trending</div>
+                  <div className="text-xs text-white/60">Hot styles</div>
+                </motion.button>
+
+                <motion.button
+                  onClick={() => {/* Navigate to community */}}
+                  className="group bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-xl rounded-2xl p-4 border border-blue-500/30 text-center hover:from-blue-500/30 hover:to-purple-500/30 transition-all duration-300"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Users className="w-6 h-6 text-blue-400 mx-auto mb-2" />
+                  <div className="text-sm font-medium text-white">Community</div>
+                  <div className="text-xs text-white/60">Connect</div>
+                </motion.button>
+
+                <motion.button
+                  onClick={() => {/* Navigate to achievements */}}
+                  className="group bg-gradient-to-br from-yellow-500/20 to-amber-500/20 backdrop-blur-xl rounded-2xl p-4 border border-yellow-500/30 text-center hover:from-yellow-500/30 hover:to-amber-500/30 transition-all duration-300"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Award className="w-6 h-6 text-yellow-400 mx-auto mb-2" />
+                  <div className="text-sm font-medium text-white">Rewards</div>
+                  <div className="text-xs text-white/60">Earn points</div>
+                </motion.button>
+
+                <motion.button
+                  onClick={() => {/* Navigate to discover */}}
+                  className="group bg-gradient-to-br from-emerald-500/20 to-green-500/20 backdrop-blur-xl rounded-2xl p-4 border border-emerald-500/30 text-center hover:from-emerald-500/30 hover:to-green-500/30 transition-all duration-300"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Compass className="w-6 h-6 text-emerald-400 mx-auto mb-2" />
+                  <div className="text-sm font-medium text-white">Discover</div>
+                  <div className="text-xs text-white/60">New brands</div>
+                </motion.button>
+              </div>
+
+              {/* Sign Out Button */}
+              <motion.button
+                onClick={handleLogout}
+                className="group w-full bg-gradient-to-r from-red-500 via-rose-600 to-red-700 hover:from-red-600 hover:via-rose-700 hover:to-red-800 text-white py-4 px-6 rounded-2xl font-semibold transition-all duration-300 flex items-center justify-between shadow-2xl hover:shadow-red-500/25 border border-red-400/30 backdrop-blur-xl mt-6"
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                    <LogOut className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <div className="font-medium">Sign Out</div>
+                    <div className="text-xs text-white/70">End session</div>
+                  </div>
+                 </div>
+                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+               </motion.button>
+            </div>
+            )
           </motion.div>
         </motion.div>
       )}

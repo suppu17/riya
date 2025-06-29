@@ -14,7 +14,7 @@ const ProductListSidebar: React.FC = () => {
 
   return (
     <motion.div
-      className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 h-fit shadow-2xl"
+      className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-2xl"
       initial={{ x: -20, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.3 }}
@@ -30,7 +30,7 @@ const ProductListSidebar: React.FC = () => {
       </motion.h3>
 
       <motion.div
-        className="space-y-3 max-h-[40vh] overflow-y-auto"
+        className="space-y-3 h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.5 }}

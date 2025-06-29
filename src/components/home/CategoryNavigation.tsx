@@ -1,4 +1,5 @@
 import React from "react";
+import { Shirt, ShoppingBag, Clock, Footprints, Gift } from "lucide-react";
 import { useShopping } from "../../contexts/ShoppingContext";
 
 const CategoryNavigation: React.FC = () => {
@@ -8,25 +9,25 @@ const CategoryNavigation: React.FC = () => {
     {
       id: "Clothing",
       label: "Clothing & Fashion",
-      icon: "fa-tshirt",
+      icon: Shirt,
       showTryON: true,
     },
     {
       id: "Bags",
       label: "Bags & Handbags",
-      icon: "fa-shopping-bag",
+      icon: ShoppingBag,
     },
-    { id: "Watches", label: "Watches", icon: "fa-clock" },
+    { id: "Watches", label: "Watches", icon: Clock },
     {
       id: "Shoes",
       label: "Shoes & Footwear",
-      icon: "fa-shoe-prints",
+      icon: Footprints,
     },
-    { id: "Gifts", label: "Gifts", icon: "fa-gift" },
+    { id: "Gifts", label: "Gifts", icon: Gift },
   ];
 
   return (
-    <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 mb-6 h-20">
+    <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 mb-4 h-20">
       <div className="flex items-center gap-3 px-4 py-2 h-full overflow-x-auto scrollbar-hide scroll-smooth">
         {categories.map((category) => (
           <button
@@ -39,7 +40,7 @@ const CategoryNavigation: React.FC = () => {
             }`}
             role="button"
           >
-            <i className={`fas ${category.icon} text-xxl`}></i>
+            <category.icon size={20} />
             <span className="text-base font-large">
               {category.label.split(" ")[0]}
             </span>

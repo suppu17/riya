@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense, lazy } from "react";
 import MainContent from "./components/MainContent";
-import VoiceAssistant from "./components/VoiceAssistant";
 import BottomNav from "./components/BottomNav";
-import WallpaperSettings from "./components/WallpaperSettings";
 import LandingPage from "./components/LandingPage";
+
+// Lazy load heavy components
+const VoiceAssistant = lazy(() => import("./components/VoiceAssistant"));
+const WallpaperSettings = lazy(() => import("./components/WallpaperSettings"));
 
 
 import { ShoppingProvider } from "./contexts/ShoppingContext";
@@ -24,6 +26,35 @@ const AppContent: React.FC = () => {
       setShowLanding(false);
     }
   }, [isAuthenticated]);
+
+  // Development fast path - skip loading screen
+  if (import.meta.env.DEV && !isLoading) {
+    return (
+      <div className="min-h-screen relative overflow-hidden">
+        {/* Dynamic Background */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('${currentWallpaper}')` }}
+        ></div>
+        {/* Multiple Shadow/Dark Overlays for Better Contrast */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/20 to-black/50"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30"></div>
+        <div className="absolute inset-0 bg-black/20"></div>
+        {/* Main Content - Centered */}
+        <div className="relative z-10 min-h-screen p-8">
+          <div className="w-full max-w-7xl mx-auto">
+            <MainContent currentView={currentView} />
+          </div>
+        </div>
+        {/* Bottom Navigation */}
+        <BottomNav currentView={currentView} setCurrentView={setCurrentView} />
+        {/* Wallpaper Settings */}
+        <Suspense fallback={null}>
+          <WallpaperSettings />
+        </Suspense>
+      </div>
+    );
+  }
 
   // Show loading screen while checking authentication
   if (isLoading) {
@@ -86,7 +117,7 @@ const AppContent: React.FC = () => {
 
               {/* Floating Particles Animation */}
               <div className="absolute inset-0 pointer-events-none">
-                {[...Array(12)].map((_, i) => (
+                {[...Array(6)].map((_, i) => (
                   <div
                     key={i}
                     className="absolute w-1 h-1 bg-cyan-300/40 rounded-full animate-pulse"
@@ -186,7 +217,9 @@ const AppContent: React.FC = () => {
       <BottomNav currentView={currentView} setCurrentView={setCurrentView} />
 
       {/* Wallpaper Settings */}
-      <WallpaperSettings />
+      <Suspense fallback={null}>
+        <WallpaperSettings />
+      </Suspense>
       
 
     </div>

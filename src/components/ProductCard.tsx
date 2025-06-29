@@ -70,8 +70,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     </svg>
   );
 
-  // Check if try icon should be enabled
-  const isTryEnabled = product.categoryFlag && product.tryown;
+  // Check if try icon should be enabled - only for clothing category
+  const isTryEnabled = product.category === "Clothing" && product.categoryFlag && product.tryown;
 
   return (
     <div className="w-full h-full bg-black rounded-3xl text-white relative overflow-hidden border border-white/20 shadow-2xl">

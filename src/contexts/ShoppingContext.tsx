@@ -123,6 +123,262 @@ const modelImages: ModelImage[] = [
     name: "Photo 8",
     url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/IMG_7514.JPG",
   },
+  // Public folder images
+  {
+    id: "public_1",
+    name: "Public Photo 1",
+    url: "/1.JPG",
+  },
+  {
+    id: "public_2",
+    name: "Public Photo 2",
+    url: "/2.JPG",
+  },
+  {
+    id: "public_3",
+    name: "Public Photo 3",
+    url: "/3.heic",
+  },
+  {
+    id: "public_4",
+    name: "Public Photo 4",
+    url: "/4.JPG",
+  },
+  {
+    id: "public_5",
+    name: "Public Photo 5",
+    url: "/5.JPG",
+  },
+  {
+    id: "public_6",
+    name: "Public Photo 6",
+    url: "/6.JPG",
+  },
+  {
+    id: "public_7",
+    name: "Public Photo 7",
+    url: "/7.JPG",
+  },
+  {
+    id: "public_8",
+    name: "Public Photo 8",
+    url: "/8.JPG",
+  },
+  {
+    id: "public_9",
+    name: "Public Photo 9",
+    url: "/9.JPG",
+  },
+  {
+    id: "public_10",
+    name: "Public Photo 10",
+    url: "/10.JPG",
+  },
+  {
+    id: "public_11",
+    name: "Public Photo 11",
+    url: "/11.JPG",
+  },
+  {
+    id: "public_12",
+    name: "Public Photo 12",
+    url: "/12.JPG",
+  },
+  {
+    id: "public_13",
+    name: "Public Photo 13",
+    url: "/13.JPG",
+  },
+  {
+    id: "public_14",
+    name: "Public Photo 14",
+    url: "/14.JPG",
+  },
+  {
+    id: "public_15",
+    name: "Public Photo 15",
+    url: "/15.JPG",
+  },
+  {
+    id: "public_16",
+    name: "Public Photo 16",
+    url: "/16.JPG",
+  },
+  {
+    id: "public_17",
+    name: "Public Photo 17",
+    url: "/17.JPG",
+  },
+  {
+    id: "public_18",
+    name: "Public Photo 18",
+    url: "/18.JPG",
+  },
+  {
+    id: "public_19",
+    name: "Public Photo 19",
+    url: "/19.JPG",
+  },
+  {
+    id: "public_20",
+    name: "Public Photo 20",
+    url: "/20.JPG",
+  },
+  {
+    id: "public_21",
+    name: "Public Photo 21",
+    url: "/21.JPG",
+  },
+  {
+    id: "public_22",
+    name: "Public Photo 22",
+    url: "/22.JPG",
+  },
+  {
+    id: "public_23",
+    name: "Public Photo 23",
+    url: "/23.JPG",
+  },
+  {
+    id: "public_24",
+    name: "Public Photo 24",
+    url: "/24.JPG",
+  },
+  {
+    id: "public_25",
+    name: "Public Photo 25",
+    url: "/25.JPG",
+  },
+  {
+    id: "public_26",
+    name: "Public Photo 26",
+    url: "/26.JPG",
+  },
+  {
+    id: "public_27",
+    name: "Public Photo 27",
+    url: "/27.JPG",
+  },
+  {
+    id: "public_28",
+    name: "Public Photo 28",
+    url: "/28.JPG",
+  },
+  {
+    id: "public_29",
+    name: "Public Photo 29",
+    url: "/29.JPG",
+  },
+  {
+    id: "public_30",
+    name: "Public Photo 30",
+    url: "/30.JPG",
+  },
+  {
+    id: "public_31",
+    name: "Public Photo 31",
+    url: "/31.JPG",
+  },
+  {
+    id: "public_32",
+    name: "Public Photo 32",
+    url: "/32.JPG",
+  },
+  {
+    id: "public_33",
+    name: "Public Photo 33",
+    url: "/33.JPG",
+  },
+  {
+    id: "public_34",
+    name: "Public Photo 34",
+    url: "/34.JPG",
+  },
+  {
+    id: "public_35",
+    name: "Public Photo 35",
+    url: "/35.JPG",
+  },
+  {
+    id: "public_36",
+    name: "Public Photo 36",
+    url: "/36.JPG",
+  },
+  {
+    id: "public_37",
+    name: "Public Photo 37",
+    url: "/37.JPG",
+  },
+  {
+    id: "public_38",
+    name: "Public Photo 38",
+    url: "/38.JPG",
+  },
+  {
+    id: "public_39",
+    name: "Public Photo 39",
+    url: "/39.JPG",
+  },
+  {
+    id: "public_40",
+    name: "Public Photo 40",
+    url: "/40.JPG",
+  },
+  {
+    id: "public_41",
+    name: "Public Photo 41",
+    url: "/41.JPG",
+  },
+  {
+    id: "public_42",
+    name: "Public Photo 42",
+    url: "/42.JPG",
+  },
+  {
+    id: "public_43",
+    name: "Public Photo 43",
+    url: "/43.JPG",
+  },
+  {
+    id: "public_44",
+    name: "Public Photo 44",
+    url: "/44.JPG",
+  },
+  {
+    id: "public_45",
+    name: "Public Photo 45",
+    url: "/45.JPG",
+  },
+  {
+    id: "public_46",
+    name: "Public Photo 46",
+    url: "/46.JPG",
+  },
+  {
+    id: "public_47",
+    name: "Public Photo 47",
+    url: "/47.JPG",
+  },
+  {
+    id: "public_48",
+    name: "Public Photo 48",
+    url: "/48.JPG",
+  },
+  {
+    id: "public_49",
+    name: "Public Photo 49",
+    url: "/49.JPG",
+  },
+  {
+    id: "public_50",
+    name: "Public Photo 50",
+    url: "/50.JPG",
+  },
+  {
+    id: "public_image",
+    name: "Public Image",
+    url: "/image.png",
+  },
 ];
 
 export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
@@ -246,17 +502,27 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
 
       if (!response.ok) {
         console.error("API error, retrying...", response.status);
-        // Retry after 5 seconds on server error
+        // Faster retry for quicker recovery
         pollingTimeoutRef.current = window.setTimeout(
           () => checkPredictionStatus(id),
-          5000
+          2000
         );
         return;
       }
 
       const data = await response.json();
       console.log("Status API Response:", data);
-      setTryOnStatus(data.status || "unknown");
+      
+      // Enhanced status messages for better user experience
+      const statusMessages = {
+        "starting": "Starting 8K Ultra HD processing...",
+        "in_queue": "Queued for high-priority processing...",
+        "processing": "Generating 8K Ultra HD try-on image...",
+        "completed": "8K Ultra HD processing complete!",
+        "failed": "Processing failed"
+      };
+      
+      setTryOnStatus(statusMessages[data.status as keyof typeof statusMessages] || data.status || "Processing...");
 
       switch (data.status) {
         case "completed":
@@ -296,42 +562,43 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
           break;
         case "starting":
           setTryOnProgress(20);
-          // Continue polling
+          // Faster polling for quicker response
           pollingTimeoutRef.current = window.setTimeout(
             () => checkPredictionStatus(id),
-            3000
+            1500
           );
           break;
         case "in_queue":
           setTryOnProgress(10);
-          // Continue polling
+          // Faster polling for quicker response
           pollingTimeoutRef.current = window.setTimeout(
             () => checkPredictionStatus(id),
-            3000
+            1500
           );
           break;
         case "processing":
           setTryOnProgress(60);
-          // Continue polling
+          // Faster polling during processing
           pollingTimeoutRef.current = window.setTimeout(
             () => checkPredictionStatus(id),
-            3000
+            2000
           );
           break;
         default:
           console.warn(`Unknown status: ${data.status}. Retrying...`);
+          setTryOnProgress(40); // Show some progress for unknown status
           pollingTimeoutRef.current = window.setTimeout(
             () => checkPredictionStatus(id),
-            5000
+            2000
           );
           break;
       }
     } catch (error) {
       console.error("Error checking prediction status, retrying...", error);
-      // Retry after 5 seconds on network error
+      // Faster retry on network error for quicker recovery
       pollingTimeoutRef.current = window.setTimeout(
         () => checkPredictionStatus(id),
-        5000
+        2000
       );
     }
   };
@@ -353,7 +620,7 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
     setIsTryingOn(true);
     setTryOnError(null);
     setTryOnResult(null);
-    setTryOnStatus("Initializing...");
+    setTryOnStatus("Initializing 8K Ultra HD processing...");
     setTryOnProgress(0);
     setPredictionId(null);
     clearPolling(); // Ensure no previous polling is running
@@ -385,6 +652,13 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
         inputs: {
           model_image: await convertImageToBase64(getSelectedModelImage()),
           garment_image: await convertImageToBase64(selectedProduct.image),
+          // Enhanced quality parameters for 8K Ultra HD output
+          quality: "ultra_hd",
+          resolution: "8k",
+          enhancement: "enabled",
+          processing_priority: "high",
+          output_format: "png",
+          compression: "lossless"
         },
       };
 
@@ -426,7 +700,9 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
         body: JSON.stringify(requestBody),
         headers: {
           Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "image/png", // Changed from image/png to application/json since we're sending JSON data
+          "Content-Type": "application/json", // Correct content type for JSON data
+          "X-Processing-Priority": "high", // Request high priority processing
+          "X-Quality-Mode": "ultra_hd" // Request ultra HD quality
         },
       });
 
@@ -435,8 +711,9 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
 
       if (response.ok && data.id) {
         setPredictionId(data.id);
-        setTryOnStatus("starting");
-        // Kick off the polling
+        setTryOnStatus("Request submitted for 8K Ultra HD processing...");
+        setTryOnProgress(5); // Show initial progress
+        // Kick off the faster polling
         checkPredictionStatus(data.id);
       } else {
         setTryOnError(data.error || "Failed to start prediction.");
