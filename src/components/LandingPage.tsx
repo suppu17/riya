@@ -87,6 +87,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
               riya
             </div>
             <div className="flex items-center gap-6">
+              <button className="text-white/80 hover:text-white transition-colors text-sm">
+                + menu
+              </button>
               
               {/* Authentication Section with Crystal Accents */}
               <div className="flex items-center gap-4">
@@ -138,47 +141,42 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
             </div>
           )}
 
-          {/* Main Content Grid */}
-          <div className="absolute inset-0 p-8 pt-24">
-            <div className="grid grid-cols-12 gap-8 h-full">
-              {/* Left Section - Text Content Only */}
-              <div className="col-span-6 flex flex-col justify-center">
-                <div className="space-y-8">
-                  <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.2s'}}>
-                    <div className="text-lg uppercase tracking-widest text-white/60 mb-4">EXHIBITION</div>
-                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-extralight text-white leading-tight">
-                      OF CONTEMPORARY
-                      <br />
-                      <span className="font-light">AI FASHION</span>
-                    </h1>
-                  </div>
-                  
-                  <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.6s'}}>
-                    <p className="text-white/80 text-lg leading-relaxed max-w-md">
-                      Discover our curated collection of contemporary fashion. Experience the future of personal styling with AI-powered recommendations.
-                    </p>
-                  </div>
+           {/* Left Side - Text Content */}
+              <div className="space-y-8">
+                <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.2s'}}>
+                  <div className="text-lg uppercase tracking-widest text-white/60 mb-4">EXHIBITION</div>
+                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-extralight text-white leading-tight">
+                    OF CONTEMPORARY
+                    <br />
+                    <span className="font-light">AI FASHION</span>
+                  </h1>
+                </div>
+                
+
+
+                <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.6s'}}>
+                  <p className="text-white/80 text-lg leading-relaxed max-w-md">
+                    Discover our curated collection of contemporary fashion. Experience the future of personal styling with AI-powered recommendations.
+                  </p>
                 </div>
               </div>
 
-              {/* Right Section - Clean Video Only */}
-              <div className="col-span-6 relative">
-                {/* Video Background - Full Coverage */}
-                <div className="absolute inset-0 overflow-hidden rounded-2xl">
-                  <video
-                    src="https://cdn.midjourney.com/video/5dfd741c-cc74-4ed4-bbfa-601bc946ae6e/0.mp4"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                
-                {/* Minimal Video Overlay - Crystal Clear */}
-                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-cyan-900/5 to-blue-900/10 rounded-2xl" />
-              </div>
+          {/* Right Section - Clean Video Only */}
+          <div className="w-1/2 relative">
+            {/* Video Background - Full Coverage */}
+            <div className="absolute inset-0 overflow-hidden">
+              <video
+                src="https://cdn.midjourney.com/video/5dfd741c-cc74-4ed4-bbfa-601bc946ae6e/0.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              />
             </div>
+            
+            {/* Minimal Video Overlay - Crystal Clear */}
+            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-cyan-900/5 to-blue-900/10" />
           </div>
 
           {/* Bottom Navigation Dots with Crystal Accent */}
@@ -224,24 +222,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
         isOpen={isProfileOpen}
         onClose={() => setIsProfileOpen(false)}
       />
-
-      {/* Add CSS for fade-in animation */}
-      <style jsx>{`
-        .fade-in-up {
-          animation: fadeInUp 0.8s ease-out forwards;
-        }
-
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </div>
   );
 };
