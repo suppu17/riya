@@ -63,15 +63,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 overflow-hidden">
-      {/* Dynamic Background with Pink Tones */}
+      {/* Dynamic Background with Crystal Clear Tones */}
       <div
         className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
         style={{ backgroundImage: `url('${currentWallpaper}')` }}
       />
 
-      {/* Pink Gradient Overlays */}
-      <div className="absolute inset-0 bg-gradient-to-br from-pink-400/30 via-rose-500/20 to-pink-600/30" />
-      <div className="absolute inset-0 bg-gradient-to-t from-pink-900/40 via-transparent to-pink-800/20" />
+      {/* Crystal Glass Gradient Overlays */}
+      <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/20 via-blue-500/15 to-teal-600/20" />
+      <div className="absolute inset-0 bg-gradient-to-t from-blue-900/30 via-transparent to-cyan-800/15" />
 
       {/* Main Glass Container - Full Width */}
       <div
@@ -79,8 +79,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
           showContent ? "opacity-100 scale-100" : "opacity-0 scale-95"
         }`}
       >
-        {/* Glass Morphism Container with Pink Tints */}
-        <div className="relative w-full h-full bg-pink-100/10 backdrop-blur-xl border border-pink-200/20 rounded-[3rem] overflow-hidden shadow-2xl flex">
+        {/* Crystal Glass Morphism Container */}
+        <div className="relative w-full h-full bg-white/10 backdrop-blur-xl border border-cyan-200/20 rounded-[3rem] overflow-hidden shadow-2xl flex">
           {/* Header - Positioned Above Content */}
           <div className="absolute top-8 left-8 right-8 flex items-center justify-between z-30">
             <div className="text-2xl font-light text-white tracking-wider">
@@ -91,11 +91,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                 + menu
               </button>
               
-              {/* Authentication Section with Pink Accents */}
+              {/* Authentication Section with Crystal Accents */}
               <div className="flex items-center gap-4">
                 <button
                   onClick={handleUserClick}
-                  className="flex items-center gap-2 px-4 py-2 bg-pink-100/10 backdrop-blur-xl rounded-full border border-pink-200/20 hover:bg-pink-100/20 transition-all duration-300 group"
+                  className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-xl rounded-full border border-cyan-200/20 hover:bg-white/15 transition-all duration-300 group"
                 >
                   {isAuthenticated ? (
                     <>
@@ -106,14 +106,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                           className="w-6 h-6 rounded-full object-cover"
                         />
                       ) : (
-                        <div className="w-6 h-6 bg-gradient-to-br from-pink-500 to-rose-500 rounded-full flex items-center justify-center">
+                        <div className="w-6 h-6 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-full flex items-center justify-center">
                           <User className="w-3 h-3 text-white" />
                         </div>
                       )}
                       <span className="text-white text-sm font-medium">
                         {user?.name?.split(' ')[0] || 'User'}
                       </span>
-                      <div className="w-2 h-2 bg-pink-400 rounded-full animate-pulse" />
+                      <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
                     </>
                   ) : (
                     <>
@@ -133,116 +133,40 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
           {/* Success Message for Logged In Users */}
           {isAuthenticated && user && (
             <div className="absolute top-24 right-8 z-30">
-              <div className="bg-pink-500/20 backdrop-blur-xl border border-pink-400/30 rounded-2xl px-4 py-2">
-                <p className="text-pink-200 text-sm font-medium">
+              <div className="bg-cyan-500/20 backdrop-blur-xl border border-cyan-400/30 rounded-2xl px-4 py-2">
+                <p className="text-cyan-200 text-sm font-medium">
                   Welcome back, {user.name?.split(' ')[0]}! Redirecting to dashboard...
                 </p>
               </div>
             </div>
           )}
 
-          {/* Left Section - Content Area */}
-          <div className="w-1/2 p-8 pt-24 flex flex-col justify-center relative z-20">
-            <div className="grid grid-cols-12 gap-8 h-full">
-              {/* Left Section - Video Preview */}
-              <div className="col-span-4 flex flex-col justify-center">
-                <div className="relative">
-                  {/* Decorative Circles with Pink Tones */}
-                  <div className="absolute -top-12 -left-8 flex gap-2">
-                    <div className="w-8 h-8 bg-pink-200/20 rounded-full backdrop-blur-sm" />
-                    <div className="w-8 h-8 bg-pink-200/15 rounded-full backdrop-blur-sm" />
-                    <div className="w-8 h-8 bg-pink-200/10 rounded-full backdrop-blur-sm" />
-                    <div className="w-8 h-8 bg-pink-200/5 rounded-full backdrop-blur-sm" />
-                  </div>
-
-                  {/* Video Container with Pink Glass Effect */}
-                  <div className="relative bg-pink-100/15 backdrop-blur-xl rounded-3xl p-6 border border-pink-200/20 aspect-[4/5] overflow-hidden group cursor-pointer hover:bg-pink-100/20 transition-all duration-500">
-                    <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-rose-500/20" />
-                    
-                    {/* Model Image */}
-                    <div className="relative w-full h-full rounded-2xl overflow-hidden">
-                      <img
-                        src="https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_1.png"
-                        alt="AI Fashion Model"
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-pink-900/30 via-transparent to-transparent" />
-                    </div>
-
-                    {/* Play Button with Pink Accent */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-16 h-16 bg-pink-100/20 backdrop-blur-xl rounded-full flex items-center justify-center border border-pink-200/30 group-hover:scale-110 transition-transform duration-300">
-                        <Play className="w-6 h-6 text-white ml-1" fill="white" />
-                      </div>
-                    </div>
-
-                    {/* Floating Elements with Pink Glow */}
-                    <div className="absolute top-4 right-4 w-3 h-3 bg-pink-400/40 rounded-full animate-pulse" />
-                    <div className="absolute bottom-6 left-4 w-2 h-2 bg-pink-300/30 rounded-full animate-pulse delay-1000" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Center Section - Main Content */}
-              <div className="col-span-8 flex flex-col justify-center items-center text-center">
-                {/* Large R Logo */}
-                <div className="relative mb-8">
-                  <div className="text-[12rem] font-light text-white/90 leading-none select-none">
-                    R
-                  </div>
-                  <div className="absolute inset-0 text-[12rem] font-light text-pink-200/20 leading-none select-none transform translate-x-2 translate-y-2">
-                    R
-                  </div>
-                </div>
-
-                {/* Main Heading */}
-                <div className="space-y-2 mb-8">
-                  <h1 className="text-4xl font-light text-white leading-tight tracking-wide">
-                    EXPERIENCE
-                  </h1>
-                  <h1 className="text-4xl font-light text-white leading-tight tracking-wide">
-                    OF AI-POWERED
-                  </h1>
-                  <h1 className="text-4xl font-light text-white leading-tight tracking-wide">
-                    FASHION
+           {/* Left Side - Text Content */}
+              <div className="space-y-8">
+                <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.2s'}}>
+                  <div className="text-lg uppercase tracking-widest text-white/60 mb-4">EXHIBITION</div>
+                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-extralight text-white leading-tight">
+                    OF CONTEMPORARY
+                    <br />
+                    <span className="font-light">AI FASHION</span>
                   </h1>
                 </div>
+                
 
-                {/* Description */}
-                <div className="max-w-md text-white/80 text-sm leading-relaxed mb-8">
-                  Discover our revolutionary AI shopping experience. 
-                  Try on luxury fashion virtually with cutting-edge technology. 
-                  Explore trends and realities through our intelligent 
-                  virtual try-on system powered by advanced AI.
-                </div>
 
-                {/* CTA Button with Pink Gradient */}
-                <button
-                  onClick={handleEnterExperience}
-                  className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-pink-500/20 to-rose-500/20 backdrop-blur-xl rounded-full border border-pink-300/30 text-white hover:from-pink-500/30 hover:to-rose-500/30 transition-all duration-300 hover:scale-105"
-                >
-                  <span className="text-sm font-medium">
-                    {isAuthenticated ? 'Continue to Dashboard' : 'Enter Experience'}
-                  </span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-                </button>
-
-                {/* Sign In Prompt for Non-Authenticated Users */}
-                {!isAuthenticated && (
-                  <p className="text-white/60 text-xs mt-4">
-                    Sign in required to access the full experience
+                <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.6s'}}>
+                  <p className="text-white/80 text-lg leading-relaxed max-w-md">
+                    Discover our curated collection of contemporary fashion. Experience the future of personal styling with AI-powered recommendations.
                   </p>
-                )}
+                </div>
               </div>
-            </div>
-          </div>
 
           {/* Right Section - Clean Video Only */}
           <div className="w-1/2 relative">
             {/* Video Background - Full Coverage */}
             <div className="absolute inset-0 overflow-hidden">
               <video
-                src="https://cdn.midjourney.com/video/67efa2d7-f26b-4593-bc87-c511cb9c012d/0.mp4"
+                src="https://cdn.midjourney.com/video/5dfd741c-cc74-4ed4-bbfa-601bc946ae6e/0.mp4"
                 autoPlay
                 loop
                 muted
@@ -251,24 +175,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
               />
             </div>
             
-            {/* Minimal Video Overlay - Very Subtle */}
-            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-pink-900/5 to-pink-900/10" />
+            {/* Minimal Video Overlay - Crystal Clear */}
+            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-cyan-900/5 to-blue-900/10" />
           </div>
 
-          {/* Bottom Navigation Dots with Pink Accent */}
+          {/* Bottom Navigation Dots with Crystal Accent */}
           <div className="absolute bottom-8 left-1/4 transform -translate-x-1/2 flex gap-3 z-30">
-            <div className="w-2 h-2 bg-pink-300 rounded-full" />
-            <div className="w-2 h-2 bg-pink-200/40 rounded-full" />
-            <div className="w-2 h-2 bg-pink-200/40 rounded-full" />
-            <div className="w-2 h-2 bg-pink-200/40 rounded-full" />
+            <div className="w-2 h-2 bg-cyan-300 rounded-full" />
+            <div className="w-2 h-2 bg-cyan-200/40 rounded-full" />
+            <div className="w-2 h-2 bg-cyan-200/40 rounded-full" />
+            <div className="w-2 h-2 bg-cyan-200/40 rounded-full" />
           </div>
 
-          {/* Floating Particles - Only on Left Side with Pink Glow */}
+          {/* Floating Particles - Only on Left Side with Crystal Glow */}
           <div className="absolute inset-0 pointer-events-none w-1/2">
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="absolute w-1 h-1 bg-pink-300/20 rounded-full animate-pulse"
+                className="absolute w-1 h-1 bg-cyan-300/20 rounded-full animate-pulse"
                 style={{
                   left: `${20 + i * 15}%`,
                   top: `${30 + (i % 3) * 20}%`,
