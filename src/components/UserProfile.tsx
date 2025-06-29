@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, LogOut, Settings, Edit3, Save, X } from 'lucide-react';
+import { User, LogOut, Settings, Edit3, Save, X, Heart, Star, Package } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -9,11 +9,16 @@ interface UserProfileProps {
 }
 
 const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
-  const { user, logout, updateProfile } = useAuth();
+  const { user, profile, logout, updateProfile, updatePreferences } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
     name: user?.name || '',
     email: user?.email || ''
+  });
+  const [preferences, setPreferences] = useState({
+    favoriteCategories: user?.preferences?.favoriteCategories || [],
+    size: user?.preferences?.size || '',
+    style: user?.preferences?.style || []
   });
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateMessage, setUpdateMessage] = useState('');
@@ -24,6 +29,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
       name: user?.name || '',
       email: user?.email || ''
     });
+    setPreferences({
+      favoriteCategories: user?.preferences?.favoriteCategories || [],
+      size: user?.preferences?.size || '',
+      style: user?.preferences?.style || []
+    });
   };
 
   const handleCancel = () => {
@@ -32,6 +42,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
       name: user?.name || '',
       email: user?.email || ''
     });
+    setPreferences({
+      favoriteCategories: user?.preferences?.favoriteCategories || [],
+      size: user?.preferences?.size || '',
+      style: user?.preferences?.style || []
+    });
     setUpdateMessage('');
   };
 
@@ -39,17 +54,22 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
     if (!user) return;
 
     setIsUpdating(true);
-    const result = await updateProfile({
+    
+    // Update profile
+    const profileResult = await updateProfile({
       name: editData.name,
       email: editData.email
     });
 
-    if (result.success) {
+    // Update preferences
+    const preferencesResult = await updatePreferences(preferences);
+
+    if (profileResult.success && preferencesResult.success) {
       setIsEditing(false);
       setUpdateMessage('Profile updated successfully!');
       setTimeout(() => setUpdateMessage(''), 3000);
     } else {
-      setUpdateMessage(result.error || 'Failed to update profile');
+      setUpdateMessage(profileResult.error || preferencesResult.error || 'Failed to update profile');
     }
     setIsUpdating(false);
   };
@@ -59,7 +79,29 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
     onClose();
   };
 
+  const handleCategoryToggle = (category: string) => {
+    setPreferences(prev => ({
+      ...prev,
+      favoriteCategories: prev.favoriteCategories.includes(category)
+        ? prev.favoriteCategories.filter(c => c !== category)
+        : [...prev.favoriteCategories, category]
+    }));
+  };
+
+  const handleStyleToggle = (style: string) => {
+    setPreferences(prev => ({
+      ...prev,
+      style: prev.style.includes(style)
+        ? prev.style.filter(s => s !== style)
+        : [...prev.style, style]
+    }));
+  };
+
   if (!user) return null;
+
+  const availableCategories = ['Clothing', 'Bags', 'Shoes', 'Watches', 'Beauty'];
+  const availableStyles = ['Casual', 'Formal', 'Sporty', 'Elegant', 'Trendy', 'Classic'];
+  const availableSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
   return (
     <AnimatePresence>
@@ -76,7 +118,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
           }}
         >
           <motion.div
-            className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-8 w-full max-w-md shadow-2xl"
+            className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl"
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -94,9 +136,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
               </button>
             </div>
 
-            {/* Profile Avatar */}
-            <div className="flex flex-col items-center mb-8">
-              <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-4">
+            {/* Profile Avatar and Basic Info */}
+            <div className="flex items-center gap-6 mb-8">
+              <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
                 {user.avatar ? (
                   <img
                     src={user.avatar}
@@ -109,12 +151,28 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
               </div>
               
               {!isEditing && (
-                <div className="text-center">
+                <div className="flex-1">
                   <h3 className="text-xl font-semibold text-white mb-1">{user.name}</h3>
                   <p className="text-white/60 text-sm">{user.email}</p>
                   <p className="text-white/40 text-xs mt-2">
                     Member since {new Date(user.createdAt).toLocaleDateString()}
                   </p>
+                  
+                  {/* Quick Stats */}
+                  <div className="flex gap-4 mt-4">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Heart className="w-4 h-4 text-red-400" />
+                      <span className="text-white/80">12 Favorites</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Package className="w-4 h-4 text-blue-400" />
+                      <span className="text-white/80">8 Orders</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Star className="w-4 h-4 text-yellow-400" />
+                      <span className="text-white/80">Premium</span>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -137,30 +195,108 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
             {/* Edit Form */}
             {isEditing ? (
               <div className="space-y-6 mb-8">
-                <div>
-                  <label className="block text-white/80 text-sm font-medium mb-2">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    value={editData.name}
-                    onChange={(e) => setEditData(prev => ({ ...prev, name: e.target.value }))}
-                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-                    placeholder="Enter your full name"
-                  />
+                {/* Basic Info */}
+                <div className="space-y-4">
+                  <h4 className="text-lg font-semibold text-white">Basic Information</h4>
+                  
+                  <div>
+                    <label className="block text-white/80 text-sm font-medium mb-2">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      value={editData.name}
+                      onChange={(e) => setEditData(prev => ({ ...prev, name: e.target.value }))}
+                      className="w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                      placeholder="Enter your full name"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-white/80 text-sm font-medium mb-2">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={editData.email}
+                      onChange={(e) => setEditData(prev => ({ ...prev, email: e.target.value }))}
+                      className="w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                      placeholder="Enter your email"
+                      disabled
+                    />
+                    <p className="text-white/40 text-xs mt-1">Email cannot be changed</p>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-white/80 text-sm font-medium mb-2">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={editData.email}
-                    onChange={(e) => setEditData(prev => ({ ...prev, email: e.target.value }))}
-                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-                    placeholder="Enter your email"
-                  />
+                {/* Preferences */}
+                <div className="space-y-4">
+                  <h4 className="text-lg font-semibold text-white">Preferences</h4>
+                  
+                  {/* Favorite Categories */}
+                  <div>
+                    <label className="block text-white/80 text-sm font-medium mb-2">
+                      Favorite Categories
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {availableCategories.map(category => (
+                        <button
+                          key={category}
+                          onClick={() => handleCategoryToggle(category)}
+                          className={`px-3 py-1 rounded-full text-sm transition-all ${
+                            preferences.favoriteCategories.includes(category)
+                              ? 'bg-purple-500/30 text-purple-200 border border-purple-400/50'
+                              : 'bg-white/10 text-white/60 border border-white/20 hover:bg-white/20'
+                          }`}
+                        >
+                          {category}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Size */}
+                  <div>
+                    <label className="block text-white/80 text-sm font-medium mb-2">
+                      Preferred Size
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {availableSizes.map(size => (
+                        <button
+                          key={size}
+                          onClick={() => setPreferences(prev => ({ ...prev, size }))}
+                          className={`px-3 py-1 rounded-full text-sm transition-all ${
+                            preferences.size === size
+                              ? 'bg-blue-500/30 text-blue-200 border border-blue-400/50'
+                              : 'bg-white/10 text-white/60 border border-white/20 hover:bg-white/20'
+                          }`}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Style */}
+                  <div>
+                    <label className="block text-white/80 text-sm font-medium mb-2">
+                      Style Preferences
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {availableStyles.map(style => (
+                        <button
+                          key={style}
+                          onClick={() => handleStyleToggle(style)}
+                          className={`px-3 py-1 rounded-full text-sm transition-all ${
+                            preferences.style.includes(style)
+                              ? 'bg-pink-500/30 text-pink-200 border border-pink-400/50'
+                              : 'bg-white/10 text-white/60 border border-white/20 hover:bg-white/20'
+                          }`}
+                        >
+                          {style}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="flex gap-3">
@@ -177,7 +313,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                     ) : (
                       <>
                         <Save className="w-4 h-4" />
-                        Save
+                        Save Changes
                       </>
                     )}
                   </button>
@@ -190,57 +326,81 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                 </div>
               </div>
             ) : (
-              /* Action Buttons */
-              <div className="space-y-4">
-                <button
-                  onClick={handleEdit}
-                  className="w-full py-3 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 text-white font-semibold rounded-2xl transition-all duration-300 flex items-center justify-center gap-2"
-                >
-                  <Edit3 className="w-4 h-4" />
-                  Edit Profile
-                </button>
+              /* View Mode */
+              <div className="space-y-6">
+                {/* Current Preferences Display */}
+                {user.preferences && (
+                  <div className="space-y-4">
+                    <h4 className="text-lg font-semibold text-white">Your Preferences</h4>
+                    
+                    {user.preferences.favoriteCategories.length > 0 && (
+                      <div>
+                        <p className="text-white/60 text-sm mb-2">Favorite Categories:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {user.preferences.favoriteCategories.map(category => (
+                            <span
+                              key={category}
+                              className="px-3 py-1 bg-purple-500/20 text-purple-200 rounded-full text-sm border border-purple-400/30"
+                            >
+                              {category}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
-                <button
-                  onClick={() => {/* Navigate to settings */}}
-                  className="w-full py-3 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 text-white font-semibold rounded-2xl transition-all duration-300 flex items-center justify-center gap-2"
-                >
-                  <Settings className="w-4 h-4" />
-                  Settings
-                </button>
+                    {user.preferences.size && (
+                      <div>
+                        <p className="text-white/60 text-sm mb-2">Preferred Size:</p>
+                        <span className="px-3 py-1 bg-blue-500/20 text-blue-200 rounded-full text-sm border border-blue-400/30">
+                          {user.preferences.size}
+                        </span>
+                      </div>
+                    )}
 
-                <button
-                  onClick={handleLogout}
-                  className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-2xl transition-colors flex items-center justify-center gap-2"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Sign Out
-                </button>
-              </div>
-            )}
+                    {user.preferences.style.length > 0 && (
+                      <div>
+                        <p className="text-white/60 text-sm mb-2">Style Preferences:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {user.preferences.style.map(style => (
+                            <span
+                              key={style}
+                              className="px-3 py-1 bg-pink-500/20 text-pink-200 rounded-full text-sm border border-pink-400/30"
+                            >
+                              {style}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
-            {/* User Stats */}
-            {!isEditing && user.preferences && (
-              <div className="mt-8 pt-6 border-t border-white/10">
-                <h4 className="text-white/80 font-medium mb-4">Preferences</h4>
-                <div className="space-y-2 text-sm">
-                  {user.preferences.favoriteCategories.length > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-white/60">Favorite Categories:</span>
-                      <span className="text-white">{user.preferences.favoriteCategories.join(', ')}</span>
-                    </div>
-                  )}
-                  {user.preferences.size && (
-                    <div className="flex justify-between">
-                      <span className="text-white/60">Size:</span>
-                      <span className="text-white">{user.preferences.size}</span>
-                    </div>
-                  )}
-                  {user.preferences.style.length > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-white/60">Style:</span>
-                      <span className="text-white">{user.preferences.style.join(', ')}</span>
-                    </div>
-                  )}
+                {/* Action Buttons */}
+                <div className="space-y-4">
+                  <button
+                    onClick={handleEdit}
+                    className="w-full py-3 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 text-white font-semibold rounded-2xl transition-all duration-300 flex items-center justify-center gap-2"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                    Edit Profile & Preferences
+                  </button>
+
+                  <button
+                    onClick={() => {/* Navigate to settings */}}
+                    className="w-full py-3 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 text-white font-semibold rounded-2xl transition-all duration-300 flex items-center justify-center gap-2"
+                  >
+                    <Settings className="w-4 h-4" />
+                    Settings
+                  </button>
+
+                  <button
+                    onClick={handleLogout}
+                    className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-2xl transition-colors flex items-center justify-center gap-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Sign Out
+                  </button>
                 </div>
               </div>
             )}

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase, type Profile } from '../lib/supabase';
+import { supabase, type Profile, profileService } from '../lib/supabase';
 import type { User as SupabaseUser, AuthError } from '@supabase/supabase-js';
 
 interface User {
@@ -17,6 +17,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  profile: Profile | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
@@ -24,15 +25,17 @@ interface AuthContextType {
   loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   updateProfile: (updates: Partial<User>) => Promise<{ success: boolean; error?: string }>;
+  updatePreferences: (preferences: { favoriteCategories?: string[]; size?: string; style?: string[] }) => Promise<{ success: boolean; error?: string }>;
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [profilesTableExists, setProfilesTableExists] = useState<boolean | null>(null);
 
   // Convert Supabase user + profile to our User type
   const convertToUser = (supabaseUser: SupabaseUser, profile?: Profile): User => {
@@ -52,81 +55,33 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Fetch user profile from database
   const fetchUserProfile = async (userId: string): Promise<Profile | null> => {
-    // If we already know the profiles table doesn't exist, don't make the API call
-    if (profilesTableExists === false) {
-      return null;
-    }
-
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (error) {
-        // If profiles table doesn't exist, return null gracefully
-        if (error.code === '42P01') {
-          console.warn('Profiles table does not exist. User will authenticate without profile data.');
-          setProfilesTableExists(false);
-          return null;
-        }
-        console.error('Error fetching profile:', error);
-        return null;
-      }
-
-      // If we successfully fetched data, the table exists
-      setProfilesTableExists(true);
-      return data;
+      const profile = await profileService.getProfile(userId);
+      setProfile(profile);
+      return profile;
     } catch (error) {
       console.error('Error fetching profile:', error);
       return null;
     }
   };
 
-  // Create user profile in database
-  const createUserProfile = async (supabaseUser: SupabaseUser, fullName?: string): Promise<Profile | null> => {
-    // If we already know the profiles table doesn't exist, don't make the API call
-    if (profilesTableExists === false) {
-      return null;
-    }
-
+  // Refresh profile data
+  const refreshProfile = async (): Promise<void> => {
+    if (!user) return;
+    
     try {
-      const profileData = {
-        id: supabaseUser.id,
-        email: supabaseUser.email || '',
-        full_name: fullName || supabaseUser.user_metadata?.full_name || supabaseUser.user_metadata?.name || 'User',
-        avatar_url: supabaseUser.user_metadata?.avatar_url || supabaseUser.user_metadata?.picture || null,
-        preferences: {
-          favoriteCategories: [],
-          size: '',
-          style: []
+      const profile = await profileService.getProfile(user.id);
+      if (profile) {
+        setProfile(profile);
+        // Update user state with fresh profile data
+        const { data: { user: supabaseUser } } = await supabase.auth.getUser();
+        if (supabaseUser) {
+          const updatedUser = convertToUser(supabaseUser, profile);
+          setUser(updatedUser);
         }
-      };
-
-      const { data, error } = await supabase
-        .from('profiles')
-        .insert(profileData)
-        .select()
-        .single();
-
-      if (error) {
-        // If profiles table doesn't exist, return null gracefully
-        if (error.code === '42P01') {
-          console.warn('Profiles table does not exist. Profile creation skipped.');
-          setProfilesTableExists(false);
-          return null;
-        }
-        console.error('Error creating profile:', error);
-        return null;
       }
-
-      // If we successfully created data, the table exists
-      setProfilesTableExists(true);
-      return data;
     } catch (error) {
-      console.error('Error creating profile:', error);
-      return null;
+      console.error('Error refreshing profile:', error);
     }
   };
 
@@ -166,15 +121,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (!mounted) return;
 
         if (event === 'SIGNED_IN' && session?.user) {
-          // Check if profile exists, if not create one
-          let profile = await fetchUserProfile(session.user.id);
-          if (!profile && profilesTableExists !== false) {
-            profile = await createUserProfile(session.user);
-          }
+          const profile = await fetchUserProfile(session.user.id);
           const userData = convertToUser(session.user, profile || undefined);
           setUser(userData);
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
+          setProfile(null);
         }
         
         setIsLoading(false);
@@ -298,17 +250,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       if (data.user) {
-        // Create profile in database
-        const profile = await createUserProfile(data.user, name.trim());
-        
-        if (profile) {
-          const userData = convertToUser(data.user, profile);
-          setUser(userData);
-          return { success: true };
-        } else {
-          // Profile creation failed, but user was created
-          return { success: false, error: 'Account created but profile setup failed. Please try logging in.' };
-        }
+        // Profile will be created automatically by the database trigger
+        // Fetch the profile to ensure it was created
+        const profile = await fetchUserProfile(data.user.id);
+        const userData = convertToUser(data.user, profile || undefined);
+        setUser(userData);
+        return { success: true };
       }
 
       return { success: false, error: 'Signup failed. Please try again.' };
@@ -362,6 +309,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = async (): Promise<void> => {
     try {
       setUser(null);
+      setProfile(null);
       await supabase.auth.signOut();
       // Force page reload to reset all app state
       window.location.reload();
@@ -369,6 +317,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.error('Logout error:', error);
       // Even if logout fails, clear local state and reload
       setUser(null);
+      setProfile(null);
       window.location.reload();
     }
   };
@@ -382,27 +331,40 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (updates.name) profileUpdates.full_name = updates.name;
       if (updates.avatar) profileUpdates.avatar_url = updates.avatar;
       if (updates.preferences) profileUpdates.preferences = updates.preferences;
+
+      const result = await profileService.updateProfile(user.id, profileUpdates);
       
-      profileUpdates.updated_at = new Date().toISOString();
-
-      const { error } = await supabase
-        .from('profiles')
-        .update(profileUpdates)
-        .eq('id', user.id);
-
-      if (error) {
-        console.error('Profile update error:', error);
-        return { success: false, error: 'Failed to update profile. Please try again.' };
+      if (!result.success) {
+        return result;
       }
 
-      // Update local user state
-      const updatedUser = { ...user, ...updates };
-      setUser(updatedUser);
+      // Refresh profile data
+      await refreshProfile();
 
       return { success: true };
     } catch (error) {
       console.error('Profile update error:', error);
       return { success: false, error: 'Failed to update profile. Please try again.' };
+    }
+  };
+
+  const updatePreferences = async (preferences: { favoriteCategories?: string[]; size?: string; style?: string[] }): Promise<{ success: boolean; error?: string }> => {
+    if (!user) return { success: false, error: 'Not authenticated' };
+
+    try {
+      const result = await profileService.updatePreferences(user.id, preferences);
+      
+      if (!result.success) {
+        return result;
+      }
+
+      // Refresh profile data
+      await refreshProfile();
+
+      return { success: true };
+    } catch (error) {
+      console.error('Preferences update error:', error);
+      return { success: false, error: 'Failed to update preferences. Please try again.' };
     }
   };
 
@@ -425,6 +387,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const value: AuthContextType = {
     user,
+    profile,
     isAuthenticated: !!user,
     isLoading,
     login,
@@ -432,7 +395,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     loginWithGoogle,
     logout,
     updateProfile,
-    resetPassword
+    updatePreferences,
+    resetPassword,
+    refreshProfile
   };
 
   return (

@@ -65,3 +65,72 @@ export interface Database {
 }
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
+
+// Helper functions for profile operations
+export const profileService = {
+  // Get user profile
+  async getProfile(userId: string): Promise<Profile | null> {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (error) {
+      console.error('Error fetching profile:', error);
+      return null;
+    }
+
+    return data;
+  },
+
+  // Update user profile
+  async updateProfile(userId: string, updates: Partial<Profile>): Promise<{ success: boolean; error?: string }> {
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', userId);
+
+    if (error) {
+      console.error('Error updating profile:', error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  },
+
+  // Create user profile (usually handled by trigger, but useful for manual creation)
+  async createProfile(profile: Database['public']['Tables']['profiles']['Insert']): Promise<{ success: boolean; error?: string }> {
+    const { error } = await supabase
+      .from('profiles')
+      .insert(profile);
+
+    if (error) {
+      console.error('Error creating profile:', error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  },
+
+  // Update user preferences
+  async updatePreferences(userId: string, preferences: { favoriteCategories?: string[]; size?: string; style?: string[] }): Promise<{ success: boolean; error?: string }> {
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        preferences,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', userId);
+
+    if (error) {
+      console.error('Error updating preferences:', error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  }
+};
