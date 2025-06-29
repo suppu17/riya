@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Play, ArrowRight } from "lucide-react";
+import { Play, ArrowRight, LogIn, User } from "lucide-react";
 import WallpaperSettings from "./WallpaperSettings";
+import AuthModal from "./auth/AuthModal";
+import UserProfile from "./UserProfile";
 import { useWallpaper } from "../contexts/WallpaperContext";
+import { useAuth } from "../contexts/AuthContext";
 
 interface LandingPageProps {
   onComplete: () => void;
@@ -9,7 +12,10 @@ interface LandingPageProps {
 
 const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
   const { currentWallpaper } = useWallpaper();
+  const { user, isAuthenticated } = useAuth();
   const [showContent, setShowContent] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   useEffect(() => {
     // Animate content in after component mounts
@@ -21,6 +27,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
       clearTimeout(timer);
     };
   }, []);
+
+  const handleUserClick = () => {
+    if (isAuthenticated) {
+      setIsProfileOpen(true);
+    } else {
+      setIsAuthModalOpen(true);
+    }
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 overflow-hidden">
@@ -51,7 +65,42 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
               <button className="text-white/80 hover:text-white transition-colors text-sm">
                 + menu
               </button>
-              <div className="text-6xl font-light text-white/60">01</div>
+              
+              {/* Authentication Section */}
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={handleUserClick}
+                  className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 hover:bg-white/20 transition-all duration-300 group"
+                >
+                  {isAuthenticated ? (
+                    <>
+                      {user?.avatar ? (
+                        <img
+                          src={user.avatar}
+                          alt={user.name}
+                          className="w-6 h-6 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                          <User className="w-3 h-3 text-white" />
+                        </div>
+                      )}
+                      <span className="text-white text-sm font-medium">
+                        {user?.name?.split(' ')[0] || 'User'}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="w-4 h-4 text-white/80 group-hover:text-white transition-colors" />
+                      <span className="text-white/80 group-hover:text-white text-sm font-medium transition-colors">
+                        Sign In
+                      </span>
+                    </>
+                  )}
+                </button>
+                
+                <div className="text-6xl font-light text-white/60">01</div>
+              </div>
             </div>
           </div>
 
@@ -198,6 +247,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
       <div className="absolute top-6 right-6 z-50">
         <WallpaperSettings />
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
+
+      {/* User Profile Modal */}
+      <UserProfile
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+      />
     </div>
   );
 };
