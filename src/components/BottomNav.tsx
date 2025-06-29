@@ -1,9 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { Home, Camera, Settings, ShoppingBag, Check, User } from "lucide-react";
-import { useShopping } from "../contexts/ShoppingContext";
-import ModelOverlay from "./ModelOverlay";
-
-interface BottomNavProps {
+import { useShopping } from "../contexts/ShoppingContext";interface BottomNavProps {
   currentView: string;
   setCurrentView: (view: string) => void;
 }
@@ -13,7 +10,6 @@ const BottomNav: React.FC<BottomNavProps> = ({
   setCurrentView,
 }) => {
   const { selectedModelId } = useShopping();
-  const [isModelOverlayOpen, setIsModelOverlayOpen] = useState(false);
   const navItems = [
     { id: "home", icon: Home, label: "Home" },
     { id: "photos", icon: Camera, label: "Photos" },
@@ -33,13 +29,7 @@ const BottomNav: React.FC<BottomNavProps> = ({
             return (
               <button
                 key={item.id}
-                onClick={() => {
-                  if (item.id === "photos") {
-                    setIsModelOverlayOpen(true);
-                  } else {
-                    setCurrentView(item.id);
-                  }
-                }}
+                onClick={() => setCurrentView(item.id)}
                 className={`relative flex flex-col items-center justify-center p-2 transition-all duration-300 ${
                   isActive ? "text-white" : "text-white/60 hover:text-white"
                 }`}
@@ -56,12 +46,6 @@ const BottomNav: React.FC<BottomNavProps> = ({
           })}
         </div>
       </div>
-      
-      {/* Render ModelOverlay at the top level */}
-      <ModelOverlay 
-        isOpen={isModelOverlayOpen} 
-        onClose={() => setIsModelOverlayOpen(false)} 
-      />
     </>
   );
 };
