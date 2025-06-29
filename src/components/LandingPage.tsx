@@ -80,14 +80,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ 
-          backgroundImage: `url('https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80')` 
+          backgroundImage: `url('https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2064&q=80')` 
         }}
       ></div>
 
       {/* Multiple Shadow/Dark Overlays for Better Contrast */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/20 to-black/50"></div>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30"></div>
-      <div className="absolute inset-0 bg-black/20"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-black/50 via-black/30 to-black/60"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/40"></div>
+      <div className="absolute inset-0 bg-black/25"></div>
 
       {/* Full screen container */}
       <div className="relative w-full h-full flex items-center justify-center z-10">
@@ -120,7 +120,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
             </h2>
 
             {/* Subtitle */}
-            <p className="text-lg md:text-xl text-center mb-12 max-w-2xl text-white/80 leading-relaxed">
+            <p className="text-lg md:text-xl text-center mb-12 max-w-2xl text-white/90 leading-relaxed">
               Experience the future of fashion with AI-powered virtual try-ons, 
               personalized recommendations, and seamless shopping experiences.
             </p>
@@ -135,7 +135,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                   </svg>
                 </div>
                 <h3 className="text-lg font-semibold mb-2">Virtual Try-On</h3>
-                <p className="text-sm text-white/70">See how clothes look on you with AI</p>
+                <p className="text-sm text-white/80">See how clothes look on you with AI</p>
               </div>
               
               <div className="text-center">
@@ -145,7 +145,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                   </svg>
                 </div>
                 <h3 className="text-lg font-semibold mb-2">Voice Shopping</h3>
-                <p className="text-sm text-white/70">Shop hands-free with voice commands</p>
+                <p className="text-sm text-white/80">Shop hands-free with voice commands</p>
               </div>
               
               <div className="text-center">
@@ -155,7 +155,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                   </svg>
                 </div>
                 <h3 className="text-lg font-semibold mb-2">Smart Recommendations</h3>
-                <p className="text-sm text-white/70">Personalized suggestions just for you</p>
+                <p className="text-sm text-white/80">Personalized suggestions just for you</p>
               </div>
             </div>
 
@@ -169,7 +169,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
             </button>
 
             {/* Skip option */}
-            <p className="text-sm text-white/60 mt-6">
+            <p className="text-sm text-white/70 mt-6">
               Auto-entering in 15 seconds...
             </p>
           </div>
