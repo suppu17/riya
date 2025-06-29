@@ -235,7 +235,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                 )}
               </div>
 
-              {/* Right Section - Video Background */}
+              {/* Right Section - Clean Video Background */}
               <div className="col-span-3 relative overflow-hidden rounded-3xl">
                 {/* Video Background - Edge to Edge */}
                 <video
@@ -247,49 +247,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                   className="absolute inset-0 w-full h-full object-cover"
                 />
                 
-                {/* Video Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/10 to-black/30" />
-                
-                {/* Content Overlay */}
-                <div className="relative z-10 h-full flex flex-col justify-between p-8">
-                  {/* Top Right - Menu and Number */}
-                  <div className="flex justify-between items-start">
-                    <div className="text-white/80 text-sm font-light">+ menu</div>
-                    <div className="text-6xl font-light text-white/90">01</div>
-                  </div>
-
-                  {/* Center Content */}
-                  <div className="text-center">
-                    <h1 className="text-3xl font-light text-white leading-tight tracking-wide mb-4">
-                      EXHIBITION<br />
-                      OF CONTEMPORARY<br />
-                      PHOTOGRAPHS
-                    </h1>
-                    
-                    {/* Large S Logo */}
-                    <div className="text-8xl font-light text-white/90 my-8">
-                      S
-                    </div>
-                    
-                    <p className="text-white/80 text-sm leading-relaxed max-w-md mx-auto">
-                      Watch our showreel to learn more about the exhibition. It was created by creative people to reflect the modern vision of the photographer, to observe trends and realities. Get your dose of inspiration from our top photographers.
-                    </p>
-                  </div>
-
-                  {/* Bottom Right - Hash Number */}
-                  <div className="flex justify-end">
-                    <div className="text-6xl font-light text-white/90">#9</div>
-                  </div>
-                </div>
-
-                {/* Decorative Elements */}
-                <div className="absolute top-1/2 left-8 transform -translate-y-1/2">
-                  <div className="w-32 h-32 bg-white/10 backdrop-blur-sm rounded-3xl flex items-center justify-center">
-                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                      <div className="w-0 h-0 border-l-4 border-l-white border-t-2 border-b-2 border-t-transparent border-b-transparent ml-1"></div>
-                    </div>
-                  </div>
-                </div>
+                {/* Minimal Video Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/5 to-black/10" />
               </div>
             </div>
           </div>
