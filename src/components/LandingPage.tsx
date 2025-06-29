@@ -1,50 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { Play, ArrowRight } from "lucide-react";
 import WallpaperSettings from "./WallpaperSettings";
 import { useWallpaper } from "../contexts/WallpaperContext";
-
-// Define keyframes for elastic animation
-const elasticAnimation = `
-@keyframes elasticAppear {
-  0% { 
-    opacity: 0; 
-    transform: scale(0.5); 
-  }
-  70% { 
-    opacity: 1; 
-    transform: scale(1.05); 
-  }
-  85% { 
-    transform: scale(0.95); 
-  }
-  100% { 
-    opacity: 1; 
-    transform: scale(1); 
-  }
-}
-
-@keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
-
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-}
-
-.elastic-appear {
-  animation: elasticAppear 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
-}
-
-.fade-in {
-  animation: fadeIn 2s ease forwards;
-}
-
-.float {
-  animation: float 6s ease-in-out infinite;
-}
-`;
 
 interface LandingPageProps {
   onComplete: () => void;
@@ -52,91 +9,199 @@ interface LandingPageProps {
 
 const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
   const { currentWallpaper } = useWallpaper();
-  // Set initial states to true to ensure elements are visible immediately
-  const [showContent, setShowContent] = useState(true);
-  const [showContainer, setShowContainer] = useState(true);
-  const [showButton, setShowButton] = useState(true);
-  // Animation sequence - only for stylesheet injection and auto-proceed
-  useEffect(() => {
-    // Create and inject the stylesheet
-    const style = document.createElement("style");
-    style.innerHTML = elasticAnimation;
-    document.head.appendChild(style);
+  const [showContent, setShowContent] = useState(false);
 
-    // Auto-proceed to main app after delay (optional)
+  useEffect(() => {
+    // Animate content in after component mounts
+    const timer = setTimeout(() => {
+      setShowContent(true);
+    }, 500);
+
+    // Auto-proceed to main app after delay
     const autoProceedTimer = setTimeout(() => {
       onComplete();
-    }, 15000); // 15 seconds
+    }, 15000);
 
     return () => {
+      clearTimeout(timer);
       clearTimeout(autoProceedTimer);
-      document.head.removeChild(style);
     };
   }, [onComplete]);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
-      {/* Dynamic Background - Same as main app */}
+    <div className="fixed inset-0 flex items-center justify-center z-50 overflow-hidden">
+      {/* Dynamic Background */}
       <div
-        className="absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
         style={{ backgroundImage: `url('${currentWallpaper}')` }}
-      ></div>
+      />
 
-      {/* Multiple Shadow/Dark Overlays for Better Contrast - Same as main app */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/20 to-black/50"></div>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30"></div>
-      <div className="absolute inset-0 bg-black/20"></div>
+      {/* Gradient Overlays */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-400/30 via-purple-500/20 to-pink-400/30" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
 
-      {/* Full screen container */}
-      <div className="relative w-full h-full flex items-center justify-center z-10">
-        {/* Square video container with blur effect */}
-        <div
-          className={`relative aspect-square w-[90vmin] max-w-3xl overflow-hidden rounded-3xl opacity-0 ${
-            showContainer ? "elastic-appear" : ""
-          }`}
-        >
-          {/* Blur overlay on top of the video */}
-          <div className="absolute inset-0 backdrop-blur-md bg-black/30 z-10"></div>
+      {/* Main Glass Container */}
+      <div
+        className={`relative w-[95vw] h-[90vh] max-w-7xl transition-all duration-1000 ${
+          showContent ? "opacity-100 scale-100" : "opacity-0 scale-95"
+        }`}
+      >
+        {/* Glass Morphism Container */}
+        <div className="relative w-full h-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-[3rem] overflow-hidden shadow-2xl">
+          {/* Header */}
+          <div className="absolute top-8 left-8 right-8 flex items-center justify-between z-20">
+            <div className="text-2xl font-light text-white tracking-wider">
+              riya
+            </div>
+            <div className="flex items-center gap-6">
+              <button className="text-white/80 hover:text-white transition-colors text-sm">
+                + menu
+              </button>
+              <div className="text-6xl font-light text-white/60">01</div>
+            </div>
+          </div>
 
-          {/* Video element that fills the container */}
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-          >
-            {/* Replace with your actual video path */}
-            <source src="/assets/landing-video.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+          {/* Main Content Grid */}
+          <div className="absolute inset-0 p-8 pt-24">
+            <div className="grid grid-cols-12 gap-8 h-full">
+              {/* Left Section - Video Preview */}
+              <div className="col-span-4 flex flex-col justify-center">
+                <div className="relative">
+                  {/* Decorative Circles */}
+                  <div className="absolute -top-12 -left-8 flex gap-2">
+                    <div className="w-8 h-8 bg-white/20 rounded-full backdrop-blur-sm" />
+                    <div className="w-8 h-8 bg-white/15 rounded-full backdrop-blur-sm" />
+                    <div className="w-8 h-8 bg-white/10 rounded-full backdrop-blur-sm" />
+                    <div className="w-8 h-8 bg-white/5 rounded-full backdrop-blur-sm" />
+                  </div>
 
-          {/* Content overlay */}
-          <div
-            className={`absolute inset-0 z-20 flex flex-col items-center justify-center p-8 text-white opacity-0 ${
-              showContent ? "fade-in" : ""
-            }`}
-          >
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-center">
-              Welcome to Riya
-            </h1>
-            <p className="text-xl md:text-2xl text-center mb-8 max-w-md">
-              Your personal shopping assistant
-            </p>
+                  {/* Video Container */}
+                  <div className="relative bg-white/15 backdrop-blur-xl rounded-3xl p-6 border border-white/20 aspect-[4/5] overflow-hidden group cursor-pointer hover:bg-white/20 transition-all duration-500">
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20" />
+                    
+                    {/* Model Image */}
+                    <div className="relative w-full h-full rounded-2xl overflow-hidden">
+                      <img
+                        src="https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_1.png"
+                        alt="AI Fashion Model"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                    </div>
 
-            {/* Skip button */}
-            <button
-              onClick={onComplete}
-              className="mt-8 px-8 py-3 bg-white/20 hover:bg-white/30 text-white rounded-full backdrop-blur-sm transition-all duration-300 elastic-appear float"
-            >
-              Enter App
-            </button>
+                    {/* Play Button */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-16 h-16 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/30 group-hover:scale-110 transition-transform duration-300">
+                        <Play className="w-6 h-6 text-white ml-1" fill="white" />
+                      </div>
+                    </div>
+
+                    {/* Floating Elements */}
+                    <div className="absolute top-4 right-4 w-3 h-3 bg-white/40 rounded-full animate-pulse" />
+                    <div className="absolute bottom-6 left-4 w-2 h-2 bg-white/30 rounded-full animate-pulse delay-1000" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Center Section - Main Content */}
+              <div className="col-span-5 flex flex-col justify-center items-center text-center">
+                {/* Large S Logo */}
+                <div className="relative mb-8">
+                  <div className="text-[12rem] font-light text-white/90 leading-none select-none">
+                    R
+                  </div>
+                  <div className="absolute inset-0 text-[12rem] font-light text-white/20 leading-none select-none transform translate-x-2 translate-y-2">
+                    R
+                  </div>
+                </div>
+
+                {/* Main Heading */}
+                <div className="space-y-2 mb-8">
+                  <h1 className="text-4xl font-light text-white leading-tight tracking-wide">
+                    EXPERIENCE
+                  </h1>
+                  <h1 className="text-4xl font-light text-white leading-tight tracking-wide">
+                    OF AI-POWERED
+                  </h1>
+                  <h1 className="text-4xl font-light text-white leading-tight tracking-wide">
+                    FASHION
+                  </h1>
+                </div>
+
+                {/* Description */}
+                <div className="max-w-md text-white/80 text-sm leading-relaxed mb-8">
+                  Discover our revolutionary AI shopping experience. 
+                  Try on luxury fashion virtually with cutting-edge technology. 
+                  Explore trends and realities through our intelligent 
+                  virtual try-on system powered by advanced AI.
+                </div>
+
+                {/* CTA Button */}
+                <button
+                  onClick={onComplete}
+                  className="group flex items-center gap-3 px-8 py-4 bg-white/15 backdrop-blur-xl rounded-full border border-white/30 text-white hover:bg-white/25 transition-all duration-300 hover:scale-105"
+                >
+                  <span className="text-sm font-medium">Enter Experience</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                </button>
+              </div>
+
+              {/* Right Section - Profile */}
+              <div className="col-span-3 flex flex-col justify-center items-end">
+                <div className="relative">
+                  {/* Profile Image */}
+                  <div className="relative w-80 h-96 rounded-3xl overflow-hidden bg-white/10 backdrop-blur-xl border border-white/20">
+                    <img
+                      src="https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_3.png"
+                      alt="Fashion Model Profile"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                  </div>
+
+                  {/* Floating Number */}
+                  <div className="absolute -bottom-8 -right-8 text-8xl font-light text-white/40 select-none">
+                    #9
+                  </div>
+
+                  {/* Decorative Arrow */}
+                  <div className="absolute top-1/2 -left-12 transform -translate-y-1/2">
+                    <div className="w-16 h-0.5 bg-white/30" />
+                    <div className="absolute right-0 top-0 w-0 h-0 border-l-4 border-l-white/30 border-t-2 border-b-2 border-t-transparent border-b-transparent transform -translate-y-1/2" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Navigation Dots */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-3">
+            <div className="w-2 h-2 bg-white rounded-full" />
+            <div className="w-2 h-2 bg-white/40 rounded-full" />
+            <div className="w-2 h-2 bg-white/40 rounded-full" />
+            <div className="w-2 h-2 bg-white/40 rounded-full" />
+          </div>
+
+          {/* Floating Particles */}
+          <div className="absolute inset-0 pointer-events-none">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute w-1 h-1 bg-white/20 rounded-full animate-pulse"
+                style={{
+                  left: `${20 + i * 15}%`,
+                  top: `${30 + (i % 3) * 20}%`,
+                  animationDelay: `${i * 0.5}s`,
+                  animationDuration: `${2 + i * 0.3}s`,
+                }}
+              />
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Wallpaper Settings - Same as main app */}
-      <div className="relative z-20">
+      {/* Wallpaper Settings */}
+      <div className="absolute top-6 right-6 z-50">
         <WallpaperSettings />
       </div>
     </div>
