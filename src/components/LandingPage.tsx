@@ -87,9 +87,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
               riya
             </div>
             <div className="flex items-center gap-6">
-              <button className="text-white/80 hover:text-white transition-colors text-sm">
-                + menu
-              </button>
               
               {/* Authentication Section with Crystal Accents */}
               <div className="flex items-center gap-4">
