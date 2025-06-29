@@ -235,28 +235,59 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                 )}
               </div>
 
-              {/* Right Section - Profile */}
-              <div className="col-span-3 flex flex-col justify-center items-end">
-                <div className="relative">
-                  {/* Profile Image */}
-                  <div className="relative w-80 h-96 rounded-3xl overflow-hidden bg-white/10 backdrop-blur-xl border border-white/20">
-                    <img
-                      src="https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_3.png"
-                      alt="Fashion Model Profile"
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+              {/* Right Section - Video Background */}
+              <div className="col-span-3 relative overflow-hidden rounded-3xl">
+                {/* Video Background - Edge to Edge */}
+                <video
+                  src="https://cdn.midjourney.com/video/67efa2d7-f26b-4593-bc87-c511cb9c012d/2.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                
+                {/* Video Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/10 to-black/30" />
+                
+                {/* Content Overlay */}
+                <div className="relative z-10 h-full flex flex-col justify-between p-8">
+                  {/* Top Right - Menu and Number */}
+                  <div className="flex justify-between items-start">
+                    <div className="text-white/80 text-sm font-light">+ menu</div>
+                    <div className="text-6xl font-light text-white/90">01</div>
                   </div>
 
-                  {/* Floating Number */}
-                  <div className="absolute -bottom-8 -right-8 text-8xl font-light text-white/40 select-none">
-                    #9
+                  {/* Center Content */}
+                  <div className="text-center">
+                    <h1 className="text-3xl font-light text-white leading-tight tracking-wide mb-4">
+                      EXHIBITION<br />
+                      OF CONTEMPORARY<br />
+                      PHOTOGRAPHS
+                    </h1>
+                    
+                    {/* Large S Logo */}
+                    <div className="text-8xl font-light text-white/90 my-8">
+                      S
+                    </div>
+                    
+                    <p className="text-white/80 text-sm leading-relaxed max-w-md mx-auto">
+                      Watch our showreel to learn more about the exhibition. It was created by creative people to reflect the modern vision of the photographer, to observe trends and realities. Get your dose of inspiration from our top photographers.
+                    </p>
                   </div>
 
-                  {/* Decorative Arrow */}
-                  <div className="absolute top-1/2 -left-12 transform -translate-y-1/2">
-                    <div className="w-16 h-0.5 bg-white/30" />
-                    <div className="absolute right-0 top-0 w-0 h-0 border-l-4 border-l-white/30 border-t-2 border-b-2 border-t-transparent border-b-transparent transform -translate-y-1/2" />
+                  {/* Bottom Right - Hash Number */}
+                  <div className="flex justify-end">
+                    <div className="text-6xl font-light text-white/90">#9</div>
+                  </div>
+                </div>
+
+                {/* Decorative Elements */}
+                <div className="absolute top-1/2 left-8 transform -translate-y-1/2">
+                  <div className="w-32 h-32 bg-white/10 backdrop-blur-sm rounded-3xl flex items-center justify-center">
+                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                      <div className="w-0 h-0 border-l-4 border-l-white border-t-2 border-b-2 border-t-transparent border-b-transparent ml-1"></div>
+                    </div>
                   </div>
                 </div>
               </div>
