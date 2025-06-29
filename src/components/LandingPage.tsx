@@ -73,16 +73,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
       <div className="absolute inset-0 bg-gradient-to-br from-blue-400/30 via-purple-500/20 to-pink-400/30" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
 
-      {/* Main Glass Container */}
+      {/* Main Glass Container - Full Width */}
       <div
         className={`relative w-[95vw] h-[90vh] max-w-7xl transition-all duration-1000 ${
           showContent ? "opacity-100 scale-100" : "opacity-0 scale-95"
         }`}
       >
-        {/* Glass Morphism Container */}
-        <div className="relative w-full h-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-[3rem] overflow-hidden shadow-2xl">
-          {/* Header */}
-          <div className="absolute top-8 left-8 right-8 flex items-center justify-between z-20">
+        {/* Glass Morphism Container with Overflow Hidden */}
+        <div className="relative w-full h-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-[3rem] overflow-hidden shadow-2xl flex">
+          {/* Header - Positioned Above Content */}
+          <div className="absolute top-8 left-8 right-8 flex items-center justify-between z-30">
             <div className="text-2xl font-light text-white tracking-wider">
               riya
             </div>
@@ -132,7 +132,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
 
           {/* Success Message for Logged In Users */}
           {isAuthenticated && user && (
-            <div className="absolute top-24 right-8 z-20">
+            <div className="absolute top-24 right-8 z-30">
               <div className="bg-green-500/20 backdrop-blur-xl border border-green-500/30 rounded-2xl px-4 py-2">
                 <p className="text-green-300 text-sm font-medium">
                   Welcome back, {user.name?.split(' ')[0]}! Redirecting to dashboard...
@@ -141,8 +141,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
             </div>
           )}
 
-          {/* Main Content Grid */}
-          <div className="absolute inset-0 p-8 pt-24">
+          {/* Left Section - Content Area */}
+          <div className="w-1/2 p-8 pt-24 flex flex-col justify-center relative z-20">
             <div className="grid grid-cols-12 gap-8 h-full">
               {/* Left Section - Video Preview */}
               <div className="col-span-4 flex flex-col justify-center">
@@ -184,7 +184,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
               </div>
 
               {/* Center Section - Main Content */}
-              <div className="col-span-5 flex flex-col justify-center items-center text-center">
+              <div className="col-span-8 flex flex-col justify-center items-center text-center">
                 {/* Large R Logo */}
                 <div className="relative mb-8">
                   <div className="text-[12rem] font-light text-white/90 leading-none select-none">
@@ -234,35 +234,37 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                   </p>
                 )}
               </div>
-
-              {/* Right Section - Clean Video Background */}
-              <div className="col-span-3 relative overflow-hidden rounded-3xl">
-                {/* Video Background - Edge to Edge */}
-                <video
-                  src="https://cdn.midjourney.com/video/67efa2d7-f26b-4593-bc87-c511cb9c012d/2.mp4"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-                
-                {/* Minimal Video Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/5 to-black/10" />
-              </div>
             </div>
           </div>
 
+          {/* Right Section - Full Video Coverage Edge to Edge */}
+          <div className="w-1/2 relative">
+            {/* Video Background - Absolute positioning to cover entire right half */}
+            <div className="absolute inset-0 overflow-hidden">
+              <video
+                src="https://cdn.midjourney.com/video/67efa2d7-f26b-4593-bc87-c511cb9c012d/2.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            </div>
+            
+            {/* Minimal Video Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/5 to-black/20" />
+          </div>
+
           {/* Bottom Navigation Dots */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-3">
+          <div className="absolute bottom-8 left-1/4 transform -translate-x-1/2 flex gap-3 z-30">
             <div className="w-2 h-2 bg-white rounded-full" />
             <div className="w-2 h-2 bg-white/40 rounded-full" />
             <div className="w-2 h-2 bg-white/40 rounded-full" />
             <div className="w-2 h-2 bg-white/40 rounded-full" />
           </div>
 
-          {/* Floating Particles */}
-          <div className="absolute inset-0 pointer-events-none">
+          {/* Floating Particles - Only on Left Side */}
+          <div className="absolute inset-0 pointer-events-none w-1/2">
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
