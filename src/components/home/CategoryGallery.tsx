@@ -50,7 +50,7 @@ const CategoryGallery: React.FC = () => {
 
   return (
     <motion.div
-      className="bg-pink-100/10 backdrop-blur-xl rounded-2xl border border-pink-200/20 p-4 mt-4"
+      className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-4 mt-4 shadow-2xl"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.6 }}

@@ -29,7 +29,7 @@ const ProductDisplay: React.FC = () => {
   if (!selectedProduct) {
     return (
       <motion.div
-        className="bg-pink-100/10 backdrop-blur-xl rounded-2xl p-8 border border-pink-200/20 flex items-center justify-center h-96"
+        className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 flex items-center justify-center h-96 shadow-2xl"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
@@ -49,7 +49,7 @@ const ProductDisplay: React.FC = () => {
   return (
     <>
       <motion.div
-        className="bg-pink-100/10 backdrop-blur-xl rounded-2xl p-4 border border-pink-200/20 relative overflow-hidden"
+        className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 border border-white/20 relative overflow-hidden shadow-2xl"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
@@ -107,7 +107,7 @@ const ProductDisplay: React.FC = () => {
                   <motion.button
                     onClick={handleTryOnClick}
                     disabled={isTryingOn}
-                    className="w-12 h-12 bg-gradient-to-br from-pink-600/80 via-rose-600/80 to-pink-700/80 backdrop-blur-md border-3 border-pink-200/50 rounded-full text-white hover:from-pink-500/90 hover:via-rose-500/90 hover:to-pink-600/90 hover:border-pink-200/80 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group shadow-lg shadow-pink-500/30"
+                    className="w-12 h-12 bg-gradient-to-br from-white/30 via-white/20 to-white/10 backdrop-blur-md border-3 border-white/50 rounded-full text-white hover:from-white/40 hover:via-white/30 hover:to-white/20 hover:border-white/80 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group shadow-lg shadow-white/30"
                     initial={{ opacity: 0, scale: 0.8, y: -10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     transition={{
@@ -241,16 +241,16 @@ const ProductDisplay: React.FC = () => {
                               ?.url
                           }
                           alt="Selected photo"
-                          className="w-12 h-12 rounded-full object-cover border-2 border-pink-200/50 shadow-lg"
+                          className="w-12 h-12 rounded-full object-cover border-2 border-white/50 shadow-lg"
                         />
-                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-pink-500 rounded-full border border-pink-200/50"></div>
+                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border border-white/50"></div>
                       </div>
                     </motion.div>
                   )}
 
                   {/* Custom Tooltip with Pink Theme */}
                   <motion.div
-                    className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-sm text-white text-xs font-medium px-3 py-2 rounded-lg shadow-lg border border-pink-200/20 whitespace-nowrap pointer-events-none opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200"
+                    className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-sm text-white text-xs font-medium px-3 py-2 rounded-lg shadow-lg border border-white/20 whitespace-nowrap pointer-events-none opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200"
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 0, y: -5 }}
                     whileHover={{ opacity: 1, y: 0 }}
@@ -259,7 +259,7 @@ const ProductDisplay: React.FC = () => {
                       {isTryingOn ? "AI Processing..." : "✨ Try On with AI"}
                     </span>
                     {/* Tooltip Arrow */}
-                    <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-black/90 border-l border-t border-pink-200/20 rotate-45"></div>
+                    <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-black/90 border-l border-t border-white/20 rotate-45"></div>
                   </motion.div>
                 </div>
               </motion.div>
@@ -282,8 +282,8 @@ const ProductDisplay: React.FC = () => {
                   onClick={() => handleImageChange(index)}
                   className={`w-12 h-12 rounded-full overflow-hidden border-2 transition-all duration-200 ${
                     selectedImageIndex === index
-                      ? "border-pink-300 shadow-lg scale-110"
-                      : "border-pink-200/30 hover:border-pink-200/60"
+                      ? "border-white/60 shadow-lg scale-110"
+                : "border-white/30 hover:border-white/60"
                   }`}
                   whileHover={{
                     scale: selectedImageIndex === index ? 1.1 : 1.05,

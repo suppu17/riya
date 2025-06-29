@@ -15,20 +15,20 @@ import {
   ChevronRight,
   Heart,
   Star,
-  LogOut,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useShopping } from "../../contexts/ShoppingContext";
-import { useAuth } from "../../contexts/AuthContext";
+import { useUser } from "../../contexts/UserContext";
 import { useState } from "react";
 import TopNavigationBar from "../home/TopNavigationBar";
 
 const ProfilePage: React.FC = () => {
   const { generatedImages, deleteGeneratedImage } = useShopping();
-  const { user, logout } = useAuth();
+  const { isPremium, setIsPremium } = useUser();
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null
   );
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   const stats = [
     { label: "Orders", value: "23", icon: Package },
@@ -39,27 +39,6 @@ const ProfilePage: React.FC = () => {
       icon: Eye,
     },
   ];
-
-  const handleLogout = () => {
-    logout();
-  };
-
-  if (!user) {
-    return (
-      <motion.div
-        className="min-h-screen flex items-center justify-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <div className="text-center">
-          <User className="w-16 h-16 text-white/40 mx-auto mb-4" />
-          <h2 className="text-2xl font-semibold text-white mb-2">Not Signed In</h2>
-          <p className="text-white/60">Please sign in to view your profile</p>
-        </div>
-      </motion.div>
-    );
-  }
 
   return (
     <motion.div
@@ -120,33 +99,18 @@ const ProfilePage: React.FC = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                 </div>
               )}
-
-              {/* Profile Avatar */}
-              <div className="absolute -bottom-8 left-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full border-4 border-white/20 flex items-center justify-center overflow-hidden">
-                  {user.avatar ? (
-                    <img
-                      src={user.avatar}
-                      alt={user.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <User className="w-8 h-8 text-white" />
-                  )}
-                </div>
-              </div>
             </motion.div>
 
             {/* Profile Info Section */}
             <motion.div
-              className="p-6 pt-12"
+              className="p-6 pt-4"
               initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.5 }}
             >
               <div className="mb-6">
                 <h2 className="text-xl font-bold text-white mb-1">
-                  {user.name}
+                  Supriya Korukonda
                 </h2>
                 <p className="text-white/60 text-sm flex items-center gap-2">
                   <Star className="w-4 h-4 text-yellow-400" />
@@ -168,7 +132,7 @@ const ProfilePage: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-white/40" />
-                      <span>Joined {new Date(user.createdAt).getFullYear()}</span>
+                      <span>Joined 2023</span>
                     </div>
                   </div>
                 </div>
@@ -207,17 +171,6 @@ const ProfilePage: React.FC = () => {
                   </motion.div>
                 ))}
               </motion.div>
-
-              {/* Logout Button */}
-              <motion.button
-                onClick={handleLogout}
-                className="w-full mt-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <LogOut className="w-4 h-4" />
-                Sign Out
-              </motion.button>
             </motion.div>
           </motion.div>
         </motion.div>
@@ -424,6 +377,8 @@ const ProfilePage: React.FC = () => {
             </motion.div>
           </motion.div>
 
+
+
           {/* Recent Activity */}
           <motion.div
             className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20"
@@ -440,7 +395,12 @@ const ProfilePage: React.FC = () => {
                   time: "2 hours ago",
                   icon: Eye,
                 },
-                { action: "Updated profile", time: "1 day ago", icon: User },
+                { 
+                  action: "Manage Subscriptions", 
+                  time: "1 day ago", 
+                  icon: CreditCard,
+                  isPremiumSection: true
+                },
                 {
                   action: "Added to wishlist",
                   time: "3 days ago",
@@ -449,7 +409,9 @@ const ProfilePage: React.FC = () => {
               ].map((activity, index) => (
                 <motion.div
                   key={index}
-                  className="flex items-center gap-3 p-3 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10"
+                  className={`p-3 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 ${
+                    activity.isPremiumSection ? 'space-y-3' : 'flex items-center gap-3'
+                  }`}
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{
@@ -457,14 +419,64 @@ const ProfilePage: React.FC = () => {
                     delay: 1.2 + index * 0.1,
                     ease: "easeOut",
                   }}
+                  {...(activity.action === "Manage Subscriptions" && { "data-subscription-section": true })}
                 >
-                  <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
-                    <activity.icon className="w-4 h-4 text-white/80" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-white/80 text-sm">{activity.action}</p>
-                    <p className="text-white/50 text-xs">{activity.time}</p>
-                  </div>
+                  {activity.isPremiumSection ? (
+                    <>
+                      {/* Manage Subscriptions Header - Clickable */}
+                      <button
+                        onClick={() => setShowSubscriptionModal(true)}
+                        className="flex items-center gap-3 w-full text-left hover:bg-white/5 rounded-lg p-2 transition-all duration-200"
+                      >
+                        <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
+                          <activity.icon className="w-4 h-4 text-white/80" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-white/80 text-sm">{activity.action}</p>
+                          <p className="text-white/50 text-xs">{activity.time}</p>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-white/50" />
+                      </button>
+                      
+                      {/* Current Plan Status */}
+                      <div className="flex items-center justify-between p-3 bg-white/5 backdrop-blur-xl rounded-lg border border-white/10">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                            isPremium ? 'bg-gradient-to-br from-yellow-500 to-orange-500' : 'bg-white/10'
+                          }`}>
+                            <Star className={`w-4 h-4 ${
+                              isPremium ? 'text-white' : 'text-white/60'
+                            }`} />
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-white text-xs">
+                              {isPremium ? 'Premium Member' : 'Free Member'}
+                            </h4>
+                            <p className="text-xs text-white/50">
+                              {isPremium ? 'All features unlocked' : 'Limited features'}
+                            </p>
+                          </div>
+                        </div>
+                        <div className={`px-3 py-1.5 rounded-lg text-xs font-medium ${
+                          isPremium 
+                            ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-300 border border-yellow-500/30'
+                            : 'bg-gray-500/20 text-gray-300 border border-gray-500/30'
+                        }`}>
+                          {isPremium ? 'Active' : 'Basic'}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
+                        <activity.icon className="w-4 h-4 text-white/80" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-white/80 text-sm">{activity.action}</p>
+                        <p className="text-white/50 text-xs">{activity.time}</p>
+                      </div>
+                    </>
+                  )}
                 </motion.div>
               ))}
             </div>
@@ -564,6 +576,212 @@ const ProfilePage: React.FC = () => {
                       <ChevronRight className="w-5 h-5 text-white" />
                     </button>
                   </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {/* Subscription Modal */}
+      {showSubscriptionModal && (
+        <motion.div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setShowSubscriptionModal(false)}
+        >
+          <motion.div
+            className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-6 max-w-md w-full max-h-[80vh] overflow-y-auto"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-white">Subscription Plans</h2>
+              <button
+                onClick={() => setShowSubscriptionModal(false)}
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-white/70" />
+              </button>
+            </div>
+
+            {/* Subscription Plans */}
+            <div className="space-y-4">
+              {/* Free Plan */}
+              <div className={`p-4 rounded-xl border transition-all duration-200 ${
+                !isPremium 
+                  ? 'bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-green-400/50' 
+                  : 'bg-white/5 border-white/10 hover:border-white/20'
+              }`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="px-3 py-1 bg-gray-500/20 rounded-full">
+                      <span className="text-xs font-medium text-white/80">FREE</span>
+                    </div>
+                    {!isPremium && (
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-white">$0</div>
+                    <div className="text-xs text-white/50">per month</div>
+                  </div>
+                </div>
+                <div className="space-y-2 text-xs text-white/70">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-white/50 rounded-full"></div>
+                    <span>Basic AI Try-On (5 per day)</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-white/50 rounded-full"></div>
+                    <span>Standard resolution images</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-white/50 rounded-full"></div>
+                    <span>Basic product catalog</span>
+                  </div>
+                </div>
+                {!isPremium ? (
+                  <div className="mt-3 px-3 py-1.5 bg-green-500/20 rounded-lg text-center">
+                    <span className="text-xs font-medium text-green-300">Current Plan</span>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setIsPremium(false);
+                      setShowSubscriptionModal(false);
+                    }}
+                    className="mt-3 w-full px-3 py-2 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-500 hover:to-gray-600 rounded-lg text-xs font-medium text-white transition-all duration-200"
+                  >
+                    Downgrade to Free
+                  </button>
+                )}
+              </div>
+
+              {/* Premium Plan */}
+              <div className={`p-4 rounded-xl border transition-all duration-200 ${
+                isPremium 
+                  ? 'bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-yellow-400/50' 
+                  : 'bg-white/5 border-white/10 hover:border-white/20'
+              }`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="px-3 py-1 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full">
+                      <span className="text-xs font-medium text-white">PREMIUM</span>
+                    </div>
+                    {isPremium && (
+                      <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-white">$9.99</div>
+                    <div className="text-xs text-white/50">per month</div>
+                  </div>
+                </div>
+                <div className="space-y-2 text-xs text-white/70">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-yellow-400 rounded-full"></div>
+                    <span>Unlimited AI Try-On</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-yellow-400 rounded-full"></div>
+                    <span>High-resolution images</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-yellow-400 rounded-full"></div>
+                    <span>Premium product catalog</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-yellow-400 rounded-full"></div>
+                    <span>Priority support</span>
+                  </div>
+                </div>
+                {isPremium ? (
+                  <div className="mt-3 space-y-2">
+                    <div className="px-3 py-1.5 bg-yellow-500/20 rounded-lg text-center">
+                      <span className="text-xs font-medium text-yellow-300">Current Plan</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setIsPremium(false);
+                        setShowSubscriptionModal(false);
+                      }}
+                      className="w-full px-3 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 rounded-lg text-xs font-medium text-white transition-all duration-200"
+                    >
+                      Cancel Subscription
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setIsPremium(true);
+                      setShowSubscriptionModal(false);
+                    }}
+                    className="mt-3 w-full px-3 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 rounded-lg text-xs font-medium text-white transition-all duration-200"
+                  >
+                    Upgrade to Premium
+                  </button>
+                )}
+              </div>
+
+              {/* Premium Plus Plan */}
+              <div className="p-4 rounded-xl border bg-white/5 border-white/10 hover:border-white/20 transition-all duration-200">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full">
+                      <span className="text-xs font-medium text-white">PREMIUM+</span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-white">$19.99</div>
+                    <div className="text-xs text-white/50">per month</div>
+                  </div>
+                </div>
+                <div className="space-y-2 text-xs text-white/70">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-purple-400 rounded-full"></div>
+                    <span>Everything in Premium</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-purple-400 rounded-full"></div>
+                    <span>4K ultra-high resolution</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-purple-400 rounded-full"></div>
+                    <span>Exclusive designer collections</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-purple-400 rounded-full"></div>
+                    <span>Advanced AI customization</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-purple-400 rounded-full"></div>
+                    <span>24/7 dedicated support</span>
+                  </div>
+                </div>
+                <div className="mt-3 space-y-2">
+                  <button 
+                    onClick={() => setShowSubscriptionModal(false)}
+                    className="w-full px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 rounded-lg text-xs font-medium text-white transition-all duration-200"
+                  >
+                    Upgrade to Premium+
+                  </button>
+                  {isPremium && (
+                    <button
+                      onClick={() => {
+                        setIsPremium(false);
+                        setShowSubscriptionModal(false);
+                      }}
+                      className="w-full px-3 py-2 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-500 hover:to-gray-600 rounded-lg text-xs font-medium text-white transition-all duration-200"
+                    >
+                      Cancel & Downgrade to Free
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

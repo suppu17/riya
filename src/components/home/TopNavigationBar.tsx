@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { useShopping } from "../../contexts/ShoppingContext";
 import { useAuth } from "../../contexts/AuthContext";
-import { ShoppingCart, User, LogIn, LogOut, Settings, ChevronDown } from "lucide-react";
+import { ShoppingCart, User, LogIn, LogOut, Settings, ChevronDown, ChevronRight } from "lucide-react";
 import CartModal from "../CartModal";
 import AuthModal from "../auth/AuthModal";
 import UserProfile from "../UserProfile";
@@ -68,7 +69,7 @@ const TopNavigationBar: React.FC = () => {
 
   return (
     <motion.div
-      className="flex items-center justify-between mb-8 bg-pink-100/10 backdrop-blur-xl rounded-2xl p-2 border border-pink-200/20 relative"
+      className="flex items-center justify-between mb-8 bg-white/10 backdrop-blur-xl rounded-2xl p-2 border border-white/20 relative shadow-2xl"
       whileHover={{ scale: 1.01 }}
       transition={{ duration: 0.2 }}
     >
@@ -128,16 +129,18 @@ const TopNavigationBar: React.FC = () => {
         <div className="relative" ref={dropdownRef}>
           <motion.button
             onClick={handleUserClick}
-            className="flex items-center gap-2 bg-pink-100/10 backdrop-blur-xl rounded-lg px-3 py-2 border border-pink-200/20 cursor-pointer"
+            className="flex items-center gap-3 bg-gradient-to-r from-white/15 to-white/5 backdrop-blur-xl rounded-xl px-4 py-2.5 border border-white/30 cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-300"
             whileHover={{
-              scale: 1.05,
-              backgroundColor: "rgba(255, 182, 193, 0.15)",
-              borderColor: "rgba(255, 182, 193, 0.3)",
+              scale: 1.02,
+              backgroundColor: "rgba(255, 255, 255, 0.2)",
+              borderColor: "rgba(255, 255, 255, 0.4)",
+              boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
             }}
             whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.2 }}
           >
             <motion.div
+              className="relative"
               animate={{
                 rotate: isAuthenticated ? [0, -10, 10, 0] : 0,
               }}
@@ -148,27 +151,41 @@ const TopNavigationBar: React.FC = () => {
             >
               {isAuthenticated ? (
                 user?.avatar ? (
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className="w-4 h-4 rounded-full object-cover"
-                  />
+                  <div className="relative">
+                    <img
+                      src={user.avatar}
+                      alt={user.name}
+                      className="w-8 h-8 rounded-full object-cover border-2 border-white/30 shadow-lg"
+                    />
+                    <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow-sm"></div>
+                  </div>
                 ) : (
-                  <User className="w-4 h-4 text-white/80" />
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center border-2 border-white/30 shadow-lg">
+                    <User className="w-4 h-4 text-white" />
+                  </div>
                 )
               ) : (
-                <LogIn className="w-4 h-4 text-white/80" />
+                <div className="w-8 h-8 bg-gradient-to-br from-gray-500 to-gray-600 rounded-full flex items-center justify-center border-2 border-white/30 shadow-lg">
+                  <LogIn className="w-4 h-4 text-white" />
+                </div>
               )}
             </motion.div>
-            <motion.span
-              className="text-white text-sm"
-              key={isAuthenticated ? 'authenticated' : 'guest'}
-              initial={{ scale: 1.2, color: "rgba(34, 197, 94, 1)" }}
-              animate={{ scale: 1, color: "rgba(255, 255, 255, 1)" }}
-              transition={{ duration: 0.3 }}
-            >
-              {isAuthenticated ? (user?.name?.split(' ')[0] || 'User') : 'Sign In'}
-            </motion.span>
+            <div className="flex flex-col items-start">
+              <motion.span
+                className="text-white text-sm font-medium"
+                key={isAuthenticated ? 'authenticated' : 'guest'}
+                initial={{ scale: 1.2, color: "rgba(34, 197, 94, 1)" }}
+                animate={{ scale: 1, color: "rgba(255, 255, 255, 1)" }}
+                transition={{ duration: 0.3 }}
+              >
+                {isAuthenticated ? (user?.name?.split(' ')[0] || 'User') : 'Sign In'}
+              </motion.span>
+              {isAuthenticated && (
+                <span className="text-white/60 text-xs">
+                  {user?.email?.split('@')[0] || 'user'}
+                </span>
+              )}
+            </div>
             {isAuthenticated && (
               <motion.div
                 animate={{ rotate: isDropdownOpen ? 180 : 0 }}
@@ -179,100 +196,125 @@ const TopNavigationBar: React.FC = () => {
             )}
           </motion.button>
 
-          {/* Dropdown Menu - Fixed Z-Index */}
-          <AnimatePresence>
-            {isAuthenticated && isDropdownOpen && (
+          {/* Dropdown Menu - Portal */}
+          {isAuthenticated && isDropdownOpen && createPortal(
+            <AnimatePresence>
               <motion.div
-                className="absolute top-full right-0 mt-2 w-48 bg-pink-100/10 backdrop-blur-xl rounded-2xl border border-pink-200/20 shadow-2xl z-[10000]"
+                ref={dropdownRef}
+                className="fixed top-20 right-8 w-56 bg-white/15 backdrop-blur-2xl rounded-3xl border border-white/30 shadow-2xl z-[99999] overflow-hidden"
                 initial={{ opacity: 0, scale: 0.95, y: -10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                transition={{ duration: 0.2 }}
-                style={{ zIndex: 10000 }}
+                transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 30 }}
+                style={{ zIndex: 99999 }}
               >
                 {/* User Info Header */}
-                <div className="p-4 border-b border-pink-200/10">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-rose-500 rounded-full flex items-center justify-center overflow-hidden">
-                      {user?.avatar ? (
-                        <img
-                          src={user.avatar}
-                          alt={user.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <User className="w-4 h-4 text-white" />
-                      )}
+                <div className="p-5 border-b border-white/20 bg-gradient-to-r from-white/10 to-transparent">
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center overflow-hidden border-2 border-white/30 shadow-lg">
+                        {user?.avatar ? (
+                          <img
+                            src={user.avatar}
+                            alt={user.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <User className="w-6 h-6 text-white" />
+                        )}
+                      </div>
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-sm flex items-center justify-center">
+                        <div className="w-2 h-2 bg-white rounded-full"></div>
+                      </div>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-white font-medium text-sm truncate">
+                      <p className="text-white font-semibold text-base truncate">
                         {user?.name}
                       </p>
-                      <p className="text-white/60 text-xs truncate">
+                      <p className="text-white/70 text-sm truncate">
                         {user?.email}
                       </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        <span className="text-green-400 text-xs font-medium">Online</span>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Menu Items */}
-                <div className="p-2">
+                <div className="p-3 space-y-1">
                   <motion.button
                     onClick={handleProfileClick}
-                    className="w-full flex items-center gap-3 px-3 py-2 text-white/80 hover:text-white hover:bg-pink-100/10 rounded-xl transition-all duration-200 text-left"
-                    whileHover={{ x: 4 }}
-                    transition={{ duration: 0.1 }}
+                    className="w-full flex items-center gap-4 px-4 py-3 text-white/80 hover:text-white hover:bg-white/15 rounded-2xl transition-all duration-300 text-left group shadow-sm hover:shadow-lg"
+                    whileHover={{ x: 6, scale: 1.02 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <User className="w-4 h-4" />
-                    <span className="text-sm">View Profile</span>
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-xl flex items-center justify-center group-hover:from-blue-500/30 group-hover:to-purple-600/30 transition-all duration-300">
+                      <User className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1">
+                      <span className="text-sm font-medium">View Profile</span>
+                      <p className="text-xs text-white/50">Manage your account</p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-white/40 group-hover:text-white/60 transition-colors" />
                   </motion.button>
 
                   <motion.button
                     onClick={handleSettingsClick}
-                    className="w-full flex items-center gap-3 px-3 py-2 text-white/80 hover:text-white hover:bg-pink-100/10 rounded-xl transition-all duration-200 text-left"
-                    whileHover={{ x: 4 }}
-                    transition={{ duration: 0.1 }}
+                    className="w-full flex items-center gap-4 px-4 py-3 text-white/80 hover:text-white hover:bg-white/15 rounded-2xl transition-all duration-300 text-left group shadow-sm hover:shadow-lg"
+                    whileHover={{ x: 6, scale: 1.02 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    <Settings className="w-4 h-4" />
-                    <span className="text-sm">Settings</span>
+                    <div className="w-8 h-8 bg-gradient-to-br from-gray-500/20 to-gray-600/20 rounded-xl flex items-center justify-center group-hover:from-gray-500/30 group-hover:to-gray-600/30 transition-all duration-300">
+                      <Settings className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1">
+                      <span className="text-sm font-medium">Settings</span>
+                      <p className="text-xs text-white/50">Preferences & privacy</p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-white/40 group-hover:text-white/60 transition-colors" />
                   </motion.button>
                 </div>
               </motion.div>
-            )}
-          </AnimatePresence>
+            </AnimatePresence>,
+            document.body
+          )}
         </div>
 
         <motion.button
           onClick={handleCartClick}
-          className="flex items-center gap-2 bg-pink-100/10 backdrop-blur-xl rounded-lg px-3 py-2 border border-pink-200/20 cursor-pointer"
+          className="relative flex items-center gap-3 bg-gradient-to-r from-white/15 to-white/5 backdrop-blur-xl rounded-xl px-4 py-2.5 border border-white/30 cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-300"
           whileHover={{
-            scale: 1.05,
-            backgroundColor: "rgba(255, 182, 193, 0.15)",
-            borderColor: "rgba(255, 182, 193, 0.3)",
+            scale: 1.02,
+            backgroundColor: "rgba(255, 255, 255, 0.2)",
+            borderColor: "rgba(255, 255, 255, 0.4)",
+            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
           }}
           whileTap={{ scale: 0.98 }}
           transition={{ duration: 0.2 }}
         >
-          <motion.div
-            animate={{
-              rotate: cartCount > 0 ? [0, -10, 10, 0] : 0,
-            }}
-            transition={{
-              duration: 0.5,
-              repeat: cartCount > 0 ? 1 : 0,
-            }}
-          >
-            <ShoppingCart className="w-4 h-4 text-white/80" />
-          </motion.div>
-          <motion.span
-            className="text-white text-sm"
-            key={cartCount}
-            initial={{ scale: 1.2, color: "rgba(34, 197, 94, 1)" }}
-            animate={{ scale: 1, color: "rgba(255, 255, 255, 1)" }}
-            transition={{ duration: 0.3 }}
-          >
-            {cartCount} items
-          </motion.span>
+          <div className="relative">
+            <div className="w-8 h-8 bg-gradient-to-br from-orange-500/20 to-red-600/20 rounded-xl flex items-center justify-center">
+              <ShoppingCart className="w-4 h-4 text-white" />
+            </div>
+            {cartCount > 0 && (
+              <motion.div
+                className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-lg border-2 border-white"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              >
+                {cartCount > 99 ? '99+' : cartCount}
+              </motion.div>
+            )}
+          </div>
+          <div className="flex flex-col items-start">
+            <span className="text-white text-sm font-medium">Cart</span>
+            <span className="text-white/60 text-xs">
+              {cartCount === 0 ? 'Empty' : `${cartCount} item${cartCount > 1 ? 's' : ''}`}
+            </span>
+          </div>
         </motion.button>
       </motion.div>
 

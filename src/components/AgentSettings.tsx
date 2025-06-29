@@ -93,7 +93,7 @@ const AgentSettings: React.FC = () => {
         <button
           type="submit"
           disabled={isUpdating}
-          className="w-full bg-pink-600 hover:bg-pink-700 disabled:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+          className="w-full bg-gradient-to-r from-white/20 to-white/10 hover:from-white/30 hover:to-white/20 disabled:bg-gray-500/50 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 border border-white/30 hover:border-white/50 shadow-lg hover:shadow-xl backdrop-blur-xl"
         >
           {isUpdating ? 'Updating...' : 'Update Agent'}
         </button>

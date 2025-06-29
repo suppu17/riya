@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, LogOut, Settings, Edit3, Save, X, Heart, Star, Package } from 'lucide-react';
+import { User, LogOut, Settings, Edit3, Save, X, Heart, Star, Package, Edit, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -127,27 +127,44 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-bold text-white">Profile</h2>
-              <button
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                  <User className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-white">Profile</h2>
+                  <p className="text-white/60 text-sm">Manage your account settings</p>
+                </div>
+              </div>
+              <motion.button
                 onClick={onClose}
-                className="p-2 text-white/60 hover:text-white transition-colors rounded-full hover:bg-white/10"
+                className="p-3 text-white/60 hover:text-white transition-all duration-300 rounded-2xl hover:bg-white/10 group"
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
               >
-                <X className="w-5 h-5" />
-              </button>
+                <X className="w-5 h-5 group-hover:text-red-400 transition-colors" />
+              </motion.button>
             </div>
 
             {/* Profile Avatar and Basic Info */}
             <div className="flex items-center gap-6 mb-8">
-              <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                {user.avatar ? (
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className="w-full h-full rounded-full object-cover"
-                  />
-                ) : (
-                  <User className="w-12 h-12 text-white" />
-                )}
+              <div className="relative">
+                <div className="w-28 h-28 bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 rounded-3xl flex items-center justify-center p-1 shadow-2xl">
+                  <div className="w-full h-full bg-white/10 backdrop-blur-xl rounded-3xl flex items-center justify-center overflow-hidden border border-white/20">
+                    {user.avatar ? (
+                      <img
+                        src={user.avatar}
+                        alt={user.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <User className="w-12 h-12 text-white" />
+                    )}
+                  </div>
+                </div>
+                <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white shadow-lg flex items-center justify-center">
+                  <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+                </div>
               </div>
               
               {!isEditing && (
@@ -159,19 +176,34 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                   </p>
                   
                   {/* Quick Stats */}
-                  <div className="flex gap-4 mt-4">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Heart className="w-4 h-4 text-red-400" />
-                      <span className="text-white/80">12 Favorites</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Package className="w-4 h-4 text-blue-400" />
-                      <span className="text-white/80">8 Orders</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Star className="w-4 h-4 text-yellow-400" />
-                      <span className="text-white/80">Premium</span>
-                    </div>
+                  <div className="grid grid-cols-3 gap-3 mt-6">
+                    <motion.div 
+                      className="bg-gradient-to-br from-red-500/20 to-pink-500/20 backdrop-blur-xl rounded-2xl p-3 border border-red-500/30 text-center"
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Heart className="w-5 h-5 text-red-400 mx-auto mb-1" />
+                      <div className="text-lg font-bold text-white">12</div>
+                      <div className="text-xs text-white/60">Favorites</div>
+                    </motion.div>
+                    <motion.div 
+                      className="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 backdrop-blur-xl rounded-2xl p-3 border border-blue-500/30 text-center"
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Package className="w-5 h-5 text-blue-400 mx-auto mb-1" />
+                      <div className="text-lg font-bold text-white">8</div>
+                      <div className="text-xs text-white/60">Orders</div>
+                    </motion.div>
+                    <motion.div 
+                      className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 backdrop-blur-xl rounded-2xl p-3 border border-yellow-500/30 text-center"
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Star className="w-5 h-5 text-yellow-400 mx-auto mb-1" />
+                      <div className="text-lg font-bold text-white">★</div>
+                      <div className="text-xs text-white/60">Premium</div>
+                    </motion.div>
                   </div>
                 </div>
               )}
@@ -288,7 +320,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                           onClick={() => handleStyleToggle(style)}
                           className={`px-3 py-1 rounded-full text-sm transition-all ${
                             preferences.style.includes(style)
-                              ? 'bg-pink-500/30 text-pink-200 border border-pink-400/50'
+                              ? 'bg-white/30 text-white border border-white/50'
                               : 'bg-white/10 text-white/60 border border-white/20 hover:bg-white/20'
                           }`}
                         >
@@ -300,10 +332,12 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                 </div>
 
                 <div className="flex gap-3">
-                  <button
+                  <motion.button
                     onClick={handleSave}
                     disabled={isUpdating}
-                    className="flex-1 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white font-semibold rounded-2xl transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed text-white font-semibold rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl border border-green-400/30 backdrop-blur-xl flex items-center justify-center gap-2"
+                    whileHover={{ scale: !isUpdating ? 1.02 : 1, y: !isUpdating ? -1 : 0 }}
+                    whileTap={{ scale: !isUpdating ? 0.98 : 1 }}
                   >
                     {isUpdating ? (
                       <>
@@ -316,13 +350,16 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                         Save Changes
                       </>
                     )}
-                  </button>
-                  <button
+                  </motion.button>
+                  <motion.button
                     onClick={handleCancel}
-                    className="flex-1 py-3 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-2xl transition-colors"
+                    className="flex-1 py-3 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-semibold rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl border border-gray-400/30 backdrop-blur-xl flex items-center justify-center gap-2"
+                    whileHover={{ scale: 1.02, y: -1 }}
+                    whileTap={{ scale: 0.98 }}
                   >
+                    <X className="w-4 h-4" />
                     Cancel
-                  </button>
+                  </motion.button>
                 </div>
               </div>
             ) : (
@@ -365,7 +402,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                           {user.preferences.style.map(style => (
                             <span
                               key={style}
-                              className="px-3 py-1 bg-pink-500/20 text-pink-200 rounded-full text-sm border border-pink-400/30"
+                              className="px-3 py-1 bg-white/20 text-white rounded-full text-sm border border-white/30"
                             >
                               {style}
                             </span>
@@ -378,30 +415,60 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
 
                 {/* Action Buttons */}
                 <div className="space-y-4">
-                  <button
-                    onClick={handleEdit}
-                    className="w-full py-3 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 text-white font-semibold rounded-2xl transition-all duration-300 flex items-center justify-center gap-2"
+                  <motion.button
+                    onClick={() => setIsEditing(true)}
+                    className="group w-full bg-gradient-to-r from-blue-500 via-purple-600 to-indigo-600 hover:from-blue-600 hover:via-purple-700 hover:to-indigo-700 text-white py-5 px-6 rounded-2xl font-semibold transition-all duration-300 flex items-center justify-between shadow-2xl hover:shadow-blue-500/25 border border-blue-400/30 backdrop-blur-xl"
+                    whileHover={{ scale: 1.02, y: -3 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <Edit3 className="w-4 h-4" />
-                    Edit Profile & Preferences
-                  </button>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                        <Edit className="w-5 h-5" />
+                      </div>
+                      <div className="text-left">
+                        <div className="font-semibold">Edit Profile & Preferences</div>
+                        <div className="text-sm text-white/70">Update your personal information</div>
+                      </div>
+                     </div>
+                     <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                   </motion.button>
 
-                  <button
+                  <motion.button
                     onClick={() => {/* Navigate to settings */}}
-                    className="w-full py-3 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 text-white font-semibold rounded-2xl transition-all duration-300 flex items-center justify-center gap-2"
+                    className="group w-full bg-gradient-to-r from-gray-600 via-slate-700 to-gray-800 hover:from-gray-700 hover:via-slate-800 hover:to-gray-900 text-white py-5 px-6 rounded-2xl font-semibold transition-all duration-300 flex items-center justify-between shadow-2xl hover:shadow-gray-500/25 border border-gray-400/30 backdrop-blur-xl"
+                    whileHover={{ scale: 1.02, y: -3 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <Settings className="w-4 h-4" />
-                    Settings
-                  </button>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                        <Settings className="w-5 h-5" />
+                      </div>
+                      <div className="text-left">
+                        <div className="font-semibold">Settings</div>
+                        <div className="text-sm text-white/70">Manage app preferences</div>
+                      </div>
+                     </div>
+                     <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                   </motion.button>
 
-                  <button
-                    onClick={handleLogout}
-                    className="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-2xl transition-colors flex items-center justify-center gap-2"
+                   <motion.button
+                     onClick={handleLogout}
+                    className="group w-full bg-gradient-to-r from-red-500 via-rose-600 to-red-700 hover:from-red-600 hover:via-rose-700 hover:to-red-800 text-white py-5 px-6 rounded-2xl font-semibold transition-all duration-300 flex items-center justify-between shadow-2xl hover:shadow-red-500/25 border border-red-400/30 backdrop-blur-xl"
+                    whileHover={{ scale: 1.02, y: -3 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <LogOut className="w-4 h-4" />
-                    Sign Out
-                  </button>
-                </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                        <LogOut className="w-5 h-5" />
+                      </div>
+                      <div className="text-left">
+                        <div className="font-semibold">Sign Out</div>
+                        <div className="text-sm text-white/70">End your current session</div>
+                      </div>
+                     </div>
+                     <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                   </motion.button>
+                 </div>
               </div>
             )}
           </motion.div>

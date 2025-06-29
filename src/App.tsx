@@ -10,6 +10,7 @@ import { ShoppingProvider } from "./contexts/ShoppingContext";
 import { VoiceProvider } from "./contexts/VoiceContext";
 import { WallpaperProvider, useWallpaper } from "./contexts/WallpaperContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { UserProvider } from "./contexts/UserContext";
 
 const AppContent: React.FC = () => {
   const [currentView, setCurrentView] = useState("home");
@@ -195,13 +196,15 @@ const AppContent: React.FC = () => {
 function App() {
   return (
     <AuthProvider>
-      <WallpaperProvider>
-        <VoiceProvider>
-          <ShoppingProvider>
-            <AppContent />
-          </ShoppingProvider>
-        </VoiceProvider>
-      </WallpaperProvider>
+      <UserProvider>
+        <WallpaperProvider>
+          <VoiceProvider>
+            <ShoppingProvider>
+              <AppContent />
+            </ShoppingProvider>
+          </VoiceProvider>
+        </WallpaperProvider>
+      </UserProvider>
     </AuthProvider>
   );
 }

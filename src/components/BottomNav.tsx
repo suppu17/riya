@@ -24,7 +24,7 @@ const BottomNav: React.FC<BottomNavProps> = ({
 
   return (
     <>
-      <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-80 h-16 bg-pink-100/10 backdrop-blur-xl border border-pink-200/20 rounded-t-3xl z-30">
+      <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-80 h-16 bg-white/10 backdrop-blur-xl border border-white/20 rounded-t-3xl z-30 shadow-2xl">
         <div className="flex items-center justify-around h-full px-4">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -47,7 +47,7 @@ const BottomNav: React.FC<BottomNavProps> = ({
                 <Icon className="w-5 h-5 mb-1" />
                 <span className="text-xs">{item.label}</span>
                 {item.id === "photos" && selectedModelId && (
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center">
+                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
                     <Check className="w-2.5 h-2.5 text-white" />
                   </div>
                 )}
