@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Mail, Lock, User, Eye, EyeOff, Loader2, ArrowLeft, CheckCircle, AlertCircle, Sparkles, Info } from 'lucide-react';
+import { X, Mail, Lock, User, Eye, EyeOff, Loader2, ArrowLeft, CheckCircle, AlertCircle, Sparkles, Info, UserPlus, LogIn } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -103,27 +103,34 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
             // Enhanced error handling for login with user-friendly messages
             const errorMessage = result.error || '';
             
-            if (errorMessage.includes('Invalid login credentials') || 
-                errorMessage.includes('Invalid email or password') ||
-                errorMessage.includes('invalid_credentials')) {
+            if (errorMessage.includes('email or password') || 
+                errorMessage.includes('incorrect') ||
+                errorMessage.includes('invalid')) {
               setErrors({ 
                 submit: '❌ Incorrect email or password',
-                hint: 'Please double-check your credentials. If you don\'t have an account, click "Sign up" below.'
+                hint: 'Please double-check your credentials. If you don\'t have an account, click "Sign up" below.',
+                showSwitchToSignup: 'true'
               });
-            } else if (errorMessage.includes('Email not confirmed')) {
+            } else if (errorMessage.includes('confirm') || errorMessage.includes('verification')) {
               setErrors({ 
                 submit: '📧 Please verify your email',
                 hint: 'Check your inbox for a verification email and click the link to activate your account.'
               });
-            } else if (errorMessage.includes('Too many requests')) {
+            } else if (errorMessage.includes('too many') || errorMessage.includes('wait')) {
               setErrors({ 
                 submit: '⏰ Too many attempts',
                 hint: 'Please wait a few minutes before trying again for security reasons.'
               });
-            } else if (errorMessage.includes('Network error') || errorMessage.includes('fetch')) {
+            } else if (errorMessage.includes('network') || errorMessage.includes('connection')) {
               setErrors({ 
                 submit: '🌐 Connection problem',
                 hint: 'Please check your internet connection and try again.'
+              });
+            } else if (errorMessage.includes('no account') || errorMessage.includes('not found')) {
+              setErrors({ 
+                submit: '👤 Account not found',
+                hint: 'No account exists with this email. Please sign up for a new account or check your email address.',
+                showSwitchToSignup: 'true'
               });
             } else {
               setErrors({ 
@@ -138,7 +145,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
           result = await signup(formData.email, formData.password, formData.name);
           if (result.success) {
             setShowSuccess(true);
-            setSuccessMessage('Account created successfully! Welcome to Riya!');
+            setSuccessMessage('Account created successfully! Welcome to SnapStyler!');
             setTimeout(() => {
               onSuccess?.();
               onClose();
@@ -148,24 +155,28 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
             // Enhanced error handling for signup - STAY ON MODAL
             const errorMessage = result.error || '';
             
-            if (errorMessage.includes('User already registered') || 
+            if (errorMessage.includes('already exists') || 
                 errorMessage.includes('already registered') ||
-                errorMessage.includes('already exists')) {
+                errorMessage.includes('user already')) {
               setErrors({ 
                 submit: '👤 Account already exists',
                 hint: 'An account with this email already exists. Try signing in instead, or use "Forgot password" if needed.',
-                showSwitchToLogin: 'true' // Special flag for showing switch button
+                showSwitchToLogin: 'true'
               });
-              // Don't redirect, stay on signup form so user can see the error
-            } else if (errorMessage.includes('Password should be')) {
+            } else if (errorMessage.includes('password') && errorMessage.includes('security')) {
               setErrors({ 
                 submit: '🔒 Password too weak',
                 hint: 'Please choose a stronger password with at least 6 characters.'
               });
-            } else if (errorMessage.includes('Invalid email')) {
+            } else if (errorMessage.includes('invalid email')) {
               setErrors({ 
                 submit: '📧 Invalid email format',
                 hint: 'Please enter a valid email address.'
+              });
+            } else if (errorMessage.includes('disabled') || errorMessage.includes('registration')) {
+              setErrors({ 
+                submit: '🚫 Registration disabled',
+                hint: 'Account registration is currently disabled. Please contact support.'
               });
             } else {
               setErrors({ 
@@ -184,10 +195,25 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
               handleModeChange('login');
             }, 3000);
           } else {
-            setErrors({ 
-              submit: result.error || 'Failed to send reset email',
-              hint: 'Please check that the email address is correct and try again.'
-            });
+            const errorMessage = result.error || '';
+            
+            if (errorMessage.includes('not found') || errorMessage.includes('no account')) {
+              setErrors({ 
+                submit: '👤 Account not found',
+                hint: 'No account exists with this email address. Please check the email or sign up for a new account.',
+                showSwitchToSignup: 'true'
+              });
+            } else if (errorMessage.includes('too many')) {
+              setErrors({ 
+                submit: '⏰ Too many requests',
+                hint: 'Please wait a few minutes before requesting another password reset.'
+              });
+            } else {
+              setErrors({ 
+                submit: errorMessage || 'Failed to send reset email',
+                hint: 'Please check that the email address is correct and try again.'
+              });
+            }
           }
           break;
       }
@@ -239,6 +265,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
         delete newErrors.submit;
         delete newErrors.hint;
         delete newErrors.showSwitchToLogin;
+        delete newErrors.showSwitchToSignup;
         return newErrors;
       });
     }
@@ -632,18 +659,30 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                                 </div>
                               )}
 
-                              {/* Quick action for "account already exists" error */}
-                              {errors.showSwitchToLogin && mode === 'signup' && (
-                                <div className="mt-3 pt-2 border-t border-red-500/20">
+                              {/* Quick action buttons */}
+                              <div className="mt-3 pt-2 border-t border-red-500/20 flex gap-3">
+                                {errors.showSwitchToLogin && mode === 'signup' && (
                                   <button
                                     type="button"
                                     onClick={() => handleModeChange('login')}
-                                    className="text-xs text-red-200 hover:text-red-100 underline transition-colors"
+                                    className="inline-flex items-center gap-1 text-xs text-red-200 hover:text-red-100 underline transition-colors"
                                   >
-                                    Switch to Sign In →
+                                    <LogIn className="w-3 h-3" />
+                                    Switch to Sign In
                                   </button>
-                                </div>
-                              )}
+                                )}
+                                
+                                {errors.showSwitchToSignup && (mode === 'login' || mode === 'forgot-password') && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleModeChange('signup')}
+                                    className="inline-flex items-center gap-1 text-xs text-red-200 hover:text-red-100 underline transition-colors"
+                                  >
+                                    <UserPlus className="w-3 h-3" />
+                                    Create Account
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </motion.div>
@@ -718,14 +757,20 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                         </div>
                       )}
 
-                      {/* Powered by Supabase with Cyan Theme */}
+                      {/* Helpful Tips Section */}
                       <div className="mt-6 p-4 bg-cyan-500/10 border border-cyan-400/20 rounded-2xl backdrop-blur-sm">
                         <div className="flex items-center justify-center gap-2 mb-2">
                           <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
-                          <p className="text-cyan-300 text-xs font-medium">Powered by Supabase</p>
+                          <p className="text-cyan-300 text-xs font-medium">
+                            {mode === 'login' ? 'Having trouble signing in?' : 
+                             mode === 'signup' ? 'Creating your account' : 
+                             'Password reset help'}
+                          </p>
                         </div>
                         <p className="text-cyan-200/80 text-xs">
-                          Secure authentication with real-time database
+                          {mode === 'login' ? 'Make sure your email and password are correct, or create a new account if you\'re new here.' :
+                           mode === 'signup' ? 'Choose a strong password and make sure your email is correct for account verification.' :
+                           'Check your email (including spam folder) for password reset instructions.'}
                         </p>
                       </div>
                     </motion.div>

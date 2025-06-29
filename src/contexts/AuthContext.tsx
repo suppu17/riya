@@ -239,23 +239,58 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (error) {
         console.error('❌ Supabase auth error:', error);
         
-        // Handle specific error cases
-        if (error.message === 'Invalid login credentials') {
-          return { success: false, error: 'Invalid email or password. Please check your credentials and try again.' };
+        // Enhanced error handling with more specific messages
+        const errorMessage = error.message.toLowerCase();
+        const errorCode = (error as any)?.code?.toLowerCase() || '';
+        
+        if (errorMessage.includes('invalid login credentials') || 
+            errorMessage.includes('invalid email or password') ||
+            errorMessage.includes('invalid_credentials') ||
+            errorCode === 'invalid_credentials') {
+          return { 
+            success: false, 
+            error: 'The email or password you entered is incorrect. Please double-check your credentials and try again.' 
+          };
         }
         
-        if (error.message.includes('Email not confirmed')) {
-          return { success: false, error: 'Please check your email and confirm your account before signing in.' };
+        if (errorMessage.includes('email not confirmed') || 
+            errorMessage.includes('signup_disabled') ||
+            errorCode === 'email_not_confirmed') {
+          return { 
+            success: false, 
+            error: 'Please check your email and confirm your account before signing in.' 
+          };
         }
         
-        if (error.message.includes('Too many requests')) {
-          return { success: false, error: 'Too many login attempts. Please wait a moment and try again.' };
+        if (errorMessage.includes('too many requests') || 
+            errorCode === 'too_many_requests') {
+          return { 
+            success: false, 
+            error: 'Too many login attempts. Please wait a few minutes before trying again.' 
+          };
+        }
+
+        if (errorMessage.includes('user not found') || 
+            errorCode === 'user_not_found') {
+          return { 
+            success: false, 
+            error: 'No account found with this email address. Please sign up first or check your email.' 
+          };
+        }
+
+        if (errorMessage.includes('network') || 
+            errorMessage.includes('fetch') ||
+            errorMessage.includes('connection')) {
+          return { 
+            success: false, 
+            error: 'Network connection error. Please check your internet connection and try again.' 
+          };
         }
         
-        // Generic error handling
+        // Generic error handling with helpful context
         return { 
           success: false, 
-          error: error.message || 'Authentication failed. Please try again.' 
+          error: `Authentication failed: ${error.message}. Please verify your credentials or try signing up if you don't have an account.` 
         };
       }
 
@@ -265,12 +300,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return { success: true };
       }
 
-      return { success: false, error: 'Login failed. Please try again.' };
+      return { success: false, error: 'Login failed. Please try again or contact support if the issue persists.' };
     } catch (error) {
       console.error('❌ Login error:', error);
+      
+      // Handle network and other unexpected errors
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      
+      if (errorMessage.includes('fetch') || errorMessage.includes('network')) {
+        return { 
+          success: false, 
+          error: 'Network error. Please check your internet connection and try again.' 
+        };
+      }
+      
       return { 
         success: false, 
-        error: 'Network error. Please check your connection and try again.' 
+        error: 'An unexpected error occurred during login. Please try again or contact support.' 
       };
     } finally {
       setIsLoading(false);
@@ -313,20 +359,49 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (error) {
         console.error('❌ Supabase signup error:', error);
         
-        // Handle specific error cases
-        if (error.message.includes('User already registered') || error.message.includes('already registered')) {
-          return { success: false, error: 'An account with this email already exists. Please sign in instead.' };
+        // Enhanced error handling for signup
+        const errorMessage = error.message.toLowerCase();
+        const errorCode = (error as any)?.code?.toLowerCase() || '';
+        
+        if (errorMessage.includes('user already registered') || 
+            errorMessage.includes('already registered') ||
+            errorMessage.includes('already exists') ||
+            errorCode === 'user_already_exists') {
+          return { 
+            success: false, 
+            error: 'An account with this email already exists. Please sign in instead or use the "Forgot password" option if needed.' 
+          };
         }
         
-        if (error.message.includes('Password should be')) {
-          return { success: false, error: 'Password does not meet security requirements. Please choose a stronger password.' };
+        if (errorMessage.includes('password should be') || 
+            errorMessage.includes('password') ||
+            errorCode === 'weak_password') {
+          return { 
+            success: false, 
+            error: 'Password does not meet security requirements. Please choose a stronger password with at least 6 characters.' 
+          };
         }
         
-        if (error.message.includes('Invalid email')) {
-          return { success: false, error: 'Please enter a valid email address.' };
+        if (errorMessage.includes('invalid email') || 
+            errorCode === 'invalid_email') {
+          return { 
+            success: false, 
+            error: 'Please enter a valid email address.' 
+          };
+        }
+
+        if (errorMessage.includes('signup_disabled') || 
+            errorCode === 'signup_disabled') {
+          return { 
+            success: false, 
+            error: 'Account registration is currently disabled. Please contact support.' 
+          };
         }
         
-        return { success: false, error: error.message || 'Account creation failed. Please try again.' };
+        return { 
+          success: false, 
+          error: `Account creation failed: ${error.message}. Please try again or contact support.` 
+        };
       }
 
       if (data.user) {
@@ -335,12 +410,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return { success: true };
       }
 
-      return { success: false, error: 'Signup failed. Please try again.' };
+      return { success: false, error: 'Account creation failed. Please try again or contact support.' };
     } catch (error) {
       console.error('❌ Signup error:', error);
+      
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      
+      if (errorMessage.includes('fetch') || errorMessage.includes('network')) {
+        return { 
+          success: false, 
+          error: 'Network error. Please check your internet connection and try again.' 
+        };
+      }
+      
       return { 
         success: false, 
-        error: 'Network error. Please check your connection and try again.' 
+        error: 'An unexpected error occurred during account creation. Please try again or contact support.' 
       };
     } finally {
       setIsLoading(false);
@@ -366,7 +451,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         console.error('❌ Google OAuth error:', error);
         return { 
           success: false, 
-          error: error.message || 'Google sign-in failed. Please try again.' 
+          error: error.message || 'Google sign-in failed. Please try again or use email/password login instead.' 
         };
       }
 
@@ -376,7 +461,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.error('❌ Google login error:', error);
       return { 
         success: false, 
-        error: 'Network error. Please check your connection and try again.' 
+        error: 'Network error during Google sign-in. Please check your connection and try again.' 
       };
     } finally {
       setIsLoading(false);
@@ -454,13 +539,37 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
 
       if (error) {
-        return { success: false, error: error.message };
+        console.error('❌ Password reset error:', error);
+        
+        const errorMessage = error.message.toLowerCase();
+        
+        if (errorMessage.includes('user not found')) {
+          return { 
+            success: false, 
+            error: 'No account found with this email address. Please check the email or sign up for a new account.' 
+          };
+        }
+        
+        if (errorMessage.includes('too many requests')) {
+          return { 
+            success: false, 
+            error: 'Too many password reset requests. Please wait a few minutes before trying again.' 
+          };
+        }
+        
+        return { 
+          success: false, 
+          error: `Password reset failed: ${error.message}. Please try again or contact support.` 
+        };
       }
 
       return { success: true };
     } catch (error) {
       console.error('❌ Password reset error:', error);
-      return { success: false, error: 'Failed to send reset email. Please try again.' };
+      return { 
+        success: false, 
+        error: 'Network error during password reset. Please check your connection and try again.' 
+      };
     }
   };
 
