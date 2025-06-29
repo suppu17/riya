@@ -17,16 +17,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
       setShowContent(true);
     }, 500);
 
-    // Auto-proceed to main app after delay
-    const autoProceedTimer = setTimeout(() => {
-      onComplete();
-    }, 15000);
-
     return () => {
       clearTimeout(timer);
-      clearTimeout(autoProceedTimer);
     };
-  }, [onComplete]);
+  }, []);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 overflow-hidden">
@@ -105,7 +99,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
 
               {/* Center Section - Main Content */}
               <div className="col-span-5 flex flex-col justify-center items-center text-center">
-                {/* Large S Logo */}
+                {/* Large R Logo */}
                 <div className="relative mb-8">
                   <div className="text-[12rem] font-light text-white/90 leading-none select-none">
                     R
