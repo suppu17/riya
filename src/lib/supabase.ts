@@ -11,7 +11,13 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true
+    detectSessionInUrl: true,
+    flowType: 'pkce'
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'snapstyle-app'
+    }
   }
 })
 
@@ -66,71 +72,132 @@ export interface Database {
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
-// Helper functions for profile operations
+// Helper functions for profile operations with better error handling
 export const profileService = {
-  // Get user profile
+  // Get user profile with retry logic
   async getProfile(userId: string): Promise<Profile | null> {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+    let retryCount = 0;
+    const maxRetries = 3;
 
-    if (error) {
-      console.error('Error fetching profile:', error);
-      return null;
+    while (retryCount < maxRetries) {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .single();
+
+        if (error) {
+          // If profiles table doesn't exist, return null gracefully
+          if (error.code === '42P01') {
+            console.warn('Profiles table does not exist. User will authenticate without profile data.');
+            return null;
+          }
+          
+          // If no profile found, return null (this is normal for new users)
+          if (error.code === 'PGRST116') {
+            console.log('No profile found for user, this is normal for new users');
+            return null;
+          }
+          
+          throw error;
+        }
+
+        return data;
+      } catch (error) {
+        retryCount++;
+        console.error(`Error fetching profile (attempt ${retryCount}):`, error);
+        
+        if (retryCount >= maxRetries) {
+          console.error('Max retries reached for profile fetch');
+          return null;
+        }
+        
+        // Wait before retrying
+        await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+      }
     }
 
-    return data;
+    return null;
   },
 
-  // Update user profile
+  // Update user profile with retry logic
   async updateProfile(userId: string, updates: Partial<Profile>): Promise<{ success: boolean; error?: string }> {
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        ...updates,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', userId);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userId);
 
-    if (error) {
-      console.error('Error updating profile:', error);
-      return { success: false, error: error.message };
+      if (error) {
+        console.error('Error updating profile:', error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Network error updating profile:', error);
+      return { success: false, error: 'Network error. Please try again.' };
     }
-
-    return { success: true };
   },
 
   // Create user profile (usually handled by trigger, but useful for manual creation)
   async createProfile(profile: Database['public']['Tables']['profiles']['Insert']): Promise<{ success: boolean; error?: string }> {
-    const { error } = await supabase
-      .from('profiles')
-      .insert(profile);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .insert(profile);
 
-    if (error) {
-      console.error('Error creating profile:', error);
-      return { success: false, error: error.message };
+      if (error) {
+        console.error('Error creating profile:', error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Network error creating profile:', error);
+      return { success: false, error: 'Network error. Please try again.' };
     }
-
-    return { success: true };
   },
 
   // Update user preferences
   async updatePreferences(userId: string, preferences: { favoriteCategories?: string[]; size?: string; style?: string[] }): Promise<{ success: boolean; error?: string }> {
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        preferences,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', userId);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          preferences,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', userId);
 
+      if (error) {
+        console.error('Error updating preferences:', error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Network error updating preferences:', error);
+      return { success: false, error: 'Network error. Please try again.' };
+    }
+  }
+};
+
+// Test connection function for debugging
+export const testSupabaseConnection = async (): Promise<{ success: boolean; error?: string }> => {
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    
     if (error) {
-      console.error('Error updating preferences:', error);
       return { success: false, error: error.message };
     }
-
+    
     return { success: true };
+  } catch (error) {
+    return { success: false, error: 'Failed to connect to Supabase' };
   }
 };

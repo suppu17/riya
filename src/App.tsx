@@ -15,7 +15,7 @@ const AppContent: React.FC = () => {
   const [currentView, setCurrentView] = useState("home");
   const [showLanding, setShowLanding] = useState(true);
   const { currentWallpaper } = useWallpaper();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
   // Reset showLanding when user becomes authenticated
   useEffect(() => {
@@ -75,10 +75,10 @@ const AppContent: React.FC = () => {
                 {/* Loading Text */}
                 <div className="space-y-2">
                   <p className="text-white/90 text-lg font-medium">
-                    Loading your experience...
+                    {user ? `Welcome back, ${user.name}!` : 'Loading your experience...'}
                   </p>
                   <p className="text-white/60 text-sm">
-                    Preparing your AI-powered fashion journey
+                    {user ? 'Setting up your dashboard...' : 'Preparing your AI-powered fashion journey'}
                   </p>
                 </div>
               </div>
