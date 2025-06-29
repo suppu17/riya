@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "motion/react";
 import { useShopping } from "../../contexts/ShoppingContext";
-import { Star, Plus, Minus, ShoppingBag } from "lucide-react";
+import { Star, Plus, Minus, ShoppingBag, Truck, Clock, Shield } from "lucide-react";
 
 const ProductActions: React.FC = () => {
   const { selectedProduct, quantity, setQuantity, addToCart } = useShopping();
@@ -159,6 +159,40 @@ const ProductActions: React.FC = () => {
           <ShoppingBag className="w-5 h-5 text-white/80 group-hover:text-white transition-colors" />
           Add to Cart
         </motion.button>
+
+        {/* Delivery Information */}
+        <motion.div
+          className=""
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.4, delay: 1.0 }}
+        >
+          <motion.h3
+            className="text-white/90 text-sm font-semibold mb-3 mt-2 flex items-center gap-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: 1.1 }}
+          >
+            <Truck className="w-4 h-4 text-white/70" />
+            Delivery Info
+          </motion.h3>
+          
+          <motion.div
+            className="space-y-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: 1.2 }}
+          >
+            <div className="flex items-center gap-2 text-xs text-white/70">
+              <Clock className="w-3 h-3 text-white-400" />
+              <span>Free delivery in 2-3 days</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-white/70">
+              <Shield className="w-3 h-3 text-white-400" />
+              <span>30-day return policy</span>
+            </div>
+          </motion.div>
+        </motion.div>
       </motion.div>
     </motion.div>
   );
