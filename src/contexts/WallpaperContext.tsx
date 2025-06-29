@@ -56,10 +56,27 @@ const wallpapers = [
 export const WallpaperProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [currentWallpaper, setCurrentWallpaper] = useState(wallpapers[0].url);
+  // Load wallpaper from localStorage or use default
+  const [currentWallpaper, setCurrentWallpaper] = useState(() => {
+    try {
+      const savedWallpaper = localStorage.getItem('selectedWallpaper');
+      return savedWallpaper || wallpapers[0].url;
+    } catch (error) {
+      console.error('Error loading wallpaper from localStorage:', error);
+      return wallpapers[0].url;
+    }
+  });
 
   const setWallpaper = (wallpaper: string) => {
-    setCurrentWallpaper(wallpaper);
+    try {
+      // Save to localStorage
+      localStorage.setItem('selectedWallpaper', wallpaper);
+      setCurrentWallpaper(wallpaper);
+    } catch (error) {
+      console.error('Error saving wallpaper to localStorage:', error);
+      // Still update the state even if localStorage fails
+      setCurrentWallpaper(wallpaper);
+    }
   };
 
   return (

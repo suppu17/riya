@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MainContent from "./components/MainContent";
 import BottomNav from "./components/BottomNav";
 import WallpaperSettings from "./components/WallpaperSettings";
 import NewLandingPage from "./components/NewLandingPage";
+import TestComponent from './TestComponent';
 
 import { ShoppingProvider } from "./contexts/ShoppingContext";
 import { VoiceProvider } from "./contexts/VoiceContext";
 import { WallpaperProvider, useWallpaper } from "./contexts/WallpaperContext";
+import { UserProvider } from "./contexts/UserContext";
 
 const AppContent: React.FC = () => {
   const [currentView, setCurrentView] = useState("home");
@@ -17,6 +19,30 @@ const AppContent: React.FC = () => {
     setShowLanding(false);
     setCurrentView("shop");
   };
+
+  // Listen for navigation to profile page event
+  useEffect(() => {
+    const handleNavigateToProfile = (event: CustomEvent) => {
+      setShowLanding(false);
+      setCurrentView("profile");
+      
+      // If scrollToSubscriptions is requested, scroll to manage subscriptions section
+      if (event.detail?.scrollToSubscriptions) {
+        setTimeout(() => {
+          const subscriptionElement = document.querySelector('[data-subscription-section]');
+          if (subscriptionElement) {
+            subscriptionElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+      }
+    };
+
+    window.addEventListener('navigateToProfile', handleNavigateToProfile as EventListener);
+    
+    return () => {
+      window.removeEventListener('navigateToProfile', handleNavigateToProfile as EventListener);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -40,9 +66,9 @@ const AppContent: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30"></div>
         <div className="absolute inset-0 bg-black/20"></div>
 
-        {/* Main Content - Centered */}
-        <div className="relative z-10 min-h-screen p-8">
-          <div className="w-full max-w-7xl mx-auto">
+        {/* Main Content - Full Width */}
+        <div className="relative z-10 min-h-screen">
+          <div className="w-full">
             <MainContent currentView={currentView} />
           </div>
         </div>
@@ -60,11 +86,13 @@ const AppContent: React.FC = () => {
 function App() {
   return (
     <WallpaperProvider>
-      <VoiceProvider>
-        <ShoppingProvider>
-          <AppContent />
-        </ShoppingProvider>
-      </VoiceProvider>
+      <UserProvider>
+        <VoiceProvider>
+          <ShoppingProvider>
+            <AppContent />
+          </ShoppingProvider>
+        </VoiceProvider>
+      </UserProvider>
     </WallpaperProvider>
   );
 }

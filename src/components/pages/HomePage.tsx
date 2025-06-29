@@ -11,7 +11,7 @@ import RiyaVoiceAgent from "../RiyaVoiceAgent";
 const HomePage: React.FC = () => {
   return (
     <motion.div
-      className="min-h-screen"
+      className="min-h-screen px-4 py-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}

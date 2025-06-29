@@ -11,7 +11,7 @@ const WallpaperSettings: React.FC = () => {
       {/* Settings Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed top-6 right-6 w-12 h-12 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all duration-300 z-50"
+        className="w-12 h-12 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all duration-300"
       >
         <Settings className="w-5 h-5" />
       </button>

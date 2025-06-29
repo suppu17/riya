@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useShopping } from "../../contexts/ShoppingContext";
+import { useUser } from "../../contexts/UserContext";
 import TryOnDisplay from "./TryOnDisplay";
 import PhotoSelectionModal from "../PhotoSelectionModal";
 
@@ -15,15 +16,30 @@ const ProductDisplay: React.FC = () => {
     selectedModelId,
     modelImages,
   } = useShopping();
-
+  
+  const { isPremium } = useUser();
   const [showModelModal, setShowModelModal] = useState(false);
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   const handleTryOnClick = async () => {
+    // Check if user is premium
+    if (!isPremium) {
+      setShowPremiumModal(true);
+      return;
+    }
+    
     if (!selectedModelId) {
       setShowModelModal(true);
       return;
     }
     await handleTryOnMe();
+  };
+
+  const handleGoToSubscriptions = () => {
+    setShowPremiumModal(false);
+    // Navigate to profile page and scroll to manage subscriptions
+    const event = new CustomEvent('navigateToProfile', { detail: { scrollToSubscriptions: true } });
+    window.dispatchEvent(event);
   };
 
   if (!selectedProduct) {
@@ -307,6 +323,75 @@ const ProductDisplay: React.FC = () => {
         isOpen={showModelModal}
         onClose={() => setShowModelModal(false)}
       />
+
+      {/* Premium Subscription Modal */}
+      <AnimatePresence>
+        {showPremiumModal && (
+          <motion.div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowPremiumModal(false)}
+          >
+            <motion.div
+              className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 max-w-md w-full mx-4"
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="text-center">
+                <motion.div
+                  className="w-16 h-16 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="32"
+                    height="32"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    className="text-white"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      d="M12 15v5m-3 0h6M12 3a6 6 0 0 1 6 6c0 3-2 5.1-6 5.1S6 12 6 9a6 6 0 0 1 6-6Z"
+                    />
+                  </svg>
+                </motion.div>
+                
+                <h3 className="text-2xl font-bold text-white mb-2">
+                  Premium Feature
+                </h3>
+                
+                <p className="text-white/80 mb-6">
+                  AI Try-On is available for premium subscribers only. Upgrade to unlock this amazing feature and many more!
+                </p>
+                
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowPremiumModal(false)}
+                    className="flex-1 px-4 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all duration-200 border border-white/20"
+                  >
+                    Cancel
+                  </button>
+                  
+                  <button
+                    onClick={handleGoToSubscriptions}
+                    className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl transition-all duration-200 font-medium"
+                  >
+                    Manage Subscriptions
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
