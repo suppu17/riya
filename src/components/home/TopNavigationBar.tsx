@@ -1,13 +1,19 @@
 import React, { useState } from "react";
 import { motion } from "motion/react";
 import { useShopping } from "../../contexts/ShoppingContext";
-import { Mic, ShoppingCart } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import { Mic, ShoppingCart, User, LogIn } from "lucide-react";
 import CartModal from "../CartModal";
+import AuthModal from "../auth/AuthModal";
+import UserProfile from "../UserProfile";
 
 const TopNavigationBar: React.FC = () => {
   const { getCartItemCount } = useShopping();
+  const { user, isAuthenticated } = useAuth();
   const cartCount = getCartItemCount();
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const handleCartClick = () => {
     setIsCartModalOpen(true);
@@ -15,6 +21,14 @@ const TopNavigationBar: React.FC = () => {
 
   const handleCloseCartModal = () => {
     setIsCartModalOpen(false);
+  };
+
+  const handleUserClick = () => {
+    if (isAuthenticated) {
+      setIsProfileOpen(true);
+    } else {
+      setIsAuthModalOpen(true);
+    }
   };
 
   return (
@@ -65,6 +79,52 @@ const TopNavigationBar: React.FC = () => {
           </motion.div>
         </motion.button>
 
+        {/* User Profile/Auth Button */}
+        <motion.button
+          onClick={handleUserClick}
+          className="flex items-center gap-2 bg-white/10 backdrop-blur-xl rounded-lg px-3 py-2 border border-white/20 cursor-pointer"
+          whileHover={{
+            scale: 1.05,
+            backgroundColor: "rgba(255, 255, 255, 0.15)",
+            borderColor: "rgba(255, 255, 255, 0.3)",
+          }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.2 }}
+        >
+          <motion.div
+            animate={{
+              rotate: isAuthenticated ? [0, -10, 10, 0] : 0,
+            }}
+            transition={{
+              duration: 0.5,
+              repeat: isAuthenticated ? 1 : 0,
+            }}
+          >
+            {isAuthenticated ? (
+              user?.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt={user.name}
+                  className="w-4 h-4 rounded-full object-cover"
+                />
+              ) : (
+                <User className="w-4 h-4 text-white/80" />
+              )
+            ) : (
+              <LogIn className="w-4 h-4 text-white/80" />
+            )}
+          </motion.div>
+          <motion.span
+            className="text-white text-sm"
+            key={isAuthenticated ? 'authenticated' : 'guest'}
+            initial={{ scale: 1.2, color: "rgba(34, 197, 94, 1)" }}
+            animate={{ scale: 1, color: "rgba(255, 255, 255, 1)" }}
+            transition={{ duration: 0.3 }}
+          >
+            {isAuthenticated ? (user?.name?.split(' ')[0] || 'User') : 'Sign In'}
+          </motion.span>
+        </motion.button>
+
         <motion.button
           onClick={handleCartClick}
           className="flex items-center gap-2 bg-white/10 backdrop-blur-xl rounded-lg px-3 py-2 border border-white/20 cursor-pointer"
@@ -101,6 +161,18 @@ const TopNavigationBar: React.FC = () => {
 
       {/* Cart Modal */}
       <CartModal isOpen={isCartModalOpen} onClose={handleCloseCartModal} />
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
+
+      {/* User Profile Modal */}
+      <UserProfile
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+      />
     </motion.div>
   );
 };

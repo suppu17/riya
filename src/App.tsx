@@ -8,6 +8,7 @@ import LandingPage from "./components/LandingPage";
 import { ShoppingProvider } from "./contexts/ShoppingContext";
 import { VoiceProvider } from "./contexts/VoiceContext";
 import { WallpaperProvider, useWallpaper } from "./contexts/WallpaperContext";
+import { AuthProvider } from "./contexts/AuthContext";
 
 const AppContent: React.FC = () => {
   const [currentView, setCurrentView] = useState("home");
@@ -55,13 +56,15 @@ const AppContent: React.FC = () => {
 
 function App() {
   return (
-    <WallpaperProvider>
-      <VoiceProvider>
-        <ShoppingProvider>
-          <AppContent />
-        </ShoppingProvider>
-      </VoiceProvider>
-    </WallpaperProvider>
+    <AuthProvider>
+      <WallpaperProvider>
+        <VoiceProvider>
+          <ShoppingProvider>
+            <AppContent />
+          </ShoppingProvider>
+        </VoiceProvider>
+      </WallpaperProvider>
+    </AuthProvider>
   );
 }
 

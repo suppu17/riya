@@ -15,14 +15,17 @@ import {
   ChevronRight,
   Heart,
   Star,
+  LogOut,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useShopping } from "../../contexts/ShoppingContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { useState } from "react";
 import TopNavigationBar from "../home/TopNavigationBar";
 
 const ProfilePage: React.FC = () => {
   const { generatedImages, deleteGeneratedImage } = useShopping();
+  const { user, logout } = useAuth();
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null
   );
@@ -36,6 +39,27 @@ const ProfilePage: React.FC = () => {
       icon: Eye,
     },
   ];
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  if (!user) {
+    return (
+      <motion.div
+        className="min-h-screen flex items-center justify-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <div className="text-center">
+          <User className="w-16 h-16 text-white/40 mx-auto mb-4" />
+          <h2 className="text-2xl font-semibold text-white mb-2">Not Signed In</h2>
+          <p className="text-white/60">Please sign in to view your profile</p>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -96,18 +120,33 @@ const ProfilePage: React.FC = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                 </div>
               )}
+
+              {/* Profile Avatar */}
+              <div className="absolute -bottom-8 left-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full border-4 border-white/20 flex items-center justify-center overflow-hidden">
+                  {user.avatar ? (
+                    <img
+                      src={user.avatar}
+                      alt={user.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <User className="w-8 h-8 text-white" />
+                  )}
+                </div>
+              </div>
             </motion.div>
 
             {/* Profile Info Section */}
             <motion.div
-              className="p-6 pt-4"
+              className="p-6 pt-12"
               initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.5 }}
             >
               <div className="mb-6">
                 <h2 className="text-xl font-bold text-white mb-1">
-                  Supriya Korukonda
+                  {user.name}
                 </h2>
                 <p className="text-white/60 text-sm flex items-center gap-2">
                   <Star className="w-4 h-4 text-yellow-400" />
@@ -129,7 +168,7 @@ const ProfilePage: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-white/40" />
-                      <span>Joined 2023</span>
+                      <span>Joined {new Date(user.createdAt).getFullYear()}</span>
                     </div>
                   </div>
                 </div>
@@ -168,6 +207,17 @@ const ProfilePage: React.FC = () => {
                   </motion.div>
                 ))}
               </motion.div>
+
+              {/* Logout Button */}
+              <motion.button
+                onClick={handleLogout}
+                className="w-full mt-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
+              </motion.button>
             </motion.div>
           </motion.div>
         </motion.div>
