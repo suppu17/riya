@@ -145,15 +145,17 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
               resetForm();
             }, 1500);
           } else {
-            // Enhanced error handling for signup
+            // Enhanced error handling for signup - STAY ON MODAL
             const errorMessage = result.error || '';
             
             if (errorMessage.includes('User already registered') || 
-                errorMessage.includes('already registered')) {
+                errorMessage.includes('already registered') ||
+                errorMessage.includes('already exists')) {
               setErrors({ 
                 submit: '👤 Account already exists',
                 hint: 'An account with this email already exists. Try signing in instead, or use "Forgot password" if needed.'
               });
+              // Don't redirect, stay on signup form so user can see the error
             } else if (errorMessage.includes('Password should be')) {
               setErrors({ 
                 submit: '🔒 Password too weak',
@@ -625,6 +627,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                                     <Info className="w-4 h-4 text-red-300/80 flex-shrink-0 mt-0.5" />
                                     <p className="text-red-200/90 text-xs leading-relaxed">{errors.hint}</p>
                                   </div>
+                                </div>
+                              )}
+
+                              {/* Quick action for "account already exists" error */}
+                              {errors.submit.includes('Account already exists') && mode === 'signup' && (
+                                <div className="mt-3 pt-2 border-t border-red-500/20">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleModeChange('login')}
+                                    className="text-xs text-red-200 hover:text-red-100 underline transition-colors"
+                                  >
+                                    Switch to Sign In →
+                                  </button>
                                 </div>
                               )}
                             </div>
