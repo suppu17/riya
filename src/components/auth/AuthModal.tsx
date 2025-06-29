@@ -153,7 +153,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                 errorMessage.includes('already exists')) {
               setErrors({ 
                 submit: '👤 Account already exists',
-                hint: 'An account with this email already exists. Try signing in instead, or use "Forgot password" if needed.'
+                hint: 'An account with this email already exists. Try signing in instead, or use "Forgot password" if needed.',
+                showSwitchToLogin: 'true' // Special flag for showing switch button
               });
               // Don't redirect, stay on signup form so user can see the error
             } else if (errorMessage.includes('Password should be')) {
@@ -237,6 +238,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
         const newErrors = { ...prev };
         delete newErrors.submit;
         delete newErrors.hint;
+        delete newErrors.showSwitchToLogin;
         return newErrors;
       });
     }
@@ -631,7 +633,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                               )}
 
                               {/* Quick action for "account already exists" error */}
-                              {errors.submit.includes('Account already exists') && mode === 'signup' && (
+                              {errors.showSwitchToLogin && mode === 'signup' && (
                                 <div className="mt-3 pt-2 border-t border-red-500/20">
                                   <button
                                     type="button"
