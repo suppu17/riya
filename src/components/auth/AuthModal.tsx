@@ -179,47 +179,75 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
             }
           }}
         >
-          {/* Glass Morphism Container */}
+          {/* Main Container - Split Layout */}
           <motion.div
-            className="relative w-full max-w-lg"
+            className="relative w-full max-w-6xl h-[90vh] max-h-[800px]"
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Main Glass Container */}
-            <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-[3rem] overflow-hidden shadow-2xl">
+            {/* Glass Morphism Container */}
+            <div className="relative w-full h-full bg-white/10 backdrop-blur-xl border border-white/20 rounded-[3rem] overflow-hidden shadow-2xl flex">
               {/* Gradient Overlays */}
               <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-purple-500/10 to-pink-400/20" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10" />
 
-              {/* Floating Particles */}
-              <div className="absolute inset-0 pointer-events-none">
-                {[...Array(8)].map((_, i) => (
+              {/* Left Section - Authentication */}
+              <div className="relative z-10 w-1/2 flex flex-col justify-center p-12">
+                {/* Header */}
+                <div className="mb-8">
+                  {/* Logo */}
                   <motion.div
-                    key={i}
-                    className="absolute w-1 h-1 bg-white/30 rounded-full"
-                    style={{
-                      left: `${15 + i * 12}%`,
-                      top: `${20 + (i % 4) * 20}%`,
-                    }}
-                    animate={{
-                      opacity: [0.3, 1, 0.3],
-                      scale: [0.5, 1.2, 0.5],
-                    }}
-                    transition={{
-                      duration: 2 + i * 0.3,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                      delay: i * 0.2,
-                    }}
-                  />
-                ))}
-              </div>
+                    className="mb-8"
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ duration: 0.6, type: "spring", stiffness: 200 }}
+                  >
+                    <div className="text-4xl font-light text-white tracking-wider">
+                      riya
+                    </div>
+                  </motion.div>
 
-              {/* Content */}
-              <div className="relative z-10 p-8">
+                  {/* Back Button for Forgot Password */}
+                  {mode === 'forgot-password' && (
+                    <motion.button
+                      onClick={() => handleModeChange('login')}
+                      className="absolute top-8 left-8 p-3 text-white/60 hover:text-white transition-colors rounded-full hover:bg-white/10"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                    </motion.button>
+                  )}
+
+                  {/* Close Button */}
+                  <motion.button
+                    onClick={onClose}
+                    className="absolute top-8 right-8 p-3 text-white/60 hover:text-white transition-colors rounded-full hover:bg-white/10"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <X className="w-5 h-5" />
+                  </motion.button>
+
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <h2 className="text-3xl font-light text-white mb-2 tracking-wide">
+                      {getTitle()}
+                    </h2>
+                    <p className="text-white/70 text-sm">
+                      {getSubtitle()}
+                    </p>
+                  </motion.div>
+                </div>
+
                 {/* Success State */}
                 {showSuccess ? (
                   <motion.div
@@ -272,60 +300,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                   </motion.div>
                 ) : (
                   <>
-                    {/* Header */}
-                    <div className="text-center mb-8">
-                      {/* Logo/Icon */}
-                      <motion.div
-                        className="relative w-16 h-16 mx-auto mb-6"
-                        initial={{ scale: 0, rotate: -180 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        transition={{ duration: 0.6, type: "spring", stiffness: 200 }}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full" />
-                        <div className="absolute inset-0 bg-white/20 rounded-full animate-pulse" />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <Sparkles className="w-8 h-8 text-white" />
-                        </div>
-                      </motion.div>
-
-                      {/* Back Button for Forgot Password */}
-                      {mode === 'forgot-password' && (
-                        <motion.button
-                          onClick={() => handleModeChange('login')}
-                          className="absolute top-8 left-8 p-3 text-white/60 hover:text-white transition-colors rounded-full hover:bg-white/10"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.2 }}
-                        >
-                          <ArrowLeft className="w-5 h-5" />
-                        </motion.button>
-                      )}
-
-                      {/* Close Button */}
-                      <motion.button
-                        onClick={onClose}
-                        className="absolute top-8 right-8 p-3 text-white/60 hover:text-white transition-colors rounded-full hover:bg-white/10"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 }}
-                      >
-                        <X className="w-5 h-5" />
-                      </motion.button>
-
-                      <motion.div
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.3 }}
-                      >
-                        <h2 className="text-3xl font-light text-white mb-2 tracking-wide">
-                          {getTitle()}
-                        </h2>
-                        <p className="text-white/70 text-sm">
-                          {getSubtitle()}
-                        </p>
-                      </motion.div>
-                    </div>
-
                     {/* Success Message */}
                     {successMessage && !showSuccess && (
                       <motion.div
@@ -519,7 +493,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                         </motion.div>
                       )}
 
-                      {/* Submit Button - Updated to match app style */}
+                      {/* Submit Button - Glass morphism style */}
                       <motion.button
                         type="submit"
                         disabled={isSubmitting}
@@ -602,6 +576,102 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                     </motion.div>
                   </>
                 )}
+              </div>
+
+              {/* Right Section - Video */}
+              <div className="relative w-1/2 overflow-hidden">
+                {/* Video Background */}
+                <video
+                  src="https://cdn.midjourney.com/video/e50e647d-a74e-4b29-aa82-b418ac1fff63/3.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                
+                {/* Video Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/10 to-black/30" />
+                
+                {/* Content Overlay */}
+                <div className="relative z-10 h-full flex flex-col justify-between p-12">
+                  {/* Top Right - Menu and Number */}
+                  <div className="flex justify-between items-start">
+                    <div className="text-white/80 text-sm font-light">+ menu</div>
+                    <div className="text-6xl font-light text-white/90">01</div>
+                  </div>
+
+                  {/* Center Content */}
+                  <div className="text-center">
+                    <motion.h1 
+                      className="text-4xl font-light text-white leading-tight tracking-wide mb-4"
+                      initial={{ y: 30, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.5, duration: 0.8 }}
+                    >
+                      EXHIBITION<br />
+                      OF CONTEMPORARY<br />
+                      PHOTOGRAPHS
+                    </motion.h1>
+                    
+                    {/* Large S Logo */}
+                    <motion.div 
+                      className="text-8xl font-light text-white/90 my-8"
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: 0.7, duration: 0.6 }}
+                    >
+                      S
+                    </motion.div>
+                    
+                    <motion.p 
+                      className="text-white/80 text-sm leading-relaxed max-w-md mx-auto"
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.9, duration: 0.6 }}
+                    >
+                      Watch our showreel to learn more about the exhibition. It was created by creative people to reflect the modern vision of the photographer, to observe trends and realities. Get your dose of inspiration from our top photographers.
+                    </motion.p>
+                  </div>
+
+                  {/* Bottom Right - Hash Number */}
+                  <div className="flex justify-end">
+                    <div className="text-6xl font-light text-white/90">#9</div>
+                  </div>
+                </div>
+
+                {/* Decorative Elements */}
+                <div className="absolute top-1/2 left-8 transform -translate-y-1/2">
+                  <div className="w-32 h-32 bg-white/10 backdrop-blur-sm rounded-3xl flex items-center justify-center">
+                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                      <div className="w-0 h-0 border-l-4 border-l-white border-t-2 border-b-2 border-t-transparent border-b-transparent ml-1"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating Particles */}
+              <div className="absolute inset-0 pointer-events-none">
+                {[...Array(8)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-1 h-1 bg-white/30 rounded-full"
+                    style={{
+                      left: `${15 + i * 12}%`,
+                      top: `${20 + (i % 4) * 20}%`,
+                    }}
+                    animate={{
+                      opacity: [0.3, 1, 0.3],
+                      scale: [0.5, 1.2, 0.5],
+                    }}
+                    transition={{
+                      duration: 2 + i * 0.3,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: i * 0.2,
+                    }}
+                  />
+                ))}
               </div>
             </div>
           </motion.div>
