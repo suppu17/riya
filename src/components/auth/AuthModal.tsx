@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Mail, Lock, User, Eye, EyeOff, Loader2, ArrowLeft, CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
+import { X, Mail, Lock, User, Eye, EyeOff, Loader2, ArrowLeft, CheckCircle, AlertCircle, Sparkles, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -26,6 +26,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showDebugInfo, setShowDebugInfo] = useState(false);
 
   const { login, signup, resetPassword, loginWithGoogle } = useAuth();
 
@@ -100,7 +101,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
               resetForm();
             }, 1500);
           } else {
-            setErrors({ submit: result.error || 'Login failed' });
+            // Enhanced error handling for login
+            if (result.error?.includes('Invalid login credentials') || result.error?.includes('Invalid email or password')) {
+              setErrors({ 
+                submit: 'The email or password you entered is incorrect. Please check your credentials and try again.',
+                hint: 'If you don\'t have an account yet, please sign up below. If you forgot your password, use the "Forgot your password?" link.'
+              });
+            } else {
+              setErrors({ submit: result.error || 'Login failed' });
+            }
           }
           break;
 
@@ -162,6 +171,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+    // Clear submit errors when user starts typing
+    if (errors.submit || errors.hint) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.submit;
+        delete newErrors.hint;
+        return newErrors;
+      });
     }
   };
 
@@ -534,12 +552,22 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                       {/* Submit Error */}
                       {errors.submit && (
                         <motion.div
-                          className="p-4 bg-red-500/20 border border-red-500/30 rounded-2xl flex items-center gap-3 backdrop-blur-sm"
+                          className="p-4 bg-red-500/20 border border-red-500/30 rounded-2xl backdrop-blur-sm space-y-3"
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
                         >
-                          <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
-                          <p className="text-red-300 text-sm">{errors.submit}</p>
+                          <div className="flex items-center gap-3">
+                            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                            <p className="text-red-300 text-sm">{errors.submit}</p>
+                          </div>
+                          
+                          {/* Additional hint for login errors */}
+                          {errors.hint && (
+                            <div className="flex items-start gap-3 pt-2 border-t border-red-500/20">
+                              <Info className="w-4 h-4 text-red-300 flex-shrink-0 mt-0.5" />
+                              <p className="text-red-200/80 text-xs leading-relaxed">{errors.hint}</p>
+                            </div>
+                          )}
                         </motion.div>
                       )}
 
@@ -612,12 +640,40 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess, initi
                         </div>
                       )}
 
+                      {/* Debug Toggle for Development */}
+                      {process.env.NODE_ENV === 'development' && (
+                        <button
+                          onClick={() => setShowDebugInfo(!showDebugInfo)}
+                          className="text-white/40 hover:text-white/60 text-xs transition-colors"
+                        >
+                          {showDebugInfo ? 'Hide' : 'Show'} Debug Info
+                        </button>
+                      )}
+
+                      {/* Debug Information */}
+                      {showDebugInfo && process.env.NODE_ENV === 'development' && (
+                        <motion.div
+                          className="mt-4 p-3 bg-gray-900/50 border border-gray-600/30 rounded-xl backdrop-blur-sm text-left"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                        >
+                          <h4 className="text-white/80 text-xs font-medium mb-2">Debug Information:</h4>
+                          <div className="text-white/60 text-xs space-y-1">
+                            <p>• To test login, you need an existing account</p>
+                            <p>• Try signing up first if you don't have an account</p>
+                            <p>• Check your Supabase dashboard for registered users</p>
+                            <p>• Email: {formData.email || 'Not entered'}</p>
+                            <p>• Mode: {mode}</p>
+                          </div>
+                        </motion.div>
+                      )}
+
                       {/* Powered by Supabase with Cyan Theme */}
                       <div className="mt-6 p-4 bg-cyan-500/10 border border-cyan-400/20 rounded-2xl backdrop-blur-sm">
                         <div className="flex items-center justify-center gap-2 mb-2">
                           <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
-                          <p className="text-cyan-300 text-xs font-medium">Powered by </p>
-                                          <div className="i-bolt-supabase text-white"></div>
+                          <p className="text-cyan-300 text-xs font-medium">Powered by Supabase</p>
                         </div>
                         <p className="text-cyan-200/80 text-xs">
                           Secure authentication with real-time database
