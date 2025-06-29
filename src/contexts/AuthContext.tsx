@@ -181,9 +181,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = () => {
+    // Clear user state immediately
     setUser(null);
+    
+    // Clear localStorage
     localStorage.removeItem('riya_user');
     localStorage.removeItem('riya_session');
+    
+    // Force page reload to reset all app state and redirect to landing
+    window.location.reload();
   };
 
   const updateProfile = async (updates: Partial<User>): Promise<{ success: boolean; error?: string }> => {

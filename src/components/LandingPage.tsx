@@ -28,9 +28,34 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
     };
   }, []);
 
+  // Redirect to dashboard when user logs in
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      // Small delay to show the login success state
+      const redirectTimer = setTimeout(() => {
+        onComplete();
+      }, 1000);
+
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [isAuthenticated, user, onComplete]);
+
   const handleUserClick = () => {
     if (isAuthenticated) {
       setIsProfileOpen(true);
+    } else {
+      setIsAuthModalOpen(true);
+    }
+  };
+
+  const handleAuthSuccess = () => {
+    setIsAuthModalOpen(false);
+    // The useEffect above will handle the redirect
+  };
+
+  const handleEnterExperience = () => {
+    if (isAuthenticated) {
+      onComplete();
     } else {
       setIsAuthModalOpen(true);
     }
@@ -88,6 +113,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                       <span className="text-white text-sm font-medium">
                         {user?.name?.split(' ')[0] || 'User'}
                       </span>
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                     </>
                   ) : (
                     <>
@@ -103,6 +129,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
               </div>
             </div>
           </div>
+
+          {/* Success Message for Logged In Users */}
+          {isAuthenticated && user && (
+            <div className="absolute top-24 right-8 z-20">
+              <div className="bg-green-500/20 backdrop-blur-xl border border-green-500/30 rounded-2xl px-4 py-2">
+                <p className="text-green-300 text-sm font-medium">
+                  Welcome back, {user.name?.split(' ')[0]}! Redirecting to dashboard...
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Main Content Grid */}
           <div className="absolute inset-0 p-8 pt-24">
@@ -181,12 +218,21 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
 
                 {/* CTA Button */}
                 <button
-                  onClick={onComplete}
+                  onClick={handleEnterExperience}
                   className="group flex items-center gap-3 px-8 py-4 bg-white/15 backdrop-blur-xl rounded-full border border-white/30 text-white hover:bg-white/25 transition-all duration-300 hover:scale-105"
                 >
-                  <span className="text-sm font-medium">Enter Experience</span>
+                  <span className="text-sm font-medium">
+                    {isAuthenticated ? 'Continue to Dashboard' : 'Enter Experience'}
+                  </span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                 </button>
+
+                {/* Sign In Prompt for Non-Authenticated Users */}
+                {!isAuthenticated && (
+                  <p className="text-white/60 text-xs mt-4">
+                    Sign in required to access the full experience
+                  </p>
+                )}
               </div>
 
               {/* Right Section - Profile */}
@@ -252,6 +298,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
+        onSuccess={handleAuthSuccess}
       />
 
       {/* User Profile Modal */}
