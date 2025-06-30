@@ -30,36 +30,37 @@ const RiyaInteractionHub: React.FC = () => {
     client: apiKey ? new ElevenLabsClient({ apiKey }) : undefined,
     voiceId: "21m00Tcm4TlvDq8ikWAM",
     clientTools: {
-      search_products: async (query: { query: string }) => {
+      search_products: async (query: {
+        type: { productID: string | number };
+      }) => {
+        // Log the raw query to avoid console display issues with object mutation
         console.log("from search_products:", JSON.stringify(query, null, 2));
-        const searchQuery = query.query;
 
-        if (!searchQuery) {
-          return "I'm sorry, I need a search term to find products.";
-        }
-
-        // Filter products based on query
-        const searchResults = products.filter(
-          (product) =>
-            product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            product.category
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            (product.description &&
-              product.description
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase()))
+        const productID = query?.type?.productID;
+        console.log(
+          `Extracted productID: ${productID} (type: ${typeof productID})`
         );
 
-        if (searchResults.length > 0) {
-          setSelectedProduct(searchResults[0]);
-          setCurrentCategory(searchResults[0].category);
-          return `I found ${searchResults.length} products matching "${searchQuery}". I've selected the ${searchResults[0].name} for you to view.`;
+        // Check if productID is null or undefined, which is safer than !productID
+        if (productID == null) {
+          return "I'm sorry, I couldn't find any products matching \"\".";
+        }
+
+        // Ensure we are comparing strings, as product.id is a string
+        const productIDString = String(productID);
+
+        const foundProduct = products.find(
+          (product) => product.id.toString() === productIDString
+        );
+
+        if (foundProduct) {
+          setSelectedProduct(foundProduct);
+          setCurrentCategory(foundProduct.category);
+          return `I found the ${foundProduct.name}. I've put it on the screen for you.`;
         } else {
-          return `I'm sorry, I couldn't find any products matching "${searchQuery}". Try searching for categories like "dresses", "tops", or "accessories".`;
+          return `I'm sorry, I couldn't find any products matching "${productIDString}".`;
         }
       },
-
       add_to_cart: async (query: { productId: string }) => {
         console.log("from add_to_cart:", JSON.stringify(query, null, 2));
         const { productId } = query;
@@ -84,16 +85,19 @@ const RiyaInteractionHub: React.FC = () => {
 
       switch_category: async (query: {
         type?: { category: string };
+        "type "?: { category: string };
         categoryName?: string;
       }) => {
         console.log("from switch_category:", JSON.stringify(query, null, 2));
-        const availableCategories = [
-          ...new Set(products.map((p) => p.category)),
-        ];
+        const availableCategories = ["Clothing", "Bags", "Watches", "Shoes"];
 
-        const categoryName = query.type?.category || query.categoryName;
+        // Handle both 'type' and 'type ' (with trailing space) keys
+        const categoryName =
+          query.type?.category || query["type"]?.category || query.categoryName;
 
         console.log(availableCategories, categoryName, "availableCategories");
+        console.log("Raw query object:", query);
+        console.log("Extracted categoryName:", categoryName);
 
         if (!categoryName) {
           return "I'm sorry, I need a category name to switch to.";
