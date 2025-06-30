@@ -54,25 +54,47 @@ interface ReelPost extends GeneratedImageData {
   caption: string;
 }
 
-const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isActive }) => {
+interface ToastState {
+  show: boolean;
+  message: string;
+  type: 'success' | 'error' | 'info';
+}
+
+const ReelCard: React.FC<{ post: ReelPost; isActive: boolean; onDelete: (imageId: string) => void }> = ({ post, isActive, onDelete }) => {
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [likes, setLikes] = useState(post.likes);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [toast, setToast] = useState<ToastState>({ show: false, message: '', type: 'info' });
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const showToast = (message: string, type: ToastState['type'] = 'info') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: 'info' }), 3000);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        console.log('Clicking outside dropdown, closing...');
+        setShowDropdown(false);
+      }
+    };
+
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
         setShowDropdown(false);
       }
     };
 
     if (showDropdown) {
       document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscapeKey);
+      console.log('Dropdown opened, adding event listeners');
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
     };
   }, [showDropdown]);
 
@@ -83,18 +105,40 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isAct
 
   const handleDownload = async () => {
     try {
-      const response = await fetch(post.url);
+      console.log('Starting download for:', post.url);
+      showToast('Downloading image...', 'info');
+      
+      const response = await fetch(post.url, {
+        mode: 'cors',
+        headers: {
+          'Accept': 'image/*'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${post.productName}-${post.id}.jpg`;
+      a.download = `${post.productName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}-${post.id}.jpg`;
+      a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+      
+      showToast('Image downloaded successfully!', 'success');
+      console.log('Download completed successfully');
     } catch (error) {
       console.error('Download failed:', error);
+      showToast('Failed to download image. Please try again.', 'error');
     }
     setShowDropdown(false);
   };
@@ -102,36 +146,68 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isAct
   const handleShare = async () => {
     if (navigator.share) {
       try {
+        // For mobile devices, this will open native share sheet with apps like iMessage, WhatsApp, etc.
+        const response = await fetch(post.url);
+        const blob = await response.blob();
+        const file = new File([blob], `${post.productName}-${post.id}.jpg`, { type: 'image/jpeg' });
+        
         await navigator.share({
           title: post.productName,
           text: post.caption,
-          url: post.url,
+          files: [file],
+          url: post.url
         });
       } catch (error) {
         console.error('Share failed:', error);
+        // Fallback to text sharing if file sharing fails
+        try {
+          await navigator.share({
+            title: post.productName,
+            text: `${post.caption} - ${post.url}`,
+          });
+        } catch (fallbackError) {
+           navigator.clipboard.writeText(`${post.caption} - ${post.url}`);
+           showToast('Link copied to clipboard!', 'success');
+         }
       }
     } else {
       // Fallback for browsers that don't support Web Share API
-      navigator.clipboard.writeText(post.url);
-      alert('Link copied to clipboard!');
+      navigator.clipboard.writeText(`${post.caption} - ${post.url}`);
+      showToast('Link copied to clipboard!', 'success');
     }
     setShowDropdown(false);
   };
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(post.url);
-      alert('Link copied to clipboard!');
+      // Copy the direct image URL instead of application URL
+      const imageUrl = post.url;
+      await navigator.clipboard.writeText(imageUrl);
+      showToast('Image link copied to clipboard! You can now paste it anywhere to share this image.', 'success');
     } catch (error) {
       console.error('Copy failed:', error);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = post.url;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      showToast('Image link copied to clipboard!', 'success');
     }
     setShowDropdown(false);
   };
 
   const handleDelete = () => {
-    if (confirm('Are you sure you want to delete this image?')) {
-      // TODO: Implement delete functionality
-      console.log('Delete image:', post.id);
+    if (confirm('Are you sure you want to delete this image? This action cannot be undone.')) {
+      try {
+        console.log('Delete image:', post.id);
+        onDelete(post.id);
+        showToast('Image deleted successfully!', 'success');
+      } catch (error) {
+        console.error('Delete failed:', error);
+        showToast('Failed to delete image. Please try again.', 'error');
+      }
     }
     setShowDropdown(false);
   };
@@ -162,21 +238,33 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isAct
               {/* Username and model text removed */}
             </div>
           </div>
-          <div className="relative" ref={dropdownRef}>
+          <div className="relative z-50" ref={dropdownRef}>
             <button 
-              className="text-white/80 hover:text-white transition-colors duration-200 p-2 rounded-full hover:bg-white/10"
+              className={`text-white hover:text-white transition-all duration-200 p-3 rounded-full hover:bg-white/30 active:scale-95 shadow-lg backdrop-blur-sm border border-white/20 ${
+                showDropdown ? 'bg-white/30 text-white scale-95' : 'bg-white/10'
+              }`}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('Three dots clicked, current state:', showDropdown);
                 setShowDropdown(!showDropdown);
               }}
+              aria-label="More options"
+              type="button"
             >
-              <MoreHorizontal className="w-5 h-5" />
+              <MoreHorizontal className="w-6 h-6" />
             </button>
             
-            {showDropdown && (
-              <div className="absolute top-8 right-0 bg-white rounded-lg shadow-xl py-2 min-w-[160px] z-[9999] border border-gray-200">
+            <AnimatePresence>
+              {showDropdown && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute top-12 right-0 bg-white rounded-xl shadow-2xl py-2 min-w-[200px] z-[99999] border border-gray-200 backdrop-blur-sm"
+                  style={{ position: 'absolute' }}
+                >
                 <button
                   onClick={(e) => {
                     e.preventDefault();
@@ -184,9 +272,10 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isAct
                     console.log('Download clicked');
                     handleDownload();
                   }}
-                  className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center gap-2 transition-colors duration-150"
+                  className="w-full px-4 py-3 text-left text-gray-800 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-3 transition-all duration-150 font-medium cursor-pointer"
+                  type="button"
                 >
-                  <Download className="w-4 h-4" />
+                  <Download className="w-5 h-5" />
                   Download
                 </button>
                 <button
@@ -196,9 +285,10 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isAct
                     console.log('Share clicked');
                     handleShare();
                   }}
-                  className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center gap-2 transition-colors duration-150"
+                  className="w-full px-4 py-3 text-left text-gray-800 hover:bg-green-50 hover:text-green-600 flex items-center gap-3 transition-all duration-150 font-medium cursor-pointer"
+                  type="button"
                 >
-                  <Share className="w-4 h-4" />
+                  <Share className="w-5 h-5" />
                   Share
                 </button>
                 <button
@@ -208,11 +298,13 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isAct
                     console.log('Copy Link clicked');
                     handleCopyLink();
                   }}
-                  className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 flex items-center gap-2 transition-colors duration-150"
+                  className="w-full px-4 py-3 text-left text-gray-800 hover:bg-purple-50 hover:text-purple-600 flex items-center gap-3 transition-all duration-150 font-medium cursor-pointer"
+                  type="button"
                 >
-                  <Link className="w-4 h-4" />
+                  <Link className="w-5 h-5" />
                   Copy Link
                 </button>
+                <div className="border-t border-gray-200 my-1"></div>
                 <button
                   onClick={(e) => {
                     e.preventDefault();
@@ -220,13 +312,15 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isAct
                     console.log('Delete clicked');
                     handleDelete();
                   }}
-                  className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors duration-150"
+                  className="w-full px-4 py-3 text-left text-red-600 hover:bg-red-50 hover:text-red-700 flex items-center gap-3 transition-all duration-150 font-medium cursor-pointer"
+                  type="button"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-5 h-5" />
                   Delete
                 </button>
-              </div>
-            )}
+              </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
@@ -268,12 +362,34 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isAct
 
       {/* Hover Effects */}
       <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toast.show && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+            className={`absolute bottom-4 left-4 right-4 px-4 py-3 rounded-lg shadow-lg z-[10000] flex items-center gap-2 ${
+              toast.type === 'success' ? 'bg-green-500 text-white' :
+              toast.type === 'error' ? 'bg-red-500 text-white' :
+              'bg-blue-500 text-white'
+            }`}
+          >
+            {toast.type === 'success' && <Check className="w-4 h-4" />}
+            {toast.type === 'error' && <X className="w-4 h-4" />}
+            {toast.type === 'info' && <Bell className="w-4 h-4" />}
+            <span className="text-sm font-medium">{toast.message}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
-  );
+   );
 };
 
 const ProfilePage: React.FC = () => {
-  const {} = useShopping();
+  const { deleteGeneratedImage } = useShopping();
   const { user, profile, uploadProfileImageFromBase64, updateProfile, refreshProfile } = useAuth();
   const [reelPosts, setReelPosts] = useState<ReelPost[]>([]);
   const [activeReel, setActiveReel] = useState(0);
@@ -639,6 +755,14 @@ const ProfilePage: React.FC = () => {
     // Note: No longer using localStorage for images
   }, [profilePicture]);
 
+  const handleDeleteImage = (imageId: string) => {
+    // Delete from context (which handles localStorage)
+    deleteGeneratedImage(imageId);
+    
+    // Update local state to immediately reflect the change
+    setReelPosts(prev => prev.filter(post => post.id !== imageId));
+  };
+
   return (
     <motion.div
       className="min-h-screen"
@@ -799,7 +923,7 @@ const ProfilePage: React.FC = () => {
                   
                   {/* Social Media Links */}
                   <div className="mt-2">
-                    <p className="text-sm text-white/60 mb-2">Connect with me</p>
+                    <p className="text-sm text-white/60 mb-2">My Digital Hangouts</p>
                     <div className="flex items-center gap-3">
                       <button 
                         onClick={() => window.open('https://instagram.com', '_blank')}
@@ -929,6 +1053,7 @@ const ProfilePage: React.FC = () => {
                       <ReelCard
                         post={post}
                         isActive={index === activeReel}
+                        onDelete={handleDeleteImage}
                       />
                     </div>
                   ))}
