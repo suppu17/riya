@@ -393,7 +393,7 @@ const ProfilePage: React.FC = () => {
   const { user, profile, uploadProfileImageFromBase64, updateProfile, refreshProfile } = useAuth();
   const [reelPosts, setReelPosts] = useState<ReelPost[]>([]);
   const [activeReel, setActiveReel] = useState(0);
-  const [profilePicture, setProfilePicture] = useState<string>(profile?.avatar_url || 'https://i.pravatar.cc/150?u=supriya');
+  const [profilePicture, setProfilePicture] = useState<string>(profile?.avatar_url || './public/8.jpg');
   const [isUploading, setIsUploading] = useState(false);
   const [showCropModal, setShowCropModal] = useState(false);
   const [tempImage, setTempImage] = useState<string>('');
@@ -742,7 +742,7 @@ const ProfilePage: React.FC = () => {
         comments: Math.floor(Math.random() * 50) + 5,
         shares: Math.floor(Math.random() * 20) + 2,
         isLiked: Math.random() > 0.7,
-        username: profile?.full_name || user?.name || 'User',
+        username: profile?.full_name || user?.name || 'Supriya',
         avatar: profilePicture,
         caption: `Loving this ${image.productName}! Generated with AI fashion technology. What do you think? ✨ #AIFashion #Style`
       }));
@@ -849,7 +849,7 @@ const ProfilePage: React.FC = () => {
 
               <div className="mb-2 text-left">
                 <h2 className="text-2xl font-bold text-white mb-1">
-                  {profile?.full_name || user?.name || 'User'}
+                  {profile?.full_name || user?.name || 'Supriya Korukonda'}
                 </h2>
                 <p className="text-white/60 text-sm flex items-center gap-2">
                   <Star className="w-4 h-4 text-yellow-400" />
@@ -895,10 +895,10 @@ const ProfilePage: React.FC = () => {
                             <button
                               onClick={handleBioUpdate}
                               disabled={isSavingBio}
-                              className={`px-3 py-1 text-xs text-white rounded-md transition-colors ${
+                              className={`px-3 py-1 text-xs text-black rounded-md transition-colors ${
                                 isSavingBio 
-                                  ? 'bg-blue-400 cursor-not-allowed' 
-                                  : 'bg-blue-500 hover:bg-blue-600'
+                                  ? 'bg-white cursor-not-allowed' 
+                                  : 'bg-white hover:bg-gray-100'
                               }`}
                             >
                               {isSavingBio ? 'Saving...' : 'Save'}
@@ -927,7 +927,7 @@ const ProfilePage: React.FC = () => {
                     <div className="flex items-center gap-3">
                       <button 
                         onClick={() => window.open('https://instagram.com', '_blank')}
-                        className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg hover:scale-110 transition-transform duration-200"
+                        className="p-2 bg-transparent rounded-lg hover:scale-110 transition-transform duration-200"
                         title="Instagram"
                       >
                         <Instagram className="w-4 h-4 text-white" />
@@ -935,15 +935,15 @@ const ProfilePage: React.FC = () => {
                       
                       <button 
                         onClick={() => window.open('https://twitter.com', '_blank')}
-                        className="p-2 bg-black rounded-lg hover:scale-110 transition-transform duration-200"
+                        className="p-2 bg-transparent rounded-lg hover:scale-110 transition-transform duration-200"
                         title="Twitter/X"
                       >
-                        <Twitter className="w-4 h-4 text-white" />
+                        <Twitter className="w-4 h-4 text-white opacity-50" />
                       </button>
                       
                       <button 
                         onClick={() => window.open('https://tiktok.com', '_blank')}
-                        className="p-2 bg-black rounded-lg hover:scale-110 transition-transform duration-200"
+                        className="p-2 bg-transparent rounded-lg hover:scale-110 transition-transform duration-200"
                         title="TikTok"
                       >
                         <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
@@ -953,7 +953,7 @@ const ProfilePage: React.FC = () => {
                       
                       <button 
                              onClick={() => window.open('https://snapchat.com', '_blank')}
-                             className="p-2 bg-yellow-400 rounded-lg hover:scale-110 transition-transform duration-200"
+                             className="p-2 bg-transparent rounded-lg hover:scale-110 transition-transform duration-200"
                              title="Snapchat"
                            >
                              <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
@@ -1007,8 +1007,8 @@ const ProfilePage: React.FC = () => {
                    whileHover={{ scale: 1.02 }}
                    whileTap={{ scale: 0.98 }}
                  >
-                   <div className={`flex-shrink-0 w-10 h-10 bg-gradient-to-r ${item.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                     <item.icon className="w-5 h-5 text-white" />
+                   <div className="flex-shrink-0 w-10 h-10 bg-white rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                     <item.icon className="w-5 h-5 text-black" />
                    </div>
                    <div className="text-left">
                      <p className="font-semibold text-white/90 text-sm">
@@ -1034,7 +1034,7 @@ const ProfilePage: React.FC = () => {
             >
               <h3 className="text-white/80 text-lg font-semibold flex items-center gap-2">
                 <Play className="w-5 h-5" />
-                My AI SnapStyler Feed
+                SnapStyler Feed
               </h3>
               <div className="flex items-center gap-2 text-white/60 text-sm">
                 <span>{reelPosts.length} posts</span>
@@ -1193,7 +1193,7 @@ const ProfilePage: React.FC = () => {
               <div>
                 <h3 className="text-xl font-bold text-white">Adjust Your Profile Image</h3>
                 <div className="flex items-center gap-2 mt-1">
-                  <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                  <div className="bg-white text-black text-xs px-2 py-1 rounded-full font-medium">
                     8K Quality Enhancement
                   </div>
                   <span className="text-white/60 text-xs">7680×4320 resolution</span>
@@ -1284,10 +1284,10 @@ const ProfilePage: React.FC = () => {
                 Cancel
               </button>
               <button
-                onClick={applyCroppedImage}
-                disabled={isEnhancing}
-                className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-purple-400 disabled:to-pink-400 text-white py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2"
-              >
+                  onClick={applyCroppedImage}
+                  disabled={isEnhancing}
+                  className="flex-1 bg-white hover:bg-gray-100 disabled:bg-gray-200 text-black py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2"
+                >
                 {isEnhancing ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
