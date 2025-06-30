@@ -1,12 +1,31 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import HomePage from "./pages/HomePage";
-import SearchPage from "./pages/SearchPage";
-import CategoriesPage from "./pages/CategoriesPage";
-import CartPage from "./pages/CartPage";
-import WishlistPage from "./pages/WishlistPage";
-import ProfilePage from "./pages/ProfilePage";
-import PhotosPage from "./pages/PhotosPage";
+// Import all pages directly in development for instant loading
+import SearchPageDirect from "./pages/SearchPage";
+import CategoriesPageDirect from "./pages/CategoriesPage";
+import CartPageDirect from "./pages/CartPage";
+import WishlistPageDirect from "./pages/WishlistPage";
+import ProfilePageDirect from "./pages/ProfilePage";
+import PhotosPageDirect from "./pages/PhotosPage";
 import { useWallpaper } from "../contexts/WallpaperContext";
+
+// Use direct imports in dev, lazy in production
+const SearchPage = import.meta.env.DEV ? SearchPageDirect : lazy(() => import("./pages/SearchPage"));
+const CategoriesPage = import.meta.env.DEV ? CategoriesPageDirect : lazy(() => import("./pages/CategoriesPage"));
+const CartPage = import.meta.env.DEV ? CartPageDirect : lazy(() => import("./pages/CartPage"));
+const WishlistPage = import.meta.env.DEV ? WishlistPageDirect : lazy(() => import("./pages/WishlistPage"));
+const ProfilePage = import.meta.env.DEV ? ProfilePageDirect : lazy(() => import("./pages/ProfilePage"));
+const PhotosPage = import.meta.env.DEV ? PhotosPageDirect : lazy(() => import("./pages/PhotosPage"));
+
+// Loading fallback component
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-[400px]">
+    <div className="relative w-12 h-12">
+      <div className="absolute inset-0 border-4 border-white/20 rounded-full"></div>
+      <div className="absolute inset-0 border-4 border-transparent border-t-cyan-400 border-r-cyan-400 rounded-full animate-spin"></div>
+    </div>
+  </div>
+);
 
 interface MainContentProps {
   currentView: string;
@@ -19,15 +38,35 @@ const MainContent: React.FC<MainContentProps> = ({ currentView }) => {
       case "home":
         return <HomePage />;
       case "search":
-        return <SearchPage />;
+        return import.meta.env.DEV ? <SearchPage /> : (
+          <Suspense fallback={<PageLoader />}>
+            <SearchPage />
+          </Suspense>
+        );
       case "categories":
-        return <CategoriesPage />;
+        return import.meta.env.DEV ? <CategoriesPage /> : (
+          <Suspense fallback={<PageLoader />}>
+            <CategoriesPage />
+          </Suspense>
+        );
       case "cart":
-        return <CartPage />;
+        return import.meta.env.DEV ? <CartPage /> : (
+          <Suspense fallback={<PageLoader />}>
+            <CartPage />
+          </Suspense>
+        );
       case "wishlist":
-        return <WishlistPage />;
+        return import.meta.env.DEV ? <WishlistPage /> : (
+          <Suspense fallback={<PageLoader />}>
+            <WishlistPage />
+          </Suspense>
+        );
       case "profile":
-        return <ProfilePage />;
+        return import.meta.env.DEV ? <ProfilePage /> : (
+          <Suspense fallback={<PageLoader />}>
+            <ProfilePage />
+          </Suspense>
+        );
       case "finance":
         return (
           <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 text-center">
@@ -43,7 +82,11 @@ const MainContent: React.FC<MainContentProps> = ({ currentView }) => {
           </div>
         );
       case "photos":
-        return <PhotosPage />;
+        return import.meta.env.DEV ? <PhotosPage /> : (
+          <Suspense fallback={<PageLoader />}>
+            <PhotosPage />
+          </Suspense>
+        );
       case "settings":
         return (
           <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20">

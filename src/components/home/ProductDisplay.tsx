@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useShopping } from "../../contexts/ShoppingContext";
+import { useWallpaper } from "../../contexts/WallpaperContext";
 import TryOnDisplay from "./TryOnDisplay";
 import PhotoSelectionModal from "../PhotoSelectionModal";
 
@@ -15,6 +16,7 @@ const ProductDisplay: React.FC = () => {
     selectedModelId,
     modelImages,
   } = useShopping();
+  const { currentWallpaper } = useWallpaper();
 
   const [showModelModal, setShowModelModal] = useState(false);
 
@@ -29,7 +31,7 @@ const ProductDisplay: React.FC = () => {
   if (!selectedProduct) {
     return (
       <motion.div
-        className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 flex items-center justify-center h-96 shadow-2xl"
+        className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 flex items-center justify-center h-full shadow-2xl"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
@@ -49,19 +51,23 @@ const ProductDisplay: React.FC = () => {
   return (
     <>
       <motion.div
-        className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 border border-white/20 relative overflow-hidden shadow-2xl"
+        className="backdrop-blur-xl rounded-2xl p-4 border border-white/20 relative overflow-hidden shadow-2xl h-full flex flex-col"
+        style={{
+          background: `linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)`,
+          backdropFilter: 'blur(20px)',
+        }}
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
         whileHover={{
-          backgroundColor: "rgba(255, 182, 193, 0.12)",
-          borderColor: "rgba(255, 182, 193, 0.25)",
+          backgroundColor: "rgba(255, 255, 255, 0.15)",
+          borderColor: "rgba(255, 255, 255, 0.3)",
           scale: 1.01,
         }}
         layout
       >
         <motion.div
-          className="relative h-[590px] flex items-center justify-center w-full"
+          className="relative flex-1 flex items-center justify-center w-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.4 }}
@@ -90,7 +96,7 @@ const ProductDisplay: React.FC = () => {
                   backgroundSize: "cover",
                   backgroundPosition: "top",
                   backgroundRepeat: "no-repeat",
-                  border: "1px solid rgba(255, 182, 193, 0.2)",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
                   borderRadius: "8px",
                 }}
                 initial={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -102,7 +108,8 @@ const ProductDisplay: React.FC = () => {
                   filter: "brightness(1.03)",
                 }}
               >
-                {/* AI Try On Button Overlay with Pink Theme */}
+                {/* AI Try On Button Overlay - Only for Clothing */}
+                {selectedProduct.category === "Clothing" && (
                 <div className="absolute top-4 right-4 group/tooltip">
                   <motion.button
                     onClick={handleTryOnClick}
@@ -118,8 +125,8 @@ const ProductDisplay: React.FC = () => {
                     }}
                     whileHover={{
                       scale: 1.08,
-                      boxShadow: "0 12px 40px rgba(236, 72, 153, 0.5)",
-                      border: "3px solid rgba(255, 182, 193, 0.9)",
+                      boxShadow: "0 12px 40px rgba(255, 255, 255, 0.3)",
+                      border: "3px solid rgba(255, 255, 255, 0.8)",
                     }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -248,26 +255,27 @@ const ProductDisplay: React.FC = () => {
                     </motion.div>
                   )}
 
-                  {/* Custom Tooltip with Pink Theme */}
+                  {/* Custom Tooltip */}
                   <motion.div
                     className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 bg-black/90 backdrop-blur-sm text-white text-xs font-medium px-3 py-2 rounded-lg shadow-lg border border-white/20 whitespace-nowrap pointer-events-none opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200"
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 0, y: -5 }}
                     whileHover={{ opacity: 1, y: 0 }}
                   >
-                    <span className="bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent font-semibold">
+                    <span className="bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent font-semibold">
                       {isTryingOn ? "AI Processing..." : "✨ Try On with AI"}
                     </span>
                     {/* Tooltip Arrow */}
                     <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-black/90 border-l border-t border-white/20 rotate-45"></div>
                   </motion.div>
                 </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
         </motion.div>
 
-        {/* Thumbnail Navigation with Pink Accents */}
+        {/* Thumbnail Navigation */}
         {selectedProduct.images && selectedProduct.images.length > 1 && (
           <motion.div
             className="absolute bottom-8 right-7 transform -translate-x-1/2"

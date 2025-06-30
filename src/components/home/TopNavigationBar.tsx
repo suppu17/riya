@@ -78,7 +78,7 @@ const TopNavigationBar: React.FC = () => {
         )}
 
         {/* Login Button for non-authenticated users */}
-        {!isAuthenticated && (
+        {/* {!isAuthenticated && (
           <motion.button
             onClick={() => setIsAuthModalOpen(true)}
             className="flex items-center gap-3 bg-gradient-to-r from-white/15 to-white/5 backdrop-blur-xl rounded-xl px-4 py-2.5 border border-white/30 cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-300"
@@ -95,7 +95,7 @@ const TopNavigationBar: React.FC = () => {
             </div>
             <span className="text-white text-sm font-medium">Sign In</span>
           </motion.button>
-        )}
+        )} */}
 
 
 

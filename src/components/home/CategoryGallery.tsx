@@ -10,7 +10,7 @@ interface CategoryImage {
 }
 
 const CategoryGallery: React.FC = () => {
-  const { products } = useShopping();
+  const { products, setSelectedProduct, setCurrentCategory } = useShopping();
 
   const categoryImages: CategoryImage[] = useMemo(() => {
     const categoryMap = new Map<string, CategoryImage[]>();
@@ -48,15 +48,23 @@ const CategoryGallery: React.FC = () => {
     return allImages.slice(0, 8);
   }, [products]);
 
+  const handleProductClick = (categoryImage: CategoryImage) => {
+    const fullProduct = products.find(product => product.id === categoryImage.id);
+    if (fullProduct) {
+      setCurrentCategory(fullProduct.category);
+      setSelectedProduct(fullProduct);
+    }
+  };
+
   return (
     <motion.div
-      className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-4 mt-4 shadow-2xl"
+      className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-6 mt-4 shadow-2xl h-fit"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.6 }}
     >
-      <h3 className="text-white font-semibold text-bold mb-3">Trending</h3>
-      <div className="grid grid-cols-4 gap-2">
+      <h3 className="text-white font-semibold text-bold mb-6">Trending Collection</h3>
+      <div className="grid grid-cols-4 gap-3">
         {categoryImages.map((category, index) => (
           <motion.div
             key={category.id}
@@ -66,6 +74,7 @@ const CategoryGallery: React.FC = () => {
             transition={{ duration: 0.3, delay: 0.7 + index * 0.05 }}
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
+            onClick={() => handleProductClick(category)}
           >
             <div className="aspect-square rounded-2xl overflow-hidden">
               <img

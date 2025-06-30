@@ -98,6 +98,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       try {
         console.log('🔄 Initializing auth...');
         
+        // Development fast path - skip auth for faster loading
+        if (import.meta.env.DEV) {
+          console.log('🚀 Development mode: Fast auth bypass');
+          setIsLoading(false);
+          setIsInitialized(true);
+          return;
+        }
+        
         // Set a timeout to prevent infinite loading
         timeoutId = setTimeout(() => {
           if (mounted && !isInitialized) {
@@ -105,25 +113,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setIsLoading(false);
             setIsInitialized(true);
           }
-        }, 10000); // 10 second timeout
+        }, 2000); // Reduced to 2 seconds for faster loading
 
-        // Get initial session with retry logic
+        // Get initial session with optimized retry logic
         let retryCount = 0;
         let session = null;
         
-        while (retryCount < 3 && !session && mounted) {
+        while (retryCount < 2 && !session && mounted) {
           try {
             const { data, error } = await supabase.auth.getSession();
             
             if (error) {
               console.error(`Auth session error (attempt ${retryCount + 1}):`, error);
-              if (retryCount === 2) {
+              if (retryCount === 1) {
                 // On final retry, still continue but log the error
-                console.error('Failed to get session after 3 attempts, continuing without session');
+                console.error('Failed to get session after 2 attempts, continuing without session');
                 break;
               }
               retryCount++;
-              await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+              await new Promise(resolve => setTimeout(resolve, 500)); // Reduced wait time to 500ms
               continue;
             }
             
@@ -132,8 +140,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           } catch (err) {
             console.error(`Network error getting session (attempt ${retryCount + 1}):`, err);
             retryCount++;
-            if (retryCount < 3) {
-              await new Promise(resolve => setTimeout(resolve, 1000));
+            if (retryCount < 2) {
+              await new Promise(resolve => setTimeout(resolve, 500)); // Reduced wait time
             }
           }
         }
@@ -153,6 +161,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           }
         } else {
           console.log('ℹ️ No existing session found');
+          // Fast path: immediately finish loading if no session
+          if (mounted) {
+            clearTimeout(timeoutId);
+            setIsLoading(false);
+            setIsInitialized(true);
+            console.log('✅ Auth initialization complete (no session)');
+            return;
+          }
         }
       } catch (error) {
         console.error('❌ Critical error initializing auth:', error);

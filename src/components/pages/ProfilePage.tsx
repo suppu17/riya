@@ -28,8 +28,17 @@ import {
   ShoppingBag,
   Crown,
   Edit3,
+  Compass,
+  TrendingUp,
+  Users,
+  Award,
+  Download,
+  Link,
+  Trash2,
+  Instagram,
+  Twitter,
 } from "lucide-react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { useShopping } from "../../contexts/ShoppingContext";
 import { useAuth } from "../../contexts/AuthContext";
 import TopNavigationBar from "../home/TopNavigationBar";
@@ -45,13 +54,162 @@ interface ReelPost extends GeneratedImageData {
   caption: string;
 }
 
-const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isActive }) => {
+interface ToastState {
+  show: boolean;
+  message: string;
+  type: 'success' | 'error' | 'info';
+}
+
+const ReelCard: React.FC<{ post: ReelPost; isActive: boolean; onDelete: (imageId: string) => void }> = ({ post, isActive, onDelete }) => {
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [likes, setLikes] = useState(post.likes);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [toast, setToast] = useState<ToastState>({ show: false, message: '', type: 'info' });
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const showToast = (message: string, type: ToastState['type'] = 'info') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: 'info' }), 3000);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        console.log('Clicking outside dropdown, closing...');
+        setShowDropdown(false);
+      }
+    };
+
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscapeKey);
+      console.log('Dropdown opened, adding event listeners');
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [showDropdown]);
 
   const handleLike = () => {
     setIsLiked(!isLiked);
     setLikes(prev => isLiked ? prev - 1 : prev + 1);
+  };
+
+  const handleDownload = async () => {
+    try {
+      console.log('Starting download for:', post.url);
+      showToast('Downloading image...', 'info');
+      
+      const response = await fetch(post.url, {
+        mode: 'cors',
+        headers: {
+          'Accept': 'image/*'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${post.productName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}-${post.id}.jpg`;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+      
+      showToast('Image downloaded successfully!', 'success');
+      console.log('Download completed successfully');
+    } catch (error) {
+      console.error('Download failed:', error);
+      showToast('Failed to download image. Please try again.', 'error');
+    }
+    setShowDropdown(false);
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        // For mobile devices, this will open native share sheet with apps like iMessage, WhatsApp, etc.
+        const response = await fetch(post.url);
+        const blob = await response.blob();
+        const file = new File([blob], `${post.productName}-${post.id}.jpg`, { type: 'image/jpeg' });
+        
+        await navigator.share({
+          title: post.productName,
+          text: post.caption,
+          files: [file],
+          url: post.url
+        });
+      } catch (error) {
+        console.error('Share failed:', error);
+        // Fallback to text sharing if file sharing fails
+        try {
+          await navigator.share({
+            title: post.productName,
+            text: `${post.caption} - ${post.url}`,
+          });
+        } catch (fallbackError) {
+           navigator.clipboard.writeText(`${post.caption} - ${post.url}`);
+           showToast('Link copied to clipboard!', 'success');
+         }
+      }
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      navigator.clipboard.writeText(`${post.caption} - ${post.url}`);
+      showToast('Link copied to clipboard!', 'success');
+    }
+    setShowDropdown(false);
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      // Copy the direct image URL instead of application URL
+      const imageUrl = post.url;
+      await navigator.clipboard.writeText(imageUrl);
+      showToast('Image link copied to clipboard! You can now paste it anywhere to share this image.', 'success');
+    } catch (error) {
+      console.error('Copy failed:', error);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = post.url;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      showToast('Image link copied to clipboard!', 'success');
+    }
+    setShowDropdown(false);
+  };
+
+  const handleDelete = () => {
+    if (confirm('Are you sure you want to delete this image? This action cannot be undone.')) {
+      try {
+        console.log('Delete image:', post.id);
+        onDelete(post.id);
+        showToast('Image deleted successfully!', 'success');
+      } catch (error) {
+        console.error('Delete failed:', error);
+        showToast('Failed to delete image. Please try again.', 'error');
+      }
+    }
+    setShowDropdown(false);
   };
 
   return (
@@ -75,19 +233,95 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isAct
         {/* Top Section */}
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-3">
-            <img
-              src={post.avatar}
-              alt={post.username}
-              className="w-10 h-10 rounded-full border-2 border-white/30"
-            />
+            {/* Profile picture removed */}
             <div>
-              <p className="text-white font-semibold text-sm">{post.username}</p>
-              <p className="text-white/70 text-xs">{post.modelUsed}</p>
+              {/* Username and model text removed */}
             </div>
           </div>
-          <button className="text-white/80 hover:text-white">
-            <MoreHorizontal className="w-5 h-5" />
-          </button>
+          <div className="relative z-50" ref={dropdownRef}>
+            <button 
+              className={`text-white hover:text-white transition-all duration-200 p-3 rounded-full hover:bg-white/30 active:scale-95 shadow-lg backdrop-blur-sm border border-white/20 ${
+                showDropdown ? 'bg-white/30 text-white scale-95' : 'bg-white/10'
+              }`}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Three dots clicked, current state:', showDropdown);
+                setShowDropdown(!showDropdown);
+              }}
+              aria-label="More options"
+              type="button"
+            >
+              <MoreHorizontal className="w-6 h-6" />
+            </button>
+            
+            <AnimatePresence>
+              {showDropdown && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute top-12 right-0 bg-white rounded-xl shadow-2xl py-2 min-w-[200px] z-[99999] border border-gray-200 backdrop-blur-sm"
+                  style={{ position: 'absolute' }}
+                >
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Download clicked');
+                    handleDownload();
+                  }}
+                  className="w-full px-4 py-3 text-left text-gray-800 hover:bg-blue-50 hover:text-blue-600 flex items-center gap-3 transition-all duration-150 font-medium cursor-pointer"
+                  type="button"
+                >
+                  <Download className="w-5 h-5" />
+                  Download
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Share clicked');
+                    handleShare();
+                  }}
+                  className="w-full px-4 py-3 text-left text-gray-800 hover:bg-green-50 hover:text-green-600 flex items-center gap-3 transition-all duration-150 font-medium cursor-pointer"
+                  type="button"
+                >
+                  <Share className="w-5 h-5" />
+                  Share
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Copy Link clicked');
+                    handleCopyLink();
+                  }}
+                  className="w-full px-4 py-3 text-left text-gray-800 hover:bg-purple-50 hover:text-purple-600 flex items-center gap-3 transition-all duration-150 font-medium cursor-pointer"
+                  type="button"
+                >
+                  <Link className="w-5 h-5" />
+                  Copy Link
+                </button>
+                <div className="border-t border-gray-200 my-1"></div>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Delete clicked');
+                    handleDelete();
+                  }}
+                  className="w-full px-4 py-3 text-left text-red-600 hover:bg-red-50 hover:text-red-700 flex items-center gap-3 transition-all duration-150 font-medium cursor-pointer"
+                  type="button"
+                >
+                  <Trash2 className="w-5 h-5" />
+                  Delete
+                </button>
+              </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
         {/* Bottom Section */}
@@ -95,7 +329,7 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isAct
           {/* Caption */}
           <div className="text-white">
             <p className="text-sm leading-relaxed">
-              <span className="font-semibold">{post.username}</span> {post.caption}
+              {post.caption}
             </p>
             <p className="text-xs text-white/60 mt-1">
               {new Date(post.createdAt).toLocaleDateString()}
@@ -128,16 +362,38 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isAct
 
       {/* Hover Effects */}
       <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toast.show && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+            className={`absolute bottom-4 left-4 right-4 px-4 py-3 rounded-lg shadow-lg z-[10000] flex items-center gap-2 ${
+              toast.type === 'success' ? 'bg-green-500 text-white' :
+              toast.type === 'error' ? 'bg-red-500 text-white' :
+              'bg-blue-500 text-white'
+            }`}
+          >
+            {toast.type === 'success' && <Check className="w-4 h-4" />}
+            {toast.type === 'error' && <X className="w-4 h-4" />}
+            {toast.type === 'info' && <Bell className="w-4 h-4" />}
+            <span className="text-sm font-medium">{toast.message}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
-  );
+   );
 };
 
 const ProfilePage: React.FC = () => {
-  const {} = useShopping();
+  const { deleteGeneratedImage } = useShopping();
   const { user, profile, uploadProfileImageFromBase64, updateProfile, refreshProfile } = useAuth();
   const [reelPosts, setReelPosts] = useState<ReelPost[]>([]);
   const [activeReel, setActiveReel] = useState(0);
-  const [profilePicture, setProfilePicture] = useState<string>(profile?.avatar_url || 'https://i.pravatar.cc/150?u=supriya');
+  const [profilePicture, setProfilePicture] = useState<string>(profile?.avatar_url || './public/8.jpg');
   const [isUploading, setIsUploading] = useState(false);
   const [showCropModal, setShowCropModal] = useState(false);
   const [tempImage, setTempImage] = useState<string>('');
@@ -148,6 +404,8 @@ const ProfilePage: React.FC = () => {
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [bioText, setBioText] = useState(profile?.bio || 'Welcome to my fashion profile! I love exploring new styles and creating unique looks.');
+  const [isSavingBio, setIsSavingBio] = useState(false);
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cropImageRef = useRef<HTMLImageElement>(null);
@@ -251,17 +509,37 @@ const ProfilePage: React.FC = () => {
 
   // Handle bio update
   const handleBioUpdate = async () => {
+    console.log('🔄 Starting bio update...', { bioText, user: !!user, profile: !!profile });
+    
+    if (!user) {
+      console.error('❌ No user found - cannot update bio');
+      alert('Please log in to save changes');
+      return;
+    }
+    
+    setIsSavingBio(true);
+    
     try {
+      console.log('📝 Updating profile with bio:', bioText);
       const result = await updateProfile({ bio: bioText });
+      console.log('📋 Update result:', result);
+      
       if (result.success) {
+        console.log('✅ Bio updated successfully!');
         setIsEditingBio(false);
         // Refresh profile to get updated data
         await refreshProfile();
+        console.log('🔄 Profile refreshed');
+        alert('Bio updated successfully!');
       } else {
-        console.error('Failed to update bio:', result.error);
+        console.error('❌ Failed to update bio:', result.error);
+        alert(`Failed to update bio: ${result.error}`);
       }
     } catch (error) {
-      console.error('Error updating bio:', error);
+      console.error('💥 Error updating bio:', error);
+      alert('An error occurred while saving. Please try again.');
+    } finally {
+      setIsSavingBio(false);
     }
   };
 
@@ -352,28 +630,58 @@ const ProfilePage: React.FC = () => {
   const applyCroppedImage = async () => {
     setIsEnhancing(true);
     try {
+      console.log('🔄 Starting image upload process...');
+      console.log('📊 User:', user?.id);
+      console.log('📊 Current profile:', profile);
+      
       // Create a smaller, optimized version instead of 8K to avoid storage quota issues
+      console.log('🖼️ Enhancing image...');
       const optimizedImage = await enhanceImageOptimized(tempImage);
+      console.log('✅ Image enhanced, size:', optimizedImage.length, 'characters');
       
       // Upload to Supabase Storage
+      console.log('📤 Uploading to Supabase...');
       const result = await uploadProfileImageFromBase64(optimizedImage);
+      console.log('📤 Upload result:', result);
       
       if (result.success && result.url) {
+        console.log('✅ Upload successful, URL:', result.url);
+        console.log('🔄 Refreshing profile...');
+        // Force refresh profile to ensure state consistency
+        await refreshProfile();
+        console.log('🔄 Profile refreshed, updating local state...');
+        // Set local state after profile refresh to ensure consistency
         setProfilePicture(result.url);
         setShowCropModal(false);
+        console.log('✅ Profile picture updated successfully!');
+        
+        // Show success message
+        alert('Profile picture updated successfully!');
       } else {
+        console.error('❌ Upload failed:', result.error);
+        alert(`Upload failed: ${result.error || 'Unknown error'}`);
         throw new Error(result.error || 'Upload failed');
       }
     } catch (error) {
-      console.error('Error processing image:', error);
+      console.error('❌ Error processing image:', error);
+      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      
       // Fallback: try uploading original cropped image
       try {
+        console.log('🔄 Trying fallback upload...');
         const result = await uploadProfileImageFromBase64(tempImage);
         if (result.success && result.url) {
+          await refreshProfile();
           setProfilePicture(result.url);
+          console.log('✅ Fallback upload successful!');
+          alert('Profile picture updated successfully (fallback)!');
+        } else {
+          console.error('❌ Fallback upload also failed:', result.error);
+          alert(`Fallback upload failed: ${result.error || 'Unknown error'}`);
         }
       } catch (fallbackError) {
-        console.error('Fallback upload failed:', fallbackError);
+        console.error('❌ Fallback upload failed:', fallbackError);
+        alert(`Fallback error: ${fallbackError instanceof Error ? fallbackError.message : 'Unknown error'}`);
       }
       setShowCropModal(false);
     } finally {
@@ -391,12 +699,23 @@ const ProfilePage: React.FC = () => {
     fileInputRef.current?.click();
   };
 
+
+
   // Load profile picture from Supabase profile data
   useEffect(() => {
     if (profile?.avatar_url) {
+      console.log('🔄 Profile avatar_url changed:', profile.avatar_url);
+      setProfilePicture(profile.avatar_url);
+      console.log('✅ Local profilePicture state updated');
+    }
+  }, [profile?.avatar_url]);
+
+  // Force re-render when profile updates
+  useEffect(() => {
+    if (profile?.avatar_url && profile.avatar_url !== profilePicture) {
       setProfilePicture(profile.avatar_url);
     }
-  }, [profile]);
+  }, [profile?.avatar_url]);
 
   // Load data from demo.ts and localStorage
   useEffect(() => {
@@ -423,9 +742,9 @@ const ProfilePage: React.FC = () => {
         comments: Math.floor(Math.random() * 50) + 5,
         shares: Math.floor(Math.random() * 20) + 2,
         isLiked: Math.random() > 0.7,
-        username: profile?.full_name || user?.name || 'User',
+        username: profile?.full_name || user?.name || 'Supriya',
         avatar: profilePicture,
-        caption: `Loving this ${image.productName}! Generated with AI fashion technology. What do you think? ✨ #AIFashion #Style #${image.modelUsed.replace(/\s+/g, '')}`
+        caption: `Loving this ${image.productName}! Generated with AI fashion technology. What do you think? ✨ #AIFashion #Style`
       }));
 
       setReelPosts(transformedPosts);
@@ -435,6 +754,14 @@ const ProfilePage: React.FC = () => {
 
     // Note: No longer using localStorage for images
   }, [profilePicture]);
+
+  const handleDeleteImage = (imageId: string) => {
+    // Delete from context (which handles localStorage)
+    deleteGeneratedImage(imageId);
+    
+    // Update local state to immediately reflect the change
+    setReelPosts(prev => prev.filter(post => post.id !== imageId));
+  };
 
   return (
     <motion.div
@@ -452,21 +779,21 @@ const ProfilePage: React.FC = () => {
       </motion.div>
 
       <motion.div
-        className="grid grid-cols-12 gap-6 p-6"
+        className="grid grid-cols-12 gap-6"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
         {/* Left Sidebar */}
         <motion.div
-          className="col-span-3 space-y-4"
+          className="col-span-3 space-y-8"
           initial={{ x: -30, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
           {/* Profile Header */}
           <motion.div
-            className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 h-fit overflow-hidden"
+            className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 overflow-hidden"
           >
             {/* Profile Banner Image Section */}
             <motion.div
@@ -517,16 +844,16 @@ const ProfilePage: React.FC = () => {
 
             {/* Profile Info Section */}
             <motion.div
-              className="p-6"
+              className="p-4 pb-6"
             >
 
-              <div className="mb-6 text-left">
+              <div className="mb-2 text-left">
                 <h2 className="text-2xl font-bold text-white mb-1">
-                  {profile?.full_name || user?.name || 'User'}
+                  {profile?.full_name || user?.name || 'Supriya Korukonda'}
                 </h2>
                 <p className="text-white/60 text-sm flex items-center gap-2">
                   <Star className="w-4 h-4 text-yellow-400" />
-                  {profile?.membership_type === 'premium' ? 'Premium Member' : 'Member'}
+                  {profile?.membership_type === 'premium' ? 'Premium Member' : 'Premium member'}
                 </p>
 
                 <div className="text-white/60 text-sm mt-4">
@@ -545,7 +872,7 @@ const ProfilePage: React.FC = () => {
                         </button>
                       </>
                     ) : (
-                      <div className="space-y-3">
+                      <div className="space-y-1">
                         <textarea
                           value={bioText}
                           onChange={(e) => setBioText(e.target.value)}
@@ -567,16 +894,21 @@ const ProfilePage: React.FC = () => {
                             </button>
                             <button
                               onClick={handleBioUpdate}
-                              className="px-3 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors"
+                              disabled={isSavingBio}
+                              className={`px-3 py-1 text-xs text-black rounded-md transition-colors ${
+                                isSavingBio 
+                                  ? 'bg-white cursor-not-allowed' 
+                                  : 'bg-white hover:bg-gray-100'
+                              }`}
                             >
-                              Save
+                              {isSavingBio ? 'Saving...' : 'Save'}
                             </button>
                           </div>
                         </div>
                       </div>
                     )}
                   </div>
-                  <div className="flex items-center gap-4 mt-4">
+                  <div className="flex items-center gap-4 mt-4 mb-3">
                     {profile?.location && (
                       <div className="flex items-center gap-2">
                         <MapPin className="w-4 h-4 text-white/40" />
@@ -585,12 +917,108 @@ const ProfilePage: React.FC = () => {
                     )}
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-white/40" />
-                      <span>Joined {profile?.join_date ? new Date(profile.join_date).getFullYear() : new Date(user?.createdAt || '').getFullYear()}</span>
+                      <span>Joined June 16th, 2025</span>
+                    </div>
+                  </div>
+                  
+                  {/* Social Media Links */}
+                  <div className="mt-2">
+                    <p className="text-sm text-white/60 mb-2">My Digital Hangouts</p>
+                    <div className="flex items-center gap-3">
+                      <button 
+                        onClick={() => window.open('https://instagram.com', '_blank')}
+                        className="p-2 bg-transparent rounded-lg hover:scale-110 transition-transform duration-200"
+                        title="Instagram"
+                      >
+                        <Instagram className="w-4 h-4 text-white" />
+                      </button>
+                      
+                      <button 
+                        onClick={() => window.open('https://twitter.com', '_blank')}
+                        className="p-2 bg-transparent rounded-lg hover:scale-110 transition-transform duration-200"
+                        title="Twitter/X"
+                      >
+                        <Twitter className="w-4 h-4 text-white opacity-50" />
+                      </button>
+                      
+                      <button 
+                        onClick={() => window.open('https://tiktok.com', '_blank')}
+                        className="p-2 bg-transparent rounded-lg hover:scale-110 transition-transform duration-200"
+                        title="TikTok"
+                      >
+                        <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                        </svg>
+                      </button>
+                      
+                      <button 
+                             onClick={() => window.open('https://snapchat.com', '_blank')}
+                             className="p-2 bg-transparent rounded-lg hover:scale-110 transition-transform duration-200"
+                             title="Snapchat"
+                           >
+                             <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+                               <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c.64.16 1.31.26 2 .26s1.36-.1 2-.26V17c0 .55.45 1 1 1s1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7zm-2 8c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm4 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/>
+                               <path d="M7 19c0 .55.45 1 1 1h8c.55 0 1-.45 1-1s-.45-1-1-1H8c-.55 0-1 .45-1 1z"/>
+                             </svg>
+                           </button>
                     </div>
                   </div>
                 </div>
               </div>
             </motion.div>
+          </motion.div>
+
+          {/* Explore Section */}
+          <motion.div
+            className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-4"
+            initial={{ x: -30, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <h3 className="text-white/80 text-lg font-semibold mb-3 flex items-center gap-2">
+              <Compass className="w-5 h-5" />
+              Explore
+            </h3>
+            
+            <div className="space-y-1">
+               {[
+                  {
+                    icon: Compass,
+                    label: "Discover",
+                    desc: "Find new styles",
+                    color: "from-green-500 to-teal-500"
+                  },
+                  {
+                    icon: Users,
+                    label: "Community",
+                    desc: "Connect with others",
+                    color: "from-blue-500 to-purple-500"
+                  },
+                  {
+                    icon: TrendingUp,
+                    label: "Trending",
+                    desc: "What's hot now",
+                    color: "from-orange-500 to-red-500"
+                  }
+                ].map((item) => (
+                 <motion.button
+                   key={item.label}
+                   className="w-full flex items-center gap-3 p-3 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300 group"
+                   whileHover={{ scale: 1.02 }}
+                   whileTap={{ scale: 0.98 }}
+                 >
+                   <div className="flex-shrink-0 w-10 h-10 bg-white rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                     <item.icon className="w-5 h-5 text-black" />
+                   </div>
+                   <div className="text-left">
+                     <p className="font-semibold text-white/90 text-sm">
+                       {item.label}
+                     </p>
+                     <p className="text-xs text-white/60">{item.desc}</p>
+                   </div>
+                 </motion.button>
+               ))}
+             </div>
           </motion.div>
         </motion.div>
 
@@ -606,7 +1034,7 @@ const ProfilePage: React.FC = () => {
             >
               <h3 className="text-white/80 text-lg font-semibold flex items-center gap-2">
                 <Play className="w-5 h-5" />
-                My AI Fashion Reels
+                SnapStyler Feed
               </h3>
               <div className="flex items-center gap-2 text-white/60 text-sm">
                 <span>{reelPosts.length} posts</span>
@@ -625,6 +1053,7 @@ const ProfilePage: React.FC = () => {
                       <ReelCard
                         post={post}
                         isActive={index === activeReel}
+                        onDelete={handleDeleteImage}
                       />
                     </div>
                   ))}
@@ -764,7 +1193,7 @@ const ProfilePage: React.FC = () => {
               <div>
                 <h3 className="text-xl font-bold text-white">Adjust Your Profile Image</h3>
                 <div className="flex items-center gap-2 mt-1">
-                  <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                  <div className="bg-white text-black text-xs px-2 py-1 rounded-full font-medium">
                     8K Quality Enhancement
                   </div>
                   <span className="text-white/60 text-xs">7680×4320 resolution</span>
@@ -855,10 +1284,10 @@ const ProfilePage: React.FC = () => {
                 Cancel
               </button>
               <button
-                onClick={applyCroppedImage}
-                disabled={isEnhancing}
-                className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-purple-400 disabled:to-pink-400 text-white py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2"
-              >
+                  onClick={applyCroppedImage}
+                  disabled={isEnhancing}
+                  className="flex-1 bg-white hover:bg-gray-100 disabled:bg-gray-200 text-black py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2"
+                >
                 {isEnhancing ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -875,6 +1304,8 @@ const ProfilePage: React.FC = () => {
           </motion.div>
         </motion.div>
       )}
+
+
     </motion.div>
   );
 };

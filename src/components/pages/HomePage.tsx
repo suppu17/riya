@@ -25,24 +25,28 @@ const HomePage: React.FC = () => {
       </motion.div>
 
       <motion.div
-        className="grid grid-cols-12 gap-6"
+        className="grid grid-cols-12 gap-6 h-[calc(100vh-120px)]"
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
         <motion.div
-          className="col-span-3 space-y-4"
+          className="col-span-3 flex flex-col h-full"
           initial={{ x: -30, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
           whileHover={{ scale: 1.02 }}
         >
-          <ProductListSidebar />
-          <CategoryGallery />
+          <div>
+            <ProductListSidebar />
+          </div>
+          <div className="mt-4">
+            <CategoryGallery />
+          </div>
         </motion.div>
 
         <motion.div
-          className="col-span-6"
+          className="col-span-6 flex flex-col h-full"
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
@@ -57,19 +61,20 @@ const HomePage: React.FC = () => {
           <motion.div
             whileHover={{ scale: 1.005 }}
             transition={{ duration: 0.3 }}
-            className="mt-6"
+            className="mt-4 flex-1"
           >
             <ProductDisplay />
           </motion.div>
         </motion.div>
 
         <motion.div
-          className="col-span-3 space-y-6"
+          className="col-span-3 flex flex-col h-full space-y-6"
           initial={{ x: 30, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.5 }}
         >
           <motion.div
+            className="flex-1"
             whileHover={{ scale: 1.02, y: -2 }}
             transition={{ duration: 0.2 }}
           >

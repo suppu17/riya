@@ -104,7 +104,7 @@ const RiyaVoiceAgent: React.FC = () => {
   }
 
   return (
-    <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-3 border border-white/20 flex flex-col items-center text-center relative">
+    <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-3 border border-white/20 flex flex-col items-center text-center relative h-full">
       <div className="w-full h-full aspect-square rounded-2xl overflow-hidden border-2 border-white/30">
         <video
           src="https://cdn.dribbble.com/userupload/15697531/file/original-0242acdc69146d4472fc5e69b48616dc.mp4"

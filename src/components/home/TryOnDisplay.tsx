@@ -1,7 +1,8 @@
-import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { RotateCcw } from "lucide-react";
 import { useShopping } from "../../contexts/ShoppingContext";
-import { Loader2, Clock, X, CheckCircle, AlertCircle } from "lucide-react";
+import { useVoice } from "../../contexts/VoiceContext";
 import './TryOnDisplay.css';
 
 const TryOnDisplay: React.FC = () => {
@@ -227,7 +228,7 @@ const TryOnDisplay: React.FC = () => {
               onClick={() => setTryOnResult(null)}
               className="text-gray-300 text-xs font-medium flex items-center gap-1 hover:bg-white/20 px-2 py-1 rounded transition-colors"
             >
-              <i className="fas fa-refresh"></i>
+              <RotateCcw size={16} />
               Reset Try On
             </button>
           </div>
