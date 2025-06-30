@@ -145,9 +145,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                 style={{ animationDelay: "0.4s" }}
               >
                 <p className="text-white/90 text-base leading-relaxed max-w-xxl font-light">
-                  Meet SnapStyler — the next era of web shopping, where
-                  hands-free, AI-powered experiences redefine how you discover
-                  and try on fashion.
+                  Experience a hands-free, AI-powered journey where discovering
+                  and trying on fashion feels effortless. Powered by a real-time
+                  AI Agent that can see, hear, respond, and interact like a
+                  human — SnapStyler redefines how you shop online.
                 </p>
               </div>
 
