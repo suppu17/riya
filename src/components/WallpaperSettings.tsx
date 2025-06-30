@@ -35,7 +35,7 @@ const WallpaperSettings: React.FC = () => {
                 <div
                   key={wallpaper.id}
                   onClick={() => setWallpaper(wallpaper.url)}
-                  className={`relative cursor-pointer rounded-2xl overflow-hidden border-2 transition-all duration-300 ${
+                  className={`relative cursor-pointer rounded-2xl overflow-hidden border-2 transition-all duration-300 aspect-[16/9] ${
                     currentWallpaper === wallpaper.url 
                       ? 'border-white/50 ring-2 ring-white/30' 
                       : 'border-white/20 hover:border-white/40'
@@ -44,7 +44,7 @@ const WallpaperSettings: React.FC = () => {
                   <img 
                     src={wallpaper.url} 
                     alt={wallpaper.name}
-                    className="w-full h-32 object-cover"
+                    className="w-full h-full object-cover object-center"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                   

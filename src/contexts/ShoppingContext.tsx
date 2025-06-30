@@ -94,36 +94,6 @@ const ShoppingContext = createContext<ShoppingContextType | undefined>(
 
 const modelImages: ModelImage[] = [
   {
-    id: "1",
-    name: "Photo 1",
-    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_1.png",
-  },
-  {
-    id: "2",
-    name: "Photo 2",
-    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_2.png",
-  },
-  {
-    id: "3",
-    name: "Photo 3",
-    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_3.png",
-  },
-  {
-    id: "4",
-    name: "Photo 4",
-    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_4.png",
-  },
-  {
-    id: "5",
-    name: "Photo 5",
-    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_5.png",
-  },
-  {
-    id: "6",
-    name: "Photo 6",
-    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/Model_6.png",
-  },
-  {
     id: "7",
     name: "Photo 7",
     url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/YEN_7671.JPG",
@@ -133,6 +103,36 @@ const modelImages: ModelImage[] = [
     name: "Photo 8",
     url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/IMG_7514.JPG",
   },
+  {
+    id: "1",
+    name: "Photo 1",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/Supriya/Screenshot+2025-06-30+at+8.19.06%E2%80%AFAM.png",
+  },
+  {
+    id: "2",
+    name: "Photo 2",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/Supriya/Screenshot+2025-06-30+at+8.18.35%E2%80%AFAM.png",
+  },
+  {
+    id: "3",
+    name: "Photo 3",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/Supriya/Screenshot+2025-06-30+at+8.18.12%E2%80%AFAM.png",
+  },
+  {
+    id: "4",
+    name: "Photo 4",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/Supriya/Screenshot+2025-06-30+at+8.17.30%E2%80%AFAM.png",
+  },
+  {
+    id: "5",
+    name: "Photo 5",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/Supriya/Screenshot+2025-06-30+at+8.17.01%E2%80%AFAM.png",
+  },
+  {
+    id: "6",
+    name: "Photo 6",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/Supriya/Screenshot+2025-06-30+at+8.16.44%E2%80%AFAM.png",
+  },
 ];
 
 export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
@@ -141,10 +141,10 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
   // Load cart from localStorage on initialization
   const [cart, setCart] = useState<CartItem[]>(() => {
     try {
-      const savedCart = localStorage.getItem('shopping-cart');
+      const savedCart = localStorage.getItem("shopping-cart");
       return savedCart ? JSON.parse(savedCart) : [];
     } catch (error) {
-      console.error('Error loading cart from localStorage:', error);
+      console.error("Error loading cart from localStorage:", error);
       return [];
     }
   });
@@ -301,12 +301,12 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
           console.log("Processed try-on result URL:", resultUrl);
           setTryOnProgress(100);
           setTryOnResult(resultUrl);
-          
+
           // Save the generated image to localStorage
           if (resultUrl) {
             saveGeneratedImage(resultUrl);
           }
-          
+
           setIsTryingOn(false);
           clearPolling();
           break;
@@ -371,9 +371,9 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
   // Save cart to localStorage whenever it changes
   useEffect(() => {
     try {
-      localStorage.setItem('shopping-cart', JSON.stringify(cart));
+      localStorage.setItem("shopping-cart", JSON.stringify(cart));
     } catch (error) {
-      console.error('Error saving cart to localStorage:', error);
+      console.error("Error saving cart to localStorage:", error);
     }
   }, [cart]);
 
@@ -529,8 +529,6 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
     return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
-
-
   const addCustomPhoto = (photo: ModelImage) => {
     setCustomPhotos((prev) => [...prev, photo]);
   };
@@ -544,28 +542,37 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
       productImage: selectedProduct?.image || "",
       createdAt: new Date().toISOString(),
       modelUsed: selectedModelId ? `Model ${selectedModelId}` : "Default Model",
-      modelId: selectedModelId || "default"
+      modelId: selectedModelId || "default",
     };
-    
-    setGeneratedImages(prev => [newImage, ...prev]);
-    
+
+    setGeneratedImages((prev) => [newImage, ...prev]);
+
     // Save to localStorage
-    const existingImages = JSON.parse(localStorage.getItem('generatedImages') || '[]');
-    localStorage.setItem('generatedImages', JSON.stringify([newImage, ...existingImages]));
+    const existingImages = JSON.parse(
+      localStorage.getItem("generatedImages") || "[]"
+    );
+    localStorage.setItem(
+      "generatedImages",
+      JSON.stringify([newImage, ...existingImages])
+    );
   };
 
   const loadGeneratedImages = (): GeneratedImage[] => {
-    const stored = localStorage.getItem('generatedImages');
+    const stored = localStorage.getItem("generatedImages");
     return stored ? JSON.parse(stored) : [];
   };
 
   const deleteGeneratedImage = (imageId: string) => {
-    setGeneratedImages(prev => prev.filter(img => img.id !== imageId));
-    
+    setGeneratedImages((prev) => prev.filter((img) => img.id !== imageId));
+
     // Update localStorage
-    const existingImages = JSON.parse(localStorage.getItem('generatedImages') || '[]');
-    const updatedImages = existingImages.filter((img: GeneratedImage) => img.id !== imageId);
-    localStorage.setItem('generatedImages', JSON.stringify(updatedImages));
+    const existingImages = JSON.parse(
+      localStorage.getItem("generatedImages") || "[]"
+    );
+    const updatedImages = existingImages.filter(
+      (img: GeneratedImage) => img.id !== imageId
+    );
+    localStorage.setItem("generatedImages", JSON.stringify(updatedImages));
   };
 
   // Cart Modal functions

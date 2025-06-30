@@ -52,7 +52,7 @@ const ModelSelectionModal: React.FC<ModelSelectionModalProps> = ({ isOpen, onClo
             <div
               key={photo.id}
               onClick={() => handlePhotoSelect(photo)}
-              className={`relative cursor-pointer rounded-2xl overflow-hidden border-2 transition-all duration-300 ${
+              className={`relative cursor-pointer rounded-2xl overflow-hidden border-2 transition-all duration-300 aspect-[3/4] ${
                 selectedPhoto?.id === photo.id
                   ? 'border-white/50 ring-2 ring-white/30'
                   : 'border-white/20 hover:border-white/40'
@@ -61,7 +61,7 @@ const ModelSelectionModal: React.FC<ModelSelectionModalProps> = ({ isOpen, onClo
               <img 
                 src={photo.url} 
                 alt={photo.name}
-                className="w-full h-32 object-cover"
+                className="w-full h-full object-cover object-top"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
               
