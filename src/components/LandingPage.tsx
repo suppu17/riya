@@ -107,10 +107,26 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
             <div className="space-y-8">
               <div
                 className={`opacity-0 ${showContent ? "fade-in-up" : ""}`}
-                style={{ animationDelay: "0.2s" }}
+                style={{ animationDelay: "0.7s" }}
               >
                 <div className="text-sm uppercase tracking-[0.3em] text-white/90 mb-6 font-semibold">
-                  NEXT-GEN FASHION
+                  <div className="flex gap-2 m6-4 mb-3">
+                    <img
+                      src="https://cdn.prod.website-files.com/63b2f566abde4cad39ba419f/63c028497212641ca0f56f80_tavus%20logo%20white.svg"
+                      alt="Tavus Logo"
+                      className="h-8 w-auto animate-slide-down-bounce"
+                      style={{ "--animation-delay": "0.8s" }}
+                    />
+                    <img
+                      src="https://11labs-nonprd-15f22c1d.s3.eu-west-3.amazonaws.com/0b9cd3e1-9fad-4a5b-b3a0-c96b0a1f1d2b/elevenlabs-logo-white.png"
+                      alt="ElevenLabs Logo"
+                      className="h-4 w-auto animate-slide-down-bounce"
+                      style={{ "--animation-delay": "1.6s" }}
+                    />
+                  </div>
+                  <span className="bg-gray-800/50 px-3 py-1 rounded">
+                    NEXT-GEN FASHION
+                  </span>{" "}
                 </div>
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[0.9] tracking-tight">
                   YOUR
@@ -119,35 +135,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                   <br />
                   CONVERSATIONAL
                   <br />
-                  <span className="font-semibold flex items-center gap-3">
+                  <span className="font-semibold flex items-center">
                     REALTIME-AI STYLIST
-                    <div className="flex items-center gap-2">
-                      <svg
-                        className="w-12 h-12 text-cyan-400"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-                      </svg>
-                      <img
-                        src="https://cdn.prod.website-files.com/63b2f566abde4cad39ba419f/63c028497212641ca0f56f80_tavus%20logo%20white.svg"
-                        alt="Tavus Logo"
-                        className="h-8 w-auto animate-slide-down-bounce"
-                        style={{ "--animation-delay": "0.8s" }}
-                      />
-                      <div
-                        className="i-bolt-elevenlabs text-white animate-slide-down-bounce"
-                        style={{
-                          "--animation-delay": "1.0s",
-                          width: "48px",
-                          height: "48px",
-                        }}
-                      ></div>
-                    </div>
                   </span>
                 </h1>
               </div>
