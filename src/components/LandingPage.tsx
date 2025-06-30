@@ -91,14 +91,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
               </div>
             </div>
 
-            
-
             {/* Success Message for Logged In Users */}
             {isAuthenticated && user && (
               <div className="absolute top-24 left-8 z-30">
                 <div className="bg-cyan-500/20 backdrop-blur-xl border border-cyan-400/30 rounded-2xl px-4 py-2">
                   <p className="text-cyan-200 text-sm font-medium">
-                    Welcome back, {user.name?.split(' ')[0]}! Redirecting to dashboard...
+                    Welcome back, {user.name?.split(" ")[0]}! Redirecting to
+                    dashboard...
                   </p>
                 </div>
               </div>
@@ -106,30 +105,48 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
 
             {/* Main Content */}
             <div className="space-y-8">
-              <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.2s'}}>
-                <div className="text-sm uppercase tracking-[0.3em] text-white/90 mb-6 font-semibold">NEXT-GEN FASHION</div>
+              <div
+                className={`opacity-0 ${showContent ? "fade-in-up" : ""}`}
+                style={{ animationDelay: "0.2s" }}
+              >
+                <div className="text-sm uppercase tracking-[0.3em] text-white/90 mb-6 font-semibold">
+                  NEXT-GEN FASHION
+                </div>
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[0.9] tracking-tight">
-                  YOUR<br />
-                  PERSONAL<br />
-                  <span className="font-semibold"> AI STYLIST</span>
+                  YOUR
+                  <br />
+                  PERSONAL
+                  <br />
+                  CONVERSATIONAL
+                  <br />
+                  <span className="font-semibold"> REALTIME-AI STYLIST</span>
                 </h1>
               </div>
 
-              <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.4s'}}>
+              <div
+                className={`opacity-0 ${showContent ? "fade-in-up" : ""}`}
+                style={{ animationDelay: "0.4s" }}
+              >
                 <p className="text-white/90 text-base leading-relaxed max-w-xxl font-light">
-                  Meet SnapStyler, the revolutionary app that transforms shopping into a seamless, hands-free experience, powered by cutting-edge conversational AI. 
+                  Meet SnapStyler, the revolutionary app that transforms
+                  shopping into a seamless, hands-free experience, powered by
+                  cutting-edge conversational AI.
                 </p>
               </div>
 
-              <div className={`opacity-0 ${showContent ? 'fade-in-up' : ''}`} style={{animationDelay: '0.6s'}}>
+              <div
+                className={`opacity-0 ${showContent ? "fade-in-up" : ""}`}
+                style={{ animationDelay: "0.6s" }}
+              >
                 <button
                   onClick={handleEnterExperience}
                   className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-full px-8 py-3 text-white font-light text-sm tracking-wide hover:bg-white/15 transition-all duration-300 group"
                 >
-                  {isAuthenticated ? 'Enter Experience' : 'Sign In to Experience'}
+                  {isAuthenticated
+                    ? "Enter Experience"
+                    : "Sign In to Experience"}
                 </button>
               </div>
-
             </div>
           </div>
 
@@ -146,14 +163,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                 className="w-full h-full object-cover"
               />
             </div>
-            
+
             {/* Minimal Video Overlay - Crystal Clear */}
             <div className="absolute inset-0 bg-gradient-to-l from-transparent via-cyan-900/5 to-blue-900/10" />
           </div>
 
           {/* Bottom Navigation Dots with Crystal Accent */}
           <div className="absolute bottom-8 left-1/4 transform -translate-x-1/2 z-30">
-            <div className="text-white/70 text-sm mb-2 text-left">App Powered by:</div>
+            <div className="text-white/70 text-sm mb-2 text-left">
+              App Powered by:
+            </div>
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-center gap-3">
                 <div className="i-bolt-supabase text-white"></div>
@@ -167,8 +186,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
           </div>
 
           {/* Sponsers*/}
-          <div className="absolute inset-0 pointer-events-none w-1/2">
-          </div>
+          <div className="absolute inset-0 pointer-events-none w-1/2"></div>
         </div>
       </div>
 
@@ -185,13 +203,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
         onClose={() => setIsProfileOpen(false)}
       />
 
-        <div className="fixed top-5 right-12 z-99">
-                <img 
-                  src="./bolt.svg" 
-                  alt="Badge" 
-                  className="w-20 h-20"
-                />
-            </div>
+      <div className="fixed top-5 right-12 z-99">
+        <img src="./bolt.svg" alt="Badge" className="w-20 h-20" />
+      </div>
     </div>
   );
 };

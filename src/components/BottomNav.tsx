@@ -1,6 +1,8 @@
 import React from "react";
 import { Home, Camera, Settings, ShoppingBag, Check, User } from "lucide-react";
-import { useShopping } from "../contexts/ShoppingContext";interface BottomNavProps {
+import { useShopping } from "../contexts/ShoppingContext";
+
+interface BottomNavProps {
   currentView: string;
   setCurrentView: (view: string) => void;
 }
@@ -29,7 +31,10 @@ const BottomNav: React.FC<BottomNavProps> = ({
             return (
               <button
                 key={item.id}
-                onClick={() => setCurrentView(item.id)}
+                onClick={() => {
+              console.log('🔍 BottomNav - Navigating to:', item.id);
+              setCurrentView(item.id);
+            }}
                 className={`relative flex flex-col items-center justify-center p-2 transition-all duration-300 ${
                   isActive ? "text-white" : "text-white/60 hover:text-white"
                 }`}

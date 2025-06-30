@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
 
 const AuthDebug: React.FC = () => {
   const [testEmail, setTestEmail] = useState('test@example.com');
@@ -10,17 +9,16 @@ const AuthDebug: React.FC = () => {
 
   const testConnection = async () => {
     try {
-      setDebugInfo('Testing Supabase connection...');
+      setDebugInfo('Testing mock authentication system...');
       
-      // Test basic connection
-      const { data, error } = await supabase.auth.getSession();
+      // Test mock system
+      const mockUser = localStorage.getItem('demo-user');
       
-      if (error) {
-        setDebugInfo(`Connection Error: ${error.message}`);
-        return;
+      if (mockUser) {
+        setDebugInfo('✅ Mock authentication system working - User logged in');
+      } else {
+        setDebugInfo('✅ Mock authentication system working - No user logged in');
       }
-      
-      setDebugInfo('✅ Supabase connection successful');
     } catch (error) {
       setDebugInfo(`❌ Connection failed: ${error}`);
     }
@@ -84,8 +82,8 @@ const AuthDebug: React.FC = () => {
       )}
       
       <div className="mt-2 text-xs text-gray-400">
-        <div>URL: {import.meta.env.VITE_SUPABASE_URL}</div>
-        <div>Key: {import.meta.env.VITE_SUPABASE_ANON_KEY ? '✅ Set' : '❌ Missing'}</div>
+        <div>Mode: Mock Authentication</div>
+        <div>Demo Credentials: demo@example.com / demo123</div>
       </div>
     </div>
   );

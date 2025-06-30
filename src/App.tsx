@@ -20,10 +20,24 @@ const AppContent: React.FC = () => {
 
   // Reset showLanding when user becomes authenticated
   useEffect(() => {
+    console.log('🔍 App.tsx - Auth state changed:', {
+      isAuthenticated,
+      isLoading,
+      user: user?.email || 'no user',
+      showLanding
+    });
     if (isAuthenticated) {
+      console.log('✅ App.tsx - User authenticated, hiding landing page');
       setShowLanding(false);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isLoading, user, showLanding]);
+
+  // Initialize to home view only on first authentication
+  useEffect(() => {
+    if (isAuthenticated && showLanding) {
+      setCurrentView('home');
+    }
+  }, [isAuthenticated, showLanding]);
 
   // Show loading screen while checking authentication
   if (isLoading) {

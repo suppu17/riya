@@ -133,7 +133,6 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isAct
 };
 
 const ProfilePage: React.FC = () => {
-  const {} = useShopping();
   const { user, profile, uploadProfileImageFromBase64, updateProfile, refreshProfile } = useAuth();
   const [reelPosts, setReelPosts] = useState<ReelPost[]>([]);
   const [activeReel, setActiveReel] = useState(0);

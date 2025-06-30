@@ -1,0 +1,31 @@
+{
+  "users": [
+    {
+      "id": "demo-user-1",
+      "email": "demo@example.com",
+      "name": "Demo User",
+      "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+      "preferences": {
+        "style": "casual",
+        "colors": ["blue", "black", "white"],
+        "sizes": {
+          "top": "M",
+          "bottom": "32",
+          "shoes": "10"
+        }
+      },
+      "profile": {
+        "age": 28,
+        "gender": "male",
+        "location": "New York, NY",
+        "bio": "Fashion enthusiast and tech lover"
+      }
+    }
+  ],
+  "auth": {
+    "demoCredentials": {
+      "email": "demo@example.com",
+      "password": "demo123"
+    }
+  }
+}

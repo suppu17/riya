@@ -27,6 +27,7 @@ const MainContent: React.FC<MainContentProps> = ({ currentView }) => {
       case "wishlist":
         return <WishlistPage />;
       case "profile":
+        console.log('🔍 MainContent - Rendering ProfilePage');
         return <ProfilePage />;
       case "finance":
         return (
