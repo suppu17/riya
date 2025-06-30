@@ -208,13 +208,14 @@ const TavusVideoAgent: React.FC<TavusVideoAgentProps> = ({
           replica_id: replicaId,
           persona_id: personaId,
           callback_url: window.location.origin + "/api/tavus-webhook",
-          conversational_context: `"# Personality
+          conversational_context: `# Personality
 
 You are Riya, a friendly, cheerful, and enthusiastic shopping assistant for our online store.
 Your mission is to make each customer's shopping experience effortless, fun, and personalized.
 You are highly knowledgeable about all products in our store—including clothing, electronics, beauty items, and home goods.
-When a customer asks for product suggestions or inquires about something specific, respond conversationally and helpfully based on your product knowledge.
+When a customer asks for product suggestions or inquires about a specific product, respond conversationally and helpfully, drawing on your product knowledge.
 You show genuine excitement, just like a helpful in-store assistant would.
+Dont ask too many question recommand based on first ask 
 
 # Environment
 
@@ -235,17 +236,14 @@ Adapt your language to the customer's style – more casual with friendly custom
 
 Your primary goal is to guide customers through a seamless and enjoyable shopping experience:
 
-1. Understand the customer's needs and preferences by asking clarifying questions.
-2. Provide relevant product suggestions based on their interests and the current context.
-3. Assist with adding items to their cart, confirming each addition.
-4. Facilitate category switching to explore different product areas, explaining available options.
-5. Ensure the customer feels supported and excited about their purchases, offering helpful advice.
-6. Show the cart when the user asks to checkout and wants to place the order for confirmation on what they are about to place.
-7. Trigger the checkout when the user confirms the order and says they can submit the order and complete the order, asking for confirmation before triggering the tool.
+1. Understand the customer's needs  trigger the tool for faster response use switch category for switch the category based on the current item :  ['Clothing', 'Bags', 'Watches', 'Shoes']  -> provide one 
+2. show the product the product id based on the suggestion you have to the user 
+3. Show the cart when the user asks to checkout and wants to place the order for confirmation on what they are about to place.
+4. Trigger the checkout when the user confirms the order and says they can submit the order and complete the order, asking for confirmation before triggering the checkout. 
 
 # Guardrails
 
-Only recommend products available in our store.
+Only recommend products available in our store. use knowdgle data shared 
 Never provide personal opinions or biased recommendations.
 Avoid discussing topics unrelated to shopping.
 If you don't know an answer, admit it and offer to find out or suggest alternative solutions.
@@ -261,11 +259,72 @@ search_products: Use this tool when a customer asks for specific products or sug
 
 add_to_cart: Use this tool when the customer wants to purchase an item. Add the product ID to the cart and confirm the addition to the user. The arguments to this tool should be the product ID of the item the user wants to add to the cart.
 
-switch_category: Use this tool if the customer is discussing or switching to a specific category (e.g., "show me some clothes or bags" or "I'm looking for a new watch"). Pass the appropriate category name based on your knowledge base. The arguments to this tool should be the category name the user wants to switch to.
+switch_category: switch category for switch the category based on the current discussion automatic :  ['Clothing', 'Bags', 'Watches', 'Shoes']  -> provide one 
 
 show_kart: Show the cart when the user asks to checkout and wants to place the order for confirmation on what they are about to place. No arguments are needed for this tool.
 
 trigger_checkout: Trigger this tool when the user confirms the order and says they can submit the order and complete the order, asking for confirmation before triggering the tool. No arguments are needed for this tool.
+
+
+“try_on_me”: before trigger this make sure use selected the photo which he want to try on himself  
+Your store Prodcuts: [dont mention anytoing outside here]
+{
+    id: "13",
+    name: "Signature Accent Knit Dress",
+    price: 4300,
+    image: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/main_png.png",
+    category: "Clothing",
+    rating: 4.8,
+    tryown: true,
+    categoryFlag: true,
+    inStock: true,
+    description: "Luxurious signature accent knit dress with refined details",
+    designer: "Louis Vuitton",
+    articleNumber: "1AI965",
+    keyWords: [
+      "Signature Accent Knit Dress",
+      "Louis Vuitton",
+      "Elegant",
+      "Refined Details"
+    ],
+  }
+     {
+    id: "32",
+    name: "Alma BB",
+    price: 1900,
+    image: "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Alma_BB/alma_bb_front.png",
+    category: "Bags",
+    rating: 4.7,
+    inStock: true,
+    description: "Iconic structured handbag with timeless appeal",
+    designer: "Louis Vuitton",
+    articleNumber: "M46990",
+    keyWords: [
+      "Iconic Handbag",
+      "Louis Vuitton",
+      "Timeless Appeal"
+    ],
+    
+  },
+  
+  {
+    id: "14",
+    name: "Striped Lavalliere Dress",
+    price: 4750,
+    image: "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Striped_Lavalliere_Dress/striped_lavalliere_dress_front.png",
+    category: "Clothing",
+    rating: 4.6,
+    inStock: true,
+    description: "Elegant striped lavalliere dress with sophisticated styling",
+    designer: "Louis Vuitton",
+    articleNumber: "1AHH09",
+    keyWords: [
+      "Red Color",
+      "Louis Vuitton",
+      "Elegant",
+      "Sleeves"
+    ],
+  }
 `,
           custom_greeting: "Hello, I'm Riya, your AI stylist agent. ",
 
@@ -325,13 +384,19 @@ trigger_checkout: Trigger this tool when the user confirms the order and says th
               const searchResults = products.filter(
                 (product) =>
                   product.name.toLowerCase().includes(query.toLowerCase()) ||
-                  product.category.toLowerCase().includes(query.toLowerCase()) ||
+                  product.category
+                    .toLowerCase()
+                    .includes(query.toLowerCase()) ||
                   (product.description &&
-                    product.description.toLowerCase().includes(query.toLowerCase()))
+                    product.description
+                      .toLowerCase()
+                      .includes(query.toLowerCase()))
               );
 
-              console.log(`Found ${searchResults.length} products for query: "${query}"`);
-              
+              console.log(
+                `Found ${searchResults.length} products for query: "${query}"`
+              );
+
               // Set first result as selected if available
               if (searchResults.length > 0) {
                 setSelectedProduct(searchResults[0]);
@@ -341,7 +406,7 @@ trigger_checkout: Trigger this tool when the user confirms the order and says th
 
             case "add_to_cart": {
               const { productId } = parsedArgs;
-              
+
               if (productId) {
                 // Find product by ID
                 const productToAdd = products.find((p) => p.id === productId);
@@ -356,7 +421,9 @@ trigger_checkout: Trigger this tool when the user confirms the order and says th
                 addToCart(selectedProduct);
                 console.log(`Added ${selectedProduct.name} to cart`);
               } else {
-                console.error("No product specified or selected for cart addition");
+                console.error(
+                  "No product specified or selected for cart addition"
+                );
               }
               break;
             }
@@ -369,19 +436,23 @@ trigger_checkout: Trigger this tool when the user confirms the order and says th
               }
 
               // Get unique categories from products
-              const availableCategories = [...new Set(products.map(p => p.category))];
-              
+              const availableCategories = [
+                ...new Set(products.map((p) => p.category)),
+              ];
+
               // Find matching category (fuzzy search)
-              const matchedCategory = availableCategories.find(
-                (cat) => cat.toLowerCase().includes(categoryName.toLowerCase())
-              ) || availableCategories.find(
-                (cat) => categoryName.toLowerCase().includes(cat.toLowerCase())
-              );
+              const matchedCategory =
+                availableCategories.find((cat) =>
+                  cat.toLowerCase().includes(categoryName.toLowerCase())
+                ) ||
+                availableCategories.find((cat) =>
+                  categoryName.toLowerCase().includes(cat.toLowerCase())
+                );
 
               if (matchedCategory) {
                 setCurrentCategory(matchedCategory);
                 console.log(`Switched to category: ${matchedCategory}`);
-                
+
                 // Filter products by category and set first as selected
                 const categoryProducts = products.filter(
                   (p) => p.category === matchedCategory
@@ -400,8 +471,14 @@ trigger_checkout: Trigger this tool when the user confirms the order and says th
               // No parameters needed - just log cart contents
               console.log("Displaying cart contents:");
               console.log("Cart items:", cart);
-              console.log("Total items:", cart.reduce((sum, item) => sum + item.quantity, 0));
-              console.log("Total price:", cart.reduce((sum, item) => sum + (item.price * item.quantity), 0));
+              console.log(
+                "Total items:",
+                cart.reduce((sum, item) => sum + item.quantity, 0)
+              );
+              console.log(
+                "Total price:",
+                cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+              );
               break;
             }
 
@@ -413,13 +490,20 @@ trigger_checkout: Trigger this tool when the user confirms the order and says th
               }
 
               const totalPrice = cart.reduce(
-                (sum, item) => sum + (item.price * item.quantity),
+                (sum, item) => sum + item.price * item.quantity,
                 0
               );
-              const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-              
-              console.log(`Processing checkout for ${totalItems} items, total: $${totalPrice.toFixed(2)}`);
-              
+              const totalItems = cart.reduce(
+                (sum, item) => sum + item.quantity,
+                0
+              );
+
+              console.log(
+                `Processing checkout for ${totalItems} items, total: $${totalPrice.toFixed(
+                  2
+                )}`
+              );
+
               // Simulate checkout process
               setTimeout(() => {
                 clearCart();
@@ -437,7 +521,15 @@ trigger_checkout: Trigger this tool when the user confirms the order and says th
         }
       }
     },
-    [products, selectedProduct, addToCart, setSelectedProduct, setCurrentCategory, cart, clearCart]
+    [
+      products,
+      selectedProduct,
+      addToCart,
+      setSelectedProduct,
+      setCurrentCategory,
+      cart,
+      clearCart,
+    ]
   );
 
   /**

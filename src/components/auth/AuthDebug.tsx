@@ -1,23 +1,25 @@
-import React, { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import React, { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 
 const AuthDebug: React.FC = () => {
-  const [testEmail, setTestEmail] = useState('test@example.com');
-  const [testPassword, setTestPassword] = useState('password123');
-  const [debugInfo, setDebugInfo] = useState<string>('');
+  const [testEmail, setTestEmail] = useState("test@example.com");
+  const [testPassword, setTestPassword] = useState("password123");
+  const [debugInfo, setDebugInfo] = useState<string>("");
   const { login } = useAuth();
 
   const testConnection = async () => {
     try {
-      setDebugInfo('Testing mock authentication system...');
-      
+      setDebugInfo("Testing mock authentication system...");
+
       // Test mock system
-      const mockUser = localStorage.getItem('demo-user');
-      
+      const mockUser = localStorage.getItem("demo-user");
+
       if (mockUser) {
-        setDebugInfo('✅ Mock authentication system working - User logged in');
+        setDebugInfo("✅ Mock authentication system working - User logged in");
       } else {
-        setDebugInfo('✅ Mock authentication system working - No user logged in');
+        setDebugInfo(
+          "✅ Mock authentication system working - No user logged in"
+        );
       }
     } catch (error) {
       setDebugInfo(`❌ Connection failed: ${error}`);
@@ -26,11 +28,11 @@ const AuthDebug: React.FC = () => {
 
   const testLogin = async () => {
     try {
-      setDebugInfo('Testing login...');
+      setDebugInfo("Testing login...");
       const result = await login(testEmail, testPassword);
-      
+
       if (result.success) {
-        setDebugInfo('✅ Login successful');
+        setDebugInfo("✅ Login successful");
       } else {
         setDebugInfo(`❌ Login failed: ${result.error}`);
       }
@@ -42,7 +44,7 @@ const AuthDebug: React.FC = () => {
   return (
     <div className="fixed bottom-4 right-4 bg-black/80 text-white p-4 rounded-lg max-w-md z-[10000]">
       <h3 className="text-lg font-bold mb-2">Auth Debug Panel</h3>
-      
+
       <div className="space-y-2 mb-4">
         <input
           type="email"
@@ -59,7 +61,7 @@ const AuthDebug: React.FC = () => {
           className="w-full p-2 bg-gray-700 rounded text-white"
         />
       </div>
-      
+
       <div className="space-y-2 mb-4">
         <button
           onClick={testConnection}
@@ -74,13 +76,13 @@ const AuthDebug: React.FC = () => {
           Test Login
         </button>
       </div>
-      
+
       {debugInfo && (
         <div className="bg-gray-800 p-2 rounded text-sm">
           <pre className="whitespace-pre-wrap">{debugInfo}</pre>
         </div>
       )}
-      
+
       <div className="mt-2 text-xs text-gray-400">
         <div>Mode: Mock Authentication</div>
         <div>Demo Credentials: demo@example.com / demo123</div>

@@ -7,9 +7,10 @@ import { useShopping, type ModelImage } from '../contexts/ShoppingContext';
 interface PhotoSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onPhotoSelected?: () => void;
 }
 
-const PhotoSelectionModal: React.FC<PhotoSelectionModalProps> = ({ isOpen, onClose }) => {
+const PhotoSelectionModal: React.FC<PhotoSelectionModalProps> = ({ isOpen, onClose, onPhotoSelected }) => {
   const { selectedModelId, setSelectedModelId, modelImages, addCustomPhoto } = useShopping();
   const [selectedPhoto, setSelectedPhoto] = useState<ModelImage | null>(
     selectedModelId
@@ -41,8 +42,10 @@ const PhotoSelectionModal: React.FC<PhotoSelectionModalProps> = ({ isOpen, onClo
   }, [isOpen, stream]);
 
   const handlePhotoSelect = (photo: ModelImage) => {
+    console.log('PhotoSelectionModal: Selecting photo:', photo.name, 'with ID:', photo.id);
     setSelectedPhoto(photo);
     setSelectedModelId(photo.id);
+    console.log('PhotoSelectionModal: selectedModelId set to:', photo.id);
   };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -139,9 +142,13 @@ const PhotoSelectionModal: React.FC<PhotoSelectionModalProps> = ({ isOpen, onClo
   };
 
   const handleDone = () => {
+    console.log('PhotoSelectionModal: handleDone called with selectedPhoto:', selectedPhoto?.name, selectedPhoto?.id);
     // Save the selected photo to context if one is selected
     if (selectedPhoto) {
+      console.log('PhotoSelectionModal: Setting selectedModelId to:', selectedPhoto.id);
       setSelectedModelId(selectedPhoto.id);
+    } else {
+      console.log('PhotoSelectionModal: No photo selected, selectedModelId remains unchanged');
     }
     
     if (stream) {
@@ -150,6 +157,14 @@ const PhotoSelectionModal: React.FC<PhotoSelectionModalProps> = ({ isOpen, onClo
     }
     setIsCameraActive(false);
     onClose();
+    
+    // Trigger try-on functionality if photo is selected and callback is provided
+    if (selectedPhoto && onPhotoSelected) {
+      console.log('PhotoSelectionModal: Triggering try-on functionality');
+      setTimeout(() => {
+        onPhotoSelected();
+      }, 100); // Small delay to ensure modal closes first
+    }
   };
 
   const modalContent = (

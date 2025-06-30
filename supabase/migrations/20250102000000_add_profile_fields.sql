@@ -38,7 +38,7 @@ INSERT INTO profiles (
   '00000000-0000-0000-0000-000000000001',
   'supriya@example.com',
   'Supriya Korukonda',
-  'https://i.pravatar.cc/150?u=supriya',
+  'https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/IMG_7514.JPG',
   'Hi! I''m passionate about fashion and technology. I love exploring new styles and creating unique looks using AI.',
   'New York, USA',
   '2023-01-15',

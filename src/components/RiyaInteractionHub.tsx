@@ -23,10 +23,13 @@ const RiyaInteractionHub: React.FC = () => {
     selectedModelId,
     openPhotoModal,
   } = useShopping();
+
+  // Debug: Log selectedModelId on every render
+  console.log("RiyaInteractionHub: Current selectedModelId:", selectedModelId);
   const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
 
   const conversation = useConversation({
-    agentId: "agent_01jynswtebf13r5ct23mqfj399",
+    agentId: "agent_01jz0wdr7zffhaqgjv39gzs104",
     client: apiKey ? new ElevenLabsClient({ apiKey }) : undefined,
     voiceId: "21m00Tcm4TlvDq8ikWAM",
     clientTools: {
@@ -61,12 +64,12 @@ const RiyaInteractionHub: React.FC = () => {
           return `I'm sorry, I couldn't find any products matching "${productIDString}".`;
         }
       },
-      add_to_cart: async (query: { 
+      add_to_cart: async (query: {
         productId?: string;
         type?: { ProductID: string };
       }) => {
         console.log("from add_to_cart:", JSON.stringify(query, null, 2));
-        
+
         // Handle both productId and type.ProductID formats
         const productId = query.productId || query.type?.ProductID;
         console.log("Extracted productId:", productId);
@@ -183,12 +186,19 @@ const RiyaInteractionHub: React.FC = () => {
 
       try_on_me: async () => {
         console.log("from try_on_me: Triggering try-on functionality");
+        console.log(
+          "try_on_me called - selectedProduct:",
+          selectedProduct?.name,
+          "selectedModelId:",
+          selectedModelId
+        );
 
         if (!selectedProduct) {
           return "Please select a product first before trying it on.";
         }
 
         if (!selectedModelId) {
+          console.log("No selectedModelId found, opening photo modal");
           openPhotoModal();
           return "Please select a photo first. I've opened the photo selection modal for you.";
         }

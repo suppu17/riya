@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import {
   User,
   Settings,
@@ -45,13 +45,16 @@ interface ReelPost extends GeneratedImageData {
   caption: string;
 }
 
-const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isActive }) => {
+const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({
+  post,
+  isActive,
+}) => {
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [likes, setLikes] = useState(post.likes);
 
   const handleLike = () => {
     setIsLiked(!isLiked);
-    setLikes(prev => isLiked ? prev - 1 : prev + 1);
+    setLikes((prev) => (isLiked ? prev - 1 : prev + 1));
   };
 
   return (
@@ -81,7 +84,9 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isAct
               className="w-10 h-10 rounded-full border-2 border-white/30"
             />
             <div>
-              <p className="text-white font-semibold text-sm">{post.username}</p>
+              <p className="text-white font-semibold text-sm">
+                {post.username}
+              </p>
               <p className="text-white/70 text-xs">{post.modelUsed}</p>
             </div>
           </div>
@@ -95,7 +100,8 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isAct
           {/* Caption */}
           <div className="text-white">
             <p className="text-sm leading-relaxed">
-              <span className="font-semibold">{post.username}</span> {post.caption}
+              <span className="font-semibold">{post.username}</span>{" "}
+              {post.caption}
             </p>
             <p className="text-xs text-white/60 mt-1">
               {new Date(post.createdAt).toLocaleDateString()}
@@ -108,10 +114,10 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isAct
               <button
                 onClick={handleLike}
                 className={`flex items-center gap-2 transition-colors ${
-                  isLiked ? 'text-red-500' : 'text-white'
+                  isLiked ? "text-red-500" : "text-white"
                 }`}
               >
-                <Heart className={`w-6 h-6 ${isLiked ? 'fill-current' : ''}`} />
+                <Heart className={`w-6 h-6 ${isLiked ? "fill-current" : ""}`} />
                 <span className="text-sm font-medium">{likes}</span>
               </button>
               <button className="flex items-center gap-2 text-white hover:text-blue-400">
@@ -120,7 +126,7 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isAct
               </button>
             </div>
             <div className="text-white/60 text-xs">
-              #{post.productName.replace(/\s+/g, '').toLowerCase()}
+              #{post.productName.replace(/\s+/g, "").toLowerCase()}
             </div>
           </div>
         </div>
@@ -133,20 +139,32 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({ post, isAct
 };
 
 const ProfilePage: React.FC = () => {
-  const { user, profile, uploadProfileImageFromBase64, updateProfile, refreshProfile } = useAuth();
+  const {
+    user,
+    profile,
+    uploadProfileImageFromBase64,
+    updateProfile,
+    refreshProfile,
+  } = useAuth();
   const [reelPosts, setReelPosts] = useState<ReelPost[]>([]);
   const [activeReel, setActiveReel] = useState(0);
-  const [profilePicture, setProfilePicture] = useState<string>(profile?.avatar_url || 'https://i.pravatar.cc/150?u=supriya');
+  const [profilePicture, setProfilePicture] = useState<string>(
+    profile?.avatar_url ||
+      "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/IMG_7514.JPG"
+  );
   const [isUploading, setIsUploading] = useState(false);
   const [showCropModal, setShowCropModal] = useState(false);
-  const [tempImage, setTempImage] = useState<string>('');
+  const [tempImage, setTempImage] = useState<string>("");
   const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
   const [imageScale, setImageScale] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [isEditingBio, setIsEditingBio] = useState(false);
-  const [bioText, setBioText] = useState(profile?.bio || 'Welcome to my fashion profile! I love exploring new styles and creating unique looks.');
+  const [bioText, setBioText] = useState(
+    profile?.bio ||
+      "Fashion enthusiast and AI style explorer! ✨ I love experimenting with different looks and discovering new trends through AI-powered fashion technology. Always ready to try something bold and beautiful! 💫"
+  );
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cropImageRef = useRef<HTMLImageElement>(null);
@@ -165,8 +183,8 @@ const ProfilePage: React.FC = () => {
 
     const container = scrollContainerRef.current;
     if (container) {
-      container.addEventListener('scroll', handleScroll);
-      return () => container.removeEventListener('scroll', handleScroll);
+      container.addEventListener("scroll", handleScroll);
+      return () => container.removeEventListener("scroll", handleScroll);
     }
   }, [reelPosts]);
 
@@ -178,7 +196,9 @@ const ProfilePage: React.FC = () => {
   }, [profile?.bio]);
 
   // Handle profile picture upload
-  const handleProfilePictureUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfilePictureUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (file) {
       setIsUploading(true);
@@ -188,7 +208,7 @@ const ProfilePage: React.FC = () => {
         // if (result.success && result.url) {
         //   setProfilePicture(result.url);
         // }
-        
+
         // For cropping workflow, read as data URL first
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -200,12 +220,12 @@ const ProfilePage: React.FC = () => {
           setIsUploading(false);
           // Clear the input value to allow re-uploading the same file
           if (event.target) {
-            event.target.value = '';
+            event.target.value = "";
           }
         };
         reader.readAsDataURL(file);
       } catch (error) {
-        console.error('Error preparing image:', error);
+        console.error("Error preparing image:", error);
         setIsUploading(false);
       }
     }
@@ -216,7 +236,7 @@ const ProfilePage: React.FC = () => {
     setIsDragging(true);
     setDragStart({
       x: e.clientX - imagePosition.x,
-      y: e.clientY - imagePosition.y
+      y: e.clientY - imagePosition.y,
     });
   };
 
@@ -224,7 +244,7 @@ const ProfilePage: React.FC = () => {
     if (isDragging) {
       setImagePosition({
         x: e.clientX - dragStart.x,
-        y: e.clientY - dragStart.y
+        y: e.clientY - dragStart.y,
       });
     }
   };
@@ -235,11 +255,11 @@ const ProfilePage: React.FC = () => {
 
   // Handle zoom
   const handleZoomIn = () => {
-    setImageScale(prev => Math.min(prev + 0.1, 3));
+    setImageScale((prev) => Math.min(prev + 0.1, 3));
   };
 
   const handleZoomOut = () => {
-    setImageScale(prev => Math.max(prev - 0.1, 0.5));
+    setImageScale((prev) => Math.max(prev - 0.1, 0.5));
   };
 
   // Reset image position and scale
@@ -257,16 +277,19 @@ const ProfilePage: React.FC = () => {
         // Refresh profile to get updated data
         await refreshProfile();
       } else {
-        console.error('Failed to update bio:', result.error);
+        console.error("Failed to update bio:", result.error);
       }
     } catch (error) {
-      console.error('Error updating bio:', error);
+      console.error("Error updating bio:", error);
     }
   };
 
   // Cancel bio edit
   const cancelBioEdit = () => {
-    setBioText(profile?.bio || 'Welcome to my fashion profile! I love exploring new styles and creating unique looks.');
+    setBioText(
+      profile?.bio ||
+        "Fashion enthusiast and AI style explorer! ✨ I love experimenting with different looks and discovering new trends through AI-powered fashion technology. Always ready to try something bold and beautiful! 💫"
+    );
     setIsEditingBio(false);
   };
 
@@ -275,35 +298,35 @@ const ProfilePage: React.FC = () => {
     return new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
         // Set optimized dimensions (max 1024x1024 for profile pictures)
         const maxSize = 1024;
         const targetWidth = maxSize;
         const targetHeight = maxSize;
-        
+
         canvas.width = targetWidth;
         canvas.height = targetHeight;
-        
+
         if (ctx) {
           // Enable image smoothing for better quality
           ctx.imageSmoothingEnabled = true;
-          ctx.imageSmoothingQuality = 'high';
-          
+          ctx.imageSmoothingQuality = "high";
+
           // Fill canvas with white background
-          ctx.fillStyle = '#FFFFFF';
+          ctx.fillStyle = "#FFFFFF";
           ctx.fillRect(0, 0, targetWidth, targetHeight);
-          
+
           // The crop area dimensions (from the modal)
           const cropAreaHeight = 300;
           const cropAreaAspect = 1; // Square aspect ratio for profile pictures
           const cropAreaWidth = 300;
-          
+
           // Calculate how the image should be scaled to fit the crop area initially
           const imgAspect = img.width / img.height;
           let baseFitWidth, baseFitHeight;
-          
+
           if (imgAspect > cropAreaAspect) {
             // Image is wider - fit to height of crop area
             baseFitHeight = cropAreaHeight;
@@ -313,31 +336,25 @@ const ProfilePage: React.FC = () => {
             baseFitWidth = cropAreaWidth;
             baseFitHeight = cropAreaWidth / imgAspect;
           }
-          
+
           // Apply user's scale from the crop modal
           const scaledFitWidth = baseFitWidth * imageScale;
           const scaledFitHeight = baseFitHeight * imageScale;
-          
+
           // Scale to canvas size
           const scaleToCanvas = targetWidth / cropAreaWidth;
           const finalWidth = scaledFitWidth * scaleToCanvas;
           const finalHeight = scaledFitHeight * scaleToCanvas;
-          
+
           // Apply user's position from crop modal, scaled to canvas
           const finalX = imagePosition.x * scaleToCanvas;
           const finalY = imagePosition.y * scaleToCanvas;
-          
+
           // Draw the optimized image
-          ctx.drawImage(
-            img,
-            finalX,
-            finalY,
-            finalWidth,
-            finalHeight
-          );
-          
+          ctx.drawImage(img, finalX, finalY, finalWidth, finalHeight);
+
           // Convert to optimized JPEG (0.85 quality for smaller file size)
-          const optimizedImage = canvas.toDataURL('image/jpeg', 0.85);
+          const optimizedImage = canvas.toDataURL("image/jpeg", 0.85);
           resolve(optimizedImage);
         } else {
           resolve(imageSrc);
@@ -353,18 +370,18 @@ const ProfilePage: React.FC = () => {
     try {
       // Create a smaller, optimized version instead of 8K to avoid storage quota issues
       const optimizedImage = await enhanceImageOptimized(tempImage);
-      
+
       // Upload to Supabase Storage
       const result = await uploadProfileImageFromBase64(optimizedImage);
-      
+
       if (result.success && result.url) {
         setProfilePicture(result.url);
         setShowCropModal(false);
       } else {
-        throw new Error(result.error || 'Upload failed');
+        throw new Error(result.error || "Upload failed");
       }
     } catch (error) {
-      console.error('Error processing image:', error);
+      console.error("Error processing image:", error);
       // Fallback: try uploading original cropped image
       try {
         const result = await uploadProfileImageFromBase64(tempImage);
@@ -372,7 +389,7 @@ const ProfilePage: React.FC = () => {
           setProfilePicture(result.url);
         }
       } catch (fallbackError) {
-        console.error('Fallback upload failed:', fallbackError);
+        console.error("Fallback upload failed:", fallbackError);
       }
       setShowCropModal(false);
     } finally {
@@ -383,7 +400,7 @@ const ProfilePage: React.FC = () => {
   // Cancel cropping
   const cancelCropping = () => {
     setShowCropModal(false);
-    setTempImage('');
+    setTempImage("");
   };
 
   const triggerFileInput = () => {
@@ -401,20 +418,20 @@ const ProfilePage: React.FC = () => {
   useEffect(() => {
     const loadReelData = () => {
       // Get latest data from localStorage
-      const storedData = localStorage.getItem('generatedImages');
+      const storedData = localStorage.getItem("generatedImages");
       let latestImages: GeneratedImageData[] = [];
-      
+
       if (storedData) {
         try {
           latestImages = JSON.parse(storedData);
         } catch (error) {
-          console.error('Error parsing stored images:', error);
+          console.error("Error parsing stored images:", error);
         }
       }
 
       // Combine demo data with localStorage data
       const allImages = [...latestImages, ...demoGeneratedImages];
-      
+
       // Transform to reel posts
       const transformedPosts: ReelPost[] = allImages.map((image, index) => ({
         ...image,
@@ -422,9 +439,14 @@ const ProfilePage: React.FC = () => {
         comments: Math.floor(Math.random() * 50) + 5,
         shares: Math.floor(Math.random() * 20) + 2,
         isLiked: Math.random() > 0.7,
-        username: profile?.full_name || user?.name || 'User',
+        username: profile?.full_name || user?.name || "Supriya",
         avatar: profilePicture,
-        caption: `Loving this ${image.productName}! Generated with AI fashion technology. What do you think? ✨ #AIFashion #Style #${image.modelUsed.replace(/\s+/g, '')}`
+        caption: `Loving this ${
+          image.productName
+        }! Generated with AI fashion technology. What do you think? ✨ #AIFashion #Style #${image.modelUsed.replace(
+          /\s+/g,
+          ""
+        )}`,
       }));
 
       setReelPosts(transformedPosts);
@@ -458,15 +480,13 @@ const ProfilePage: React.FC = () => {
       >
         {/* Left Sidebar */}
         <motion.div
-          className="col-span-3 space-y-4"
+          className="col-span-3 space-y-4 h-fit"
           initial={{ x: -30, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
           {/* Profile Header */}
-          <motion.div
-            className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 h-fit overflow-hidden"
-          >
+          <motion.div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 h-fit overflow-hidden">
             {/* Profile Banner Image Section */}
             <motion.div
               className="relative h-48 overflow-hidden group cursor-pointer"
@@ -481,7 +501,7 @@ const ProfilePage: React.FC = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
               </div>
-              
+
               {/* Upload Button Overlay */}
               <div className="absolute bottom-4 right-4">
                 <button
@@ -491,7 +511,9 @@ const ProfilePage: React.FC = () => {
                   }}
                   disabled={isUploading || isEnhancing}
                   className={`bg-gray-800/90 hover:bg-gray-700 text-white p-3 rounded-full shadow-lg transition-all duration-200 backdrop-blur-sm border border-white/30 hover:scale-110 ${
-                    isUploading || isEnhancing ? 'cursor-not-allowed opacity-50' : ''
+                    isUploading || isEnhancing
+                      ? "cursor-not-allowed opacity-50"
+                      : ""
                   }`}
                 >
                   {isUploading ? (
@@ -503,7 +525,7 @@ const ProfilePage: React.FC = () => {
                   )}
                 </button>
               </div>
-              
+
               <input
                 ref={fileInputRef}
                 type="file"
@@ -515,17 +537,16 @@ const ProfilePage: React.FC = () => {
             </motion.div>
 
             {/* Profile Info Section */}
-            <motion.div
-              className="p-6"
-            >
-
+            <motion.div className="p-6">
               <div className="mb-6 text-left">
                 <h2 className="text-2xl font-bold text-white mb-1">
-                  {profile?.full_name || user?.name || 'User'}
+                  {profile?.full_name || user?.name || "Supriya"}
                 </h2>
                 <p className="text-white/60 text-sm flex items-center gap-2">
                   <Star className="w-4 h-4 text-yellow-400" />
-                  {profile?.membership_type === 'premium' ? 'Premium Member' : 'Member'}
+                  {profile?.membership_type === "premium"
+                    ? "Premium Member"
+                    : "Member"}
                 </p>
 
                 <div className="text-white/60 text-sm mt-4">
@@ -533,7 +554,8 @@ const ProfilePage: React.FC = () => {
                     {!isEditingBio ? (
                       <>
                         <p className="leading-relaxed pr-8">
-                          {profile?.bio || 'Welcome to my fashion profile! I love exploring new styles and creating unique looks.'}
+                          {profile?.bio ||
+                            "Fashion enthusiast and AI style explorer! ✨ I love experimenting with different looks and discovering new trends through AI-powered fashion technology. Always ready to try something bold and beautiful! 💫"}
                         </p>
                         <button
                           onClick={() => setIsEditingBio(true)}
@@ -584,25 +606,124 @@ const ProfilePage: React.FC = () => {
                     )}
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-white/40" />
-                      <span>Joined {profile?.join_date ? new Date(profile.join_date).getFullYear() : new Date(user?.createdAt || '').getFullYear()}</span>
+                      <span>
+                        Joined{" "}
+                        {profile?.join_date
+                          ? new Date(profile.join_date).getFullYear()
+                          : new Date(user?.createdAt || "").getFullYear()}
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
             </motion.div>
           </motion.div>
+
+          {/* Demo Data Section - Style Stats */}
+          <motion.div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-6">
+            <h3 className="text-white/80 text-lg font-semibold mb-4 flex items-center gap-2">
+              <Star className="w-5 h-5 text-yellow-400" />
+              Style Stats
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white/5 rounded-xl p-4 text-center">
+                <div className="text-2xl font-bold text-white mb-1">127</div>
+                <div className="text-white/60 text-sm">AI Outfits Created</div>
+              </div>
+              <div className="bg-white/5 rounded-xl p-4 text-center">
+                <div className="text-2xl font-bold text-white mb-1">89</div>
+                <div className="text-white/60 text-sm">Styles Liked</div>
+              </div>
+              <div className="bg-white/5 rounded-xl p-4 text-center">
+                <div className="text-2xl font-bold text-white mb-1">15</div>
+                <div className="text-white/60 text-sm">Models Used</div>
+              </div>
+              <div className="bg-white/5 rounded-xl p-4 text-center">
+                <div className="text-2xl font-bold text-white mb-1">4.8</div>
+                <div className="text-white/60 text-sm">Style Rating</div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Demo Data Section - Recent Activity */}
+          <motion.div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-6">
+            <h3 className="text-white/80 text-lg font-semibold mb-4 flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-blue-400" />
+              Recent Activity
+            </h3>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
+                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                  <Heart className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-white/90 text-sm font-medium">
+                    Loved a new AI outfit
+                  </p>
+                  <p className="text-white/60 text-xs">2 hours ago</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
+                  <Camera className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-white/90 text-sm font-medium">
+                    Generated new style with Model 8
+                  </p>
+                  <p className="text-white/60 text-xs">5 hours ago</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
+                <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+                  <ShoppingBag className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-white/90 text-sm font-medium">
+                    Added items to wishlist
+                  </p>
+                  <p className="text-white/60 text-xs">1 day ago</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Demo Data Section - Favorite Styles */}
+          <motion.div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 p-6">
+            <h3 className="text-white/80 text-lg font-semibold mb-4 flex items-center gap-2">
+              <Crown className="w-5 h-5 text-yellow-400" />
+              Favorite Styles
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {[
+                "Bohemian",
+                "Minimalist",
+                "Vintage",
+                "Streetwear",
+                "Elegant",
+                "Casual Chic",
+              ].map((style) => (
+                <span
+                  key={style}
+                  className="px-3 py-1 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-400/30 rounded-full text-white/80 text-xs font-medium"
+                >
+                  {style}
+                </span>
+              ))}
+            </div>
+            <div className="mt-4 p-3 bg-white/5 rounded-lg">
+              <p className="text-white/70 text-sm italic">
+                "I love mixing different styles to create unique looks that
+                express my personality!"
+              </p>
+            </div>
+          </motion.div>
         </motion.div>
 
         {/* Main Content - Reels Feed */}
-        <motion.div
-          className="col-span-6"
-        >
-          <motion.div
-            className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 h-full"
-          >
-            <motion.div
-              className="flex items-center justify-between mb-6"
-            >
+        <motion.div className="col-span-6">
+          <motion.div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 h-full">
+            <motion.div className="flex items-center justify-between mb-6">
               <h3 className="text-white/80 text-lg font-semibold flex items-center gap-2">
                 <Play className="w-5 h-5" />
                 My AI Fashion Reels
@@ -613,7 +734,7 @@ const ProfilePage: React.FC = () => {
             </motion.div>
 
             {/* Reels Vertical Scroll */}
-            <div 
+            <div
               ref={scrollContainerRef}
               className="h-[70vh] overflow-y-auto snap-y snap-mandatory scrollbar-hide"
             >
@@ -621,10 +742,7 @@ const ProfilePage: React.FC = () => {
                 <div className="space-y-0">
                   {reelPosts.map((post, index) => (
                     <div key={post.id} className="h-[70vh] snap-start">
-                      <ReelCard
-                        post={post}
-                        isActive={index === activeReel}
-                      />
+                      <ReelCard post={post} isActive={index === activeReel} />
                     </div>
                   ))}
                 </div>
@@ -637,7 +755,8 @@ const ProfilePage: React.FC = () => {
                     No AI Fashion Reels Yet
                   </h4>
                   <p className="text-white/60 text-sm max-w-sm">
-                    Start creating AI-generated fashion content to see your reels here!
+                    Start creating AI-generated fashion content to see your
+                    reels here!
                   </p>
                 </div>
               )}
@@ -646,13 +765,9 @@ const ProfilePage: React.FC = () => {
         </motion.div>
 
         {/* Right Sidebar */}
-        <motion.div
-          className="col-span-3 space-y-6"
-        >
+        <motion.div className="col-span-3 space-y-6 h-fit">
           {/* Account Settings */}
-          <motion.div
-            className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20"
-          >
+          <motion.div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 h-fit">
             <h3 className="text-white/80 text-lg font-semibold mb-4">
               Account Settings
             </h3>
@@ -698,13 +813,11 @@ const ProfilePage: React.FC = () => {
           </motion.div>
 
           {/* Shopping Journey */}
-          <motion.div
-            className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20"
-          >
+          <motion.div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 flex-1">
             <h3 className="text-white/80 text-lg font-semibold mb-4">
               Shopping Journey
             </h3>
-            
+
             {/* Shopping Journey Options */}
             <div className="space-y-3 mb-6">
               {[
@@ -740,6 +853,63 @@ const ProfilePage: React.FC = () => {
                 </motion.button>
               ))}
             </div>
+
+            {/* Additional Shopping Stats */}
+            <div className="mt-6 p-4 bg-white/5 rounded-xl">
+              <h4 className="text-white/80 font-semibold mb-3 text-sm">
+                Shopping Stats
+              </h4>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-white">24</div>
+                  <div className="text-white/60 text-xs">Orders</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-bold text-white">$1,247</div>
+                  <div className="text-white/60 text-xs">Spent</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="mt-6">
+              <h4 className="text-white/80 font-semibold mb-3 text-sm">
+                Quick Actions
+              </h4>
+              <div className="space-y-2">
+                <button className="w-full p-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-400/30 rounded-lg text-white/80 text-sm hover:bg-white/10 transition-colors">
+                  🛍️ Start Shopping
+                </button>
+                <button className="w-full p-3 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-400/30 rounded-lg text-white/80 text-sm hover:bg-white/10 transition-colors">
+                  ✨ Generate AI Outfit
+                </button>
+                <button className="w-full p-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-400/30 rounded-lg text-white/80 text-sm hover:bg-white/10 transition-colors">
+                  💎 Upgrade to Premium
+                </button>
+              </div>
+            </div>
+
+            {/* Trending Styles */}
+            <div className="mt-6">
+              <h4 className="text-white/80 font-semibold mb-3 text-sm">
+                Trending Now
+              </h4>
+              <div className="space-y-2">
+                {["Summer Vibes", "Minimalist Chic", "Retro Revival"].map(
+                  (trend, index) => (
+                    <div
+                      key={trend}
+                      className="flex items-center gap-3 p-2 bg-white/5 rounded-lg"
+                    >
+                      <div className="w-6 h-6 bg-gradient-to-r from-orange-400 to-red-500 rounded-full flex items-center justify-center text-xs font-bold text-white">
+                        {index + 1}
+                      </div>
+                      <span className="text-white/70 text-sm">{trend}</span>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
           </motion.div>
         </motion.div>
       </motion.div>
@@ -761,12 +931,16 @@ const ProfilePage: React.FC = () => {
             {/* Modal Header */}
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-xl font-bold text-white">Adjust Your Profile Image</h3>
+                <h3 className="text-xl font-bold text-white">
+                  Adjust Your Profile Image
+                </h3>
                 <div className="flex items-center gap-2 mt-1">
                   <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-2 py-1 rounded-full font-medium">
                     8K Quality Enhancement
                   </div>
-                  <span className="text-white/60 text-xs">7680×4320 resolution</span>
+                  <span className="text-white/60 text-xs">
+                    7680×4320 resolution
+                  </span>
                 </div>
               </div>
               <button
@@ -779,7 +953,10 @@ const ProfilePage: React.FC = () => {
             </div>
 
             {/* Crop Area */}
-            <div className="relative bg-black/20 rounded-xl overflow-hidden mb-6" style={{ height: '300px' }}>
+            <div
+              className="relative bg-black/20 rounded-xl overflow-hidden mb-6"
+              style={{ height: "300px" }}
+            >
               <div
                 className="absolute inset-0 cursor-move"
                 onMouseDown={handleMouseDown}
@@ -794,17 +971,17 @@ const ProfilePage: React.FC = () => {
                   className="absolute transition-transform duration-100 ease-out"
                   style={{
                     transform: `translate(${imagePosition.x}px, ${imagePosition.y}px) scale(${imageScale})`,
-                    transformOrigin: 'center',
-                    minWidth: '100%',
-                    minHeight: '100%',
-                    objectFit: 'cover',
-                    userSelect: 'none',
-                    pointerEvents: isDragging ? 'none' : 'auto'
+                    transformOrigin: "center",
+                    minWidth: "100%",
+                    minHeight: "100%",
+                    objectFit: "cover",
+                    userSelect: "none",
+                    pointerEvents: isDragging ? "none" : "auto",
                   }}
                   draggable={false}
                 />
               </div>
-              
+
               {/* Crop Guide Overlay */}
               <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute inset-4 border-2 border-white/50 border-dashed rounded-lg" />
@@ -834,7 +1011,7 @@ const ProfilePage: React.FC = () => {
                   <ZoomIn className="w-4 h-4" />
                 </button>
               </div>
-              
+
               <button
                 onClick={resetImagePosition}
                 className="text-white/60 hover:text-white text-sm transition-colors"

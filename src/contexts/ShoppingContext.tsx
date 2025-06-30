@@ -104,34 +104,34 @@ const modelImages: ModelImage[] = [
     url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/IMG_7514.JPG",
   },
   {
-    id: "1",
-    name: "Photo 1",
-    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/Supriya/Screenshot+2025-06-30+at+8.19.06%E2%80%AFAM.png",
-  },
-  {
-    id: "2",
-    name: "Photo 2",
-    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/Supriya/Screenshot+2025-06-30+at+8.18.35%E2%80%AFAM.png",
-  },
-  {
     id: "3",
     name: "Photo 3",
-    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/Supriya/Screenshot+2025-06-30+at+8.18.12%E2%80%AFAM.png",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/supriya_final_images+/88c1bd2e-4679-428f-8045-17e8325526db.jpg",
   },
   {
     id: "4",
     name: "Photo 4",
-    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/Supriya/Screenshot+2025-06-30+at+8.17.30%E2%80%AFAM.png",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/supriya_final_images+/IMG_20191214_102707.jpg",
   },
   {
     id: "5",
     name: "Photo 5",
-    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/Supriya/Screenshot+2025-06-30+at+8.17.01%E2%80%AFAM.png",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/supriya_final_images+/5.jpg",
   },
   {
     id: "6",
     name: "Photo 6",
-    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/Supriya/Screenshot+2025-06-30+at+8.16.44%E2%80%AFAM.png",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/supriya_final_images+/6.JPG",
+  },
+  {
+    id: "2",
+    name: "Photo 2",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/supriya_final_images+/2.JPG",
+  },
+  {
+    id: "1",
+    name: "Photo 1",
+    url: "https://assetsimagesai.s3.us-east-1.amazonaws.com/supriya_final_images+/1.JPG",
   },
 ];
 
@@ -151,14 +151,37 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
   const [wishlist, setWishlist] = useState<Product[]>([]);
   const [currentCategory, setCurrentCategory] = useState("Clothing");
 
-  const [selectedProduct, setSelectedProduct] = useState(
-    sampleProducts.find((p) => p.category === currentCategory) ||
-      sampleProducts[0]
+  const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(
+    () => {
+      return (
+        sampleProducts.find((p) => p.category === currentCategory) ||
+        sampleProducts[0]
+      );
+    }
   );
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
+  const [selectedModelId, setSelectedModelId] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem('selectedModelId') || null;
+    } catch {
+      return null;
+    }
+  });
   const [customPhotos, setCustomPhotos] = useState<ModelImage[]>([]);
+
+  // Persist selectedModelId to localStorage
+  useEffect(() => {
+    try {
+      if (selectedModelId) {
+        localStorage.setItem('selectedModelId', selectedModelId);
+      } else {
+        localStorage.removeItem('selectedModelId');
+      }
+    } catch (error) {
+      console.error('Failed to persist selectedModelId:', error);
+    }
+  }, [selectedModelId]);
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
 
   // Cart Modal state
@@ -383,7 +406,15 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   const handleTryOnMe = async () => {
-    if (!selectedProduct) return;
+    console.log(
+      "handleTryOnMe - selectedProduct from state:",
+      selectedProduct?.name
+    );
+
+    if (!selectedProduct) {
+      console.log("No selectedProduct found, cannot proceed with try-on");
+      return;
+    }
     // Reset state for a new request
     setIsTryingOn(true);
     setTryOnError(null);
@@ -403,7 +434,13 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
 
       // Get the selected model image URL
       const getSelectedModelImage = () => {
+        console.log(
+          "handleTryOnMe - selectedModelId from state:",
+          selectedModelId
+        );
+
         if (!selectedModelId) {
+          console.log("No selectedModelId found, using default image");
           // Default model image if no model is selected
           return "https://media.istockphoto.com/id/907261794/photo/handsome-man.jpg?s=612x612&w=0&k=20&c=31YyQlon3lBpv7izm6h05HdwZXNiQKRX6_lkFQcTPRY=";
         }
@@ -412,6 +449,13 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
         const selectedModel = modelImages.find(
           (model) => model.id === selectedModelId
         );
+
+        console.log("handleTryOnMe - found selectedModel:", selectedModel);
+        console.log(
+          "handleTryOnMe - using model image URL:",
+          selectedModel?.url || modelImages[0]?.url
+        );
+
         return selectedModel?.url || modelImages[0]?.url; // Fallback to first model
       };
 
@@ -422,6 +466,15 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
           garment_image: await convertImageToBase64(selectedProduct.image),
         },
       };
+
+      console.log(
+        "handleTryOnMe - API request using product:",
+        selectedProduct.name
+      );
+      console.log(
+        "handleTryOnMe - API request using garment image:",
+        selectedProduct.image
+      );
 
       // Helper function to convert image URL to base64
       async function convertImageToBase64(imageUrl: string): Promise<string> {

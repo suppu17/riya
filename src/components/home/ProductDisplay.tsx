@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from "motion/react";
 import { useShopping } from "../../contexts/ShoppingContext";
 import TryOnDisplay from "./TryOnDisplay";
@@ -20,9 +20,17 @@ const ProductDisplay: React.FC = () => {
 
   const handleTryOnClick = async () => {
     if (!selectedModelId) {
-      setShowModelModal(true);
-      return;
+      // Only show modal if there are model images available
+      if (modelImages.length > 0) {
+        setShowModelModal(true);
+        return;
+      } else {
+        // No model images available, show modal to upload/capture
+        setShowModelModal(true);
+        return;
+      }
     }
+    // Photo is already selected, proceed with try-on directly
     await handleTryOnMe();
   };
 
@@ -306,6 +314,7 @@ const ProductDisplay: React.FC = () => {
       <PhotoSelectionModal
         isOpen={showModelModal}
         onClose={() => setShowModelModal(false)}
+        onPhotoSelected={handleTryOnMe}
       />
     </>
   );

@@ -45,8 +45,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const handleTryClick = () => {
     if (!selectedModelId) {
+      // Only show modal if needed - user hasn't selected a photo yet
       setShowModelModal(true);
     } else {
+      // Photo already selected, proceed with try-on directly
       handleTryOnMe();
     }
   };

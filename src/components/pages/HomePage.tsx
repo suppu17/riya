@@ -11,7 +11,7 @@ import PhotoSelectionModal from "../PhotoSelectionModal";
 import { useShopping } from "../../contexts/ShoppingContext";
 
 const HomePage: React.FC = () => {
-  const { isPhotoModalOpen, closePhotoModal } = useShopping();
+  const { isPhotoModalOpen, closePhotoModal, handleTryOnMe } = useShopping();
 
   return (
     <motion.div
@@ -93,6 +93,7 @@ const HomePage: React.FC = () => {
       <PhotoSelectionModal
         isOpen={isPhotoModalOpen}
         onClose={closePhotoModal}
+        onPhotoSelected={handleTryOnMe}
       />
     </motion.div>
   );
