@@ -298,7 +298,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
     } catch (error) {
       setErrors({
         submit: "🚨 Google sign-in error",
-        hint: "Please try again or use email/password login instead.",
+        hint: "Please try again or use email/password login instead. Demo Account: demo@example.com / demo123",
       });
     } finally {
       setIsSubmitting(false);
@@ -624,7 +624,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
                                   ? "border-red-500/50"
                                   : "border-cyan-200/20"
                               }`}
-                              placeholder="Enter your email"
+                              placeholder="demo@example.com"
                               disabled={isSubmitting}
                             />
                           </div>
@@ -666,7 +666,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
                                     ? "border-red-500/50"
                                     : "border-cyan-200/20"
                                 }`}
-                                placeholder="Enter your password"
+                                placeholder="demo123"
                                 disabled={isSubmitting}
                               />
                               <button
@@ -744,23 +744,23 @@ const AuthModal: React.FC<AuthModalProps> = ({
                       {/* Enhanced Submit Error Display */}
                       {errors.submit && (
                         <motion.div
-                          className="p-4 bg-red-500/20 border border-red-500/30 rounded-2xl backdrop-blur-sm space-y-3"
+                          className="p-4 bg-black/90 border border-gray-600 rounded-2xl backdrop-blur-sm space-y-3"
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
                         >
                           <div className="flex items-start gap-3">
-                            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                            <AlertCircle className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
                             <div className="flex-1">
-                              <p className="text-red-300 text-sm font-medium">
+                              <p className="text-white text-sm font-medium">
                                 {errors.submit}
                               </p>
 
                               {/* Additional helpful hint */}
                               {errors.hint && (
-                                <div className="mt-2 pt-2 border-t border-red-500/20">
+                                <div className="mt-2 pt-2 border-t border-gray-600">
                                   <div className="flex items-start gap-2">
-                                    <Info className="w-4 h-4 text-red-300/80 flex-shrink-0 mt-0.5" />
-                                    <p className="text-red-200/90 text-xs leading-relaxed">
+                                    <Info className="w-4 h-4 text-gray-300 flex-shrink-0 mt-0.5" />
+                                    <p className="text-gray-200 text-xs leading-relaxed">
                                       {errors.hint}
                                     </p>
                                   </div>
@@ -877,25 +877,9 @@ const AuthModal: React.FC<AuthModalProps> = ({
                       )}
 
                       {/* Helpful Tips Section */}
-                      <div className="mt-6 p-4 bg-cyan-500/10 border border-cyan-400/20 rounded-2xl backdrop-blur-sm">
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                          <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
-                          <p className="text-cyan-300 text-xs font-medium">
-                            {mode === "login"
-                              ? "Having trouble signing in?"
-                              : mode === "signup"
-                              ? "Creating your account"
-                              : "Password reset help"}
-                          </p>
-                        </div>
-                        <p className="text-cyan-200/80 text-xs">
-                          {mode === "login"
-                            ? "Make sure your email and password are correct, or create a new account if you're new here."
-                            : mode === "signup"
-                            ? "Choose a strong password and make sure your email is correct for account verification."
-                            : "Check your email (including spam folder) for password reset instructions."}
-                        </p>
-                      </div>
+                      <span className="text-xs text-white/50">
+                        Demo Account: demo@example.com / demo123
+                      </span>
                     </motion.div>
                   </>
                 )}

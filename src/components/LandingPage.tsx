@@ -119,19 +119,35 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                   <br />
                   CONVERSATIONAL
                   <br />
-                  <span className="font-semibold flex items-center gap-2">
+                  <span className="font-semibold flex items-center gap-3">
                     REALTIME-AI STYLIST
-                    <svg
-                      className="w-12 h-12 text-cyan-400"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-                    </svg>
+                    <div className="flex items-center gap-2">
+                      <svg
+                        className="w-12 h-12 text-cyan-400"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                      </svg>
+                      <img
+                        src="https://cdn.prod.website-files.com/63b2f566abde4cad39ba419f/63c028497212641ca0f56f80_tavus%20logo%20white.svg"
+                        alt="Tavus Logo"
+                        className="h-8 w-auto animate-slide-down-bounce"
+                        style={{ "--animation-delay": "0.8s" }}
+                      />
+                      <div
+                        className="i-bolt-elevenlabs text-white animate-slide-down-bounce"
+                        style={{
+                          "--animation-delay": "1.0s",
+                          width: "48px",
+                          height: "48px",
+                        }}
+                      ></div>
+                    </div>
                   </span>
                 </h1>
               </div>
@@ -153,7 +169,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
               >
                 <button
                   onClick={handleEnterExperience}
-                  className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-full px-8 py-3 text-white font-light text-sm tracking-wide hover:bg-white/15 transition-all duration-300 group"
+                  className="bg-gray-900/90 backdrop-blur-xl border border-gray-700/50 rounded-full px-8 py-3 text-white font-medium text-sm tracking-wide hover:bg-gray-800/90 transition-all duration-300 group shadow-lg"
                 >
                   {isAuthenticated
                     ? "Enter Experience"
@@ -181,20 +197,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
             <div className="absolute inset-0 bg-gradient-to-l from-transparent via-cyan-900/5 to-blue-900/10" />
           </div>
 
-          {/* Bottom Navigation Dots with Crystal Accent */}
-          <div className="absolute bottom-8 left-1/4 transform -translate-x-1/2 z-30">
-            <div className="text-white/70 text-sm mb-2 text-left">
-              App Powered by:
-            </div>
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-center gap-3">
-                <div className="i-bolt-supabase text-white"></div>
-                <div className="i-bolt-elevenlabs text-white"></div>
-                <div className="i-bolt-netlify"></div>
-                <div className="i-bolt-entri text-white"></div>
-                <div className="i-bolt-expo text-white"></div>
-                <div className="i-bolt-revenuecat text-white"></div>
-              </div>
+          {/* Powered By Section - Right Side */}
+          <div className="absolute bottom-8 right-8 z-30">
+            <div className="flex items-center justify-end gap-3 bg-black/10 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg">
+              <div className="text-white/70 text-sm">App Powered by:</div>
+              <img
+                src="https://cdn.prod.website-files.com/63b2f566abde4cad39ba419f/63c028497212641ca0f56f80_tavus%20logo%20white.svg"
+                alt="Tavus Logo"
+                className="h-5 w-auto"
+              />
+              <img
+                src="https://11labs-nonprd-15f22c1d.s3.eu-west-3.amazonaws.com/0b9cd3e1-9fad-4a5b-b3a0-c96b0a1f1d2b/elevenlabs-logo-white.png"
+                alt="ElevenLabs Logo"
+                className="h-3 w-auto"
+              />
+              <div className="i-bolt-netlify text-white"></div>
+              <div className="i-bolt-supabase text-white"></div>
+              <div className="i-bolt-entri text-white"></div>
+              <div className="i-bolt-expo text-white"></div>
             </div>
           </div>
 
@@ -217,7 +237,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
       />
 
       <div className="fixed top-5 right-12 z-99">
-        <img src="./bolt.svg" alt="Badge" className="w-20 h-20" />
+        <a href="https://bolt.new/" target="_blank" rel="noopener noreferrer">
+          <img src="./bolt.svg" alt="Badge" className="w-20 h-20" />
+        </a>
       </div>
     </div>
   );
