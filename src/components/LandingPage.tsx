@@ -87,7 +87,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
             <div className="absolute top-8 left-8 flex items-center gap-4 z-30">
               <div className="text-3xl font-bold text-white tracking-wide">
                 SnapStyler
-                <span className="text-sm text-white/80 font-medium">.app</span>
               </div>
             </div>
 
