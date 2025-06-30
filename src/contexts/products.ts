@@ -17,6 +17,26 @@ export type Product = {
 };
 export const sampleProducts: Product[] = [
   {
+    id: "16",
+    name: "Embroidered Accent Denim Jacket",
+    price: 4650,
+    image:
+      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Embroidered_Accent_Denim_Jacket/embroidered_accent_denim_jacket_worn.png",
+    category: "Clothing",
+    rating: 4.5,
+    inStock: true,
+    description: "Premium denim jacket with intricate embroidered accents",
+    designer: "Louis Vuitton",
+    articleNumber: "1AFTB2",
+    images: [
+      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Embroidered_Accent_Denim_Jacket/embroidered_accent_denim_jacket_front.png",
+      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Embroidered_Accent_Denim_Jacket/embroidered_accent_denim_jacket_worn.png",
+      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Embroidered_Accent_Denim_Jacket/embroidered_accent_denim_jacket_ambiance.png",
+    ],
+    keyWords: ["Denim", "pink", "Pinkandblack", "Jacket", "LV", "Cute", "trendy", "chic"], 
+    moreInfo: "This casual jacket is uplifted with elegant seasonal detailing for spirited everyday styling. Cut in a chic cropped shape from washed denim in a playful colorway, the shoulders are accented with intricately embroidered floral patches. Signed on the back with a Monogram Flower tab and a Louis Vuitton patch."
+  },
+  {
     id: "32",
     name: "Alma BB",
     price: 1900,
@@ -404,26 +424,7 @@ export const sampleProducts: Product[] = [
     keyWords: ["Red Color", "Louis Vuitton", "silk", "Christmas", "Elegant", "Longdress", "fulllength","Sleeveless"],
     moreInfo: "This dress exudes elegance in silk satin in a lustrous tone-on-tone striped finish. The top half discreetly emphasizes the geometric look with pleating and a cross-over front, while the skirt falls to the ankles with fluid lines. Metallic Monogram accents add a subtle signature to the lavallière neckline and the back is fastened with an exposed zipper." 
   },
-  {
-    id: "16",
-    name: "Embroidered Accent Denim Jacket",
-    price: 4650,
-    image:
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Embroidered_Accent_Denim_Jacket/embroidered_accent_denim_jacket_worn.png",
-    category: "Clothing",
-    rating: 4.5,
-    inStock: true,
-    description: "Premium denim jacket with intricate embroidered accents",
-    designer: "Louis Vuitton",
-    articleNumber: "1AFTB2",
-    images: [
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Embroidered_Accent_Denim_Jacket/embroidered_accent_denim_jacket_front.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Embroidered_Accent_Denim_Jacket/embroidered_accent_denim_jacket_worn.png",
-      "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Embroidered_Accent_Denim_Jacket/embroidered_accent_denim_jacket_ambiance.png",
-    ],
-    keyWords: ["Denim", "pink", "Pinkandblack", "Jacket", "LV", "Cute", "trendy", "chic"], 
-    moreInfo: "This casual jacket is uplifted with elegant seasonal detailing for spirited everyday styling. Cut in a chic cropped shape from washed denim in a playful colorway, the shoulders are accented with intricately embroidered floral patches. Signed on the back with a Monogram Flower tab and a Louis Vuitton patch."
-  },
+  
   {
     id: "17",
     name: "Long Monogram Parka",

@@ -27,6 +27,11 @@ const TavusVideoAgent: React.FC<TavusVideoAgentProps> = ({
     setCurrentCategory,
     cart,
     clearCart,
+    openCartModal,
+    cartModalRef,
+    handleTryOnMe,
+    selectedModelId,
+    openPhotoModal,
   } = useShopping();
 
   // State management
@@ -143,6 +148,19 @@ const TavusVideoAgent: React.FC<TavusVideoAgentProps> = ({
               name: "trigger_checkout",
               description:
                 "Trigger this tool when the user confirms the order and says they can submit the order and complete the order, asking for confirmation before triggering the tool. No arguments are needed for this tool.",
+              parameters: {
+                type: "object",
+                properties: {},
+                required: [],
+              },
+            },
+          },
+          {
+            type: "function",
+            function: {
+              name: "try_on_me",
+              description:
+                "Use this tool when the customer wants to try on a product virtually. Make sure the user has selected a photo before triggering this tool. No arguments are needed for this tool.",
               parameters: {
                 type: "object",
                 properties: {},
@@ -267,64 +285,42 @@ trigger_checkout: Trigger this tool when the user confirms the order and says th
 
 
 “try_on_me”: before trigger this make sure use selected the photo which he want to try on himself  
-Your store Prodcuts: [dont mention anytoing outside here]
-{
-    id: "13",
-    name: "Signature Accent Knit Dress",
-    price: 4300,
-    image: "https://assetsimagesai.s3.us-east-1.amazonaws.com/model_pics/main_png.png",
-    category: "Clothing",
-    rating: 4.8,
-    tryown: true,
-    categoryFlag: true,
-    inStock: true,
-    description: "Luxurious signature accent knit dress with refined details",
-    designer: "Louis Vuitton",
-    articleNumber: "1AI965",
-    keyWords: [
-      "Signature Accent Knit Dress",
-      "Louis Vuitton",
-      "Elegant",
-      "Refined Details"
-    ],
-  }
-     {
-    id: "32",
-    name: "Alma BB",
-    price: 1900,
-    image: "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Alma_BB/alma_bb_front.png",
-    category: "Bags",
-    rating: 4.7,
-    inStock: true,
-    description: "Iconic structured handbag with timeless appeal",
-    designer: "Louis Vuitton",
-    articleNumber: "M46990",
-    keyWords: [
-      "Iconic Handbag",
-      "Louis Vuitton",
-      "Timeless Appeal"
-    ],
-    
-  },
-  
-  {
-    id: "14",
-    name: "Striped Lavalliere Dress",
-    price: 4750,
-    image: "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Striped_Lavalliere_Dress/striped_lavalliere_dress_front.png",
-    category: "Clothing",
-    rating: 4.6,
-    inStock: true,
-    description: "Elegant striped lavalliere dress with sophisticated styling",
-    designer: "Louis Vuitton",
-    articleNumber: "1AHH09",
-    keyWords: [
-      "Red Color",
-      "Louis Vuitton",
-      "Elegant",
-      "Sleeves"
-    ],
-  }
+Your store Products: [dont mention anything outside here]
+
+## Product Catalog (10 Featured Items)
+
+| ID | Category | Keywords |
+|----|----------|----------|
+| 16 | Clothing | Denim, pink, Pinkandblack, Jacket, LV, Cute, trendy, chic |
+| 32 | Bags | Iconic Handbag, Louis Vuitton, Small, Cute, Handy, Original |
+| 33 | Bags | Premium Tote Bag, Blue, Monogram, Denim, Louis Vuitton, Officewear, Sophisticated Design |
+| 34 | Bags | Brown, Monogram, Canvas, Louis Vuitton, Hide Away, Workwear, Weekendwear |
+| 8 | Clothing | Denim, A-line Dress, Louis Vuitton, Dresses, Clothing, Elegant |
+| 9 | Shoes | LV Isola, Flat Mule, Stylish, Signature Design |
+| 13 | Clothing | Knit Dress, Navy, Made in Italy, Sleeveless, Louis Vuitton, Stylish, Vintage |
+| 14 | Clothing | Red Color, Louis Vuitton, silk, Christmas, Elegant, Longdress, fulllength, Sleeveless |
+| 18 | Watches | steel, white, navy, sporty |
+| 20 | Watches | 18-carat, white gold, spin time, dolphin, limited edition |
+
+## Detailed Product Information:
+
+**Clothing:**
+- ID 16: Embroidered Accent Denim Jacket - $4650 (Premium denim jacket with intricate embroidered accents)
+- ID 8: Louis Vuitton Monogram Denim Dress - $3250 (Elegant floral jacquard A-line dress)
+- ID 13: Signature Accent Knit Dress - $4300 (Luxurious signature accent knit dress with refined details)
+- ID 14: Striped Lavalliere Dress - $4750 (Elegant striped lavalliere dress with sophisticated styling)
+
+**Bags:**
+- ID 32: Alma BB - $1900 (Iconic structured handbag with timeless appeal)
+- ID 33: OnTheGo PM - $4000 (Premium tote bag with sophisticated design and ample space)
+- ID 34: Hide Away MM - $3400 (Versatile handbag with modern design and practical functionality)
+
+**Shoes:**
+- ID 9: Louis Vuitton LV Isola Flat Mule - $795 (Stylish flat mule with signature LV design elements)
+
+**Watches:**
+- ID 18: Tambour Street Diver - $5965 (Professional diving watch with quartz movement and steel construction)
+- ID 20: Tambour Taiko Spin Time Air - $85500 (Limited Edition masterpiece with flying tourbillon)
 `,
           custom_greeting: "Hello, I'm Riya, your AI stylist agent. ",
 
@@ -363,35 +359,49 @@ Your store Prodcuts: [dont mention anytoing outside here]
   };
 
   const processMessage = useCallback(
-    (message: any) => {
+    async (message: any) => {
       if (message.event_type === "conversation.tool_call") {
         console.log("Tool call message received:", message);
-        const { name, arguments: args } = message.properties;
+        const { name, arguments: args, tool_call_id } = message.properties;
 
         try {
           const parsedArgs = JSON.parse(args);
           console.log(`Processing tool: ${name} with args:`, parsedArgs);
+          
+          let result = "";
 
           switch (name) {
             case "search_products": {
-              const { query } = parsedArgs;
+              console.log(
+                "from search_products:",
+                JSON.stringify(parsedArgs, null, 2)
+              );
+
+              // Handle multiple argument formats
+              const query =
+                parsedArgs.query ||
+                parsedArgs.type?.productID ||
+                parsedArgs.productID;
+
               if (!query) {
                 console.error("Search query is required");
-                return;
+                return "I'm sorry, I need a search query to find products.";
               }
 
-              // Filter products based on query
-              const searchResults = products.filter(
-                (product) =>
-                  product.name.toLowerCase().includes(query.toLowerCase()) ||
-                  product.category
-                    .toLowerCase()
-                    .includes(query.toLowerCase()) ||
+              // Enhanced search logic - check keywords, name, category, and description
+              const searchResults = products.filter((product) => {
+                const searchTerm = query.toLowerCase();
+                return (
+                  product.name.toLowerCase().includes(searchTerm) ||
+                  product.category.toLowerCase().includes(searchTerm) ||
                   (product.description &&
-                    product.description
-                      .toLowerCase()
-                      .includes(query.toLowerCase()))
-              );
+                    product.description.toLowerCase().includes(searchTerm)) ||
+                  (product.keyWords &&
+                    product.keyWords.some((keyword) =>
+                      keyword.toLowerCase().includes(searchTerm)
+                    ))
+                );
+              });
 
               console.log(
                 `Found ${searchResults.length} products for query: "${query}"`
@@ -400,12 +410,25 @@ Your store Prodcuts: [dont mention anytoing outside here]
               // Set first result as selected if available
               if (searchResults.length > 0) {
                 setSelectedProduct(searchResults[0]);
+                setCurrentCategory(searchResults[0].category);
+                result = `I found ${searchResults.length} products matching "${query}". I've selected the ${searchResults[0].name} for you to view.`;
+              } else {
+                result = `I'm sorry, I couldn't find any products matching "${query}". Please try a different search term.`;
               }
               break;
             }
 
             case "add_to_cart": {
-              const { productId } = parsedArgs;
+              console.log(
+                "from add_to_cart:",
+                JSON.stringify(parsedArgs, null, 2)
+              );
+
+              // Handle multiple argument formats
+              const productId =
+                parsedArgs.productId ||
+                parsedArgs.type?.ProductID ||
+                parsedArgs.type?.productID;
 
               if (productId) {
                 // Find product by ID
@@ -413,32 +436,52 @@ Your store Prodcuts: [dont mention anytoing outside here]
                 if (productToAdd) {
                   addToCart(productToAdd);
                   console.log(`Added ${productToAdd.name} to cart`);
+                  result = `I've added the ${productToAdd.name} to your cart for $${productToAdd.price}.`;
                 } else {
                   console.error("Product not found with ID:", productId);
+                  result = "I'm sorry, I couldn't find that product to add to your cart.";
                 }
               } else if (selectedProduct) {
                 // Use currently selected product
                 addToCart(selectedProduct);
                 console.log(`Added ${selectedProduct.name} to cart`);
+                result = `I've added the ${selectedProduct.name} to your cart for $${selectedProduct.price}.`;
               } else {
                 console.error(
                   "No product specified or selected for cart addition"
                 );
+                result = "I'm sorry, please select a product first or specify which product you'd like to add to your cart.";
               }
               break;
             }
 
             case "switch_category": {
-              const { categoryName } = parsedArgs;
+              console.log(
+                "from switch_category:",
+                JSON.stringify(parsedArgs, null, 2)
+              );
+              const availableCategories = [
+                "Clothing",
+                "Bags",
+                "Watches",
+                "Shoes",
+              ];
+
+              // Handle multiple argument formats
+              const categoryName =
+                parsedArgs.category ||
+                parsedArgs.categoryName ||
+                parsedArgs.type?.category ||
+                parsedArgs["type"]?.category;
+
+              console.log("Raw query object:", parsedArgs);
+              console.log("Extracted categoryName:", categoryName);
+
               if (!categoryName) {
                 console.error("Category name is required");
-                return;
+                result = "I'm sorry, I need a category name to switch to.";
+                break;
               }
-
-              // Get unique categories from products
-              const availableCategories = [
-                ...new Set(products.map((p) => p.category)),
-              ];
 
               // Find matching category (fuzzy search)
               const matchedCategory =
@@ -460,64 +503,133 @@ Your store Prodcuts: [dont mention anytoing outside here]
                 if (categoryProducts.length > 0) {
                   setSelectedProduct(categoryProducts[0]);
                 }
+
+                result = `I've switched to the ${matchedCategory} category and found ${
+                  categoryProducts.length
+                } products. ${
+                  categoryProducts.length > 0
+                    ? `I've selected the ${categoryProducts[0].name} for you to view.`
+                    : ""
+                }`;
               } else {
                 console.error("Category not found:", categoryName);
                 console.log("Available categories:", availableCategories);
+                result = `I'm sorry, I couldn't find the "${categoryName}" category. Available categories are: ${availableCategories.join(
+                  ", "
+                )}.`;
               }
               break;
             }
 
             case "show_kart": {
-              // No parameters needed - just log cart contents
-              console.log("Displaying cart contents:");
-              console.log("Cart items:", cart);
-              console.log(
-                "Total items:",
-                cart.reduce((sum, item) => sum + item.quantity, 0)
-              );
-              console.log(
-                "Total price:",
-                cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
-              );
+              console.log("from show_kart: Opening cart modal");
+
+              // Trigger the cart modal to open
+              openCartModal();
+
+              if (cart.length === 0) {
+                result = "I've opened your cart. It's currently empty. Would you like me to help you find some products?";
+              } else {
+                const totalItems = cart.reduce(
+                  (sum, item) => sum + item.quantity,
+                  0
+                );
+                const totalPrice = cart.reduce(
+                  (sum, item) => sum + item.price * item.quantity,
+                  0
+                );
+
+                result = `I've opened your cart for you. You have ${totalItems} items totaling $${totalPrice.toFixed(
+                  2
+                )}.`;
+              }
               break;
             }
 
             case "trigger_checkout": {
-              // No parameters needed - process checkout
-              if (cart.length === 0) {
-                console.log("Cannot checkout - cart is empty");
-                return;
+              console.log("from trigger_checkout: Processing checkout");
+
+              // Trigger the cart modal to open
+              openCartModal();
+
+              // Use setTimeout to handle async operation
+              setTimeout(async () => {
+                // Wait a moment for the modal to render
+                await new Promise((resolve) => setTimeout(resolve, 100));
+
+                // Use the cartModalRef to trigger the checkout button
+                if (cartModalRef.current) {
+                  await cartModalRef.current.triggerCheckout();
+                }
+              }, 0);
+
+              result = "Processing checkout. Please wait...";
+              break;
+            }
+
+            case "try_on_me": {
+              console.log("from try_on_me: Triggering try-on functionality");
+              console.log(
+                "try_on_me called - selectedProduct:",
+                selectedProduct?.name,
+                "selectedModelId:",
+                selectedModelId
+              );
+
+              if (!selectedProduct) {
+                result = "Please select a product first before trying it on.";
+                break;
               }
 
-              const totalPrice = cart.reduce(
-                (sum, item) => sum + item.price * item.quantity,
-                0
-              );
-              const totalItems = cart.reduce(
-                (sum, item) => sum + item.quantity,
-                0
-              );
+              if (!selectedModelId) {
+                console.log("No selectedModelId found, opening photo modal");
+                openPhotoModal();
+                result = "Please select a photo first. I've opened the photo selection modal for you.";
+                break;
+              }
 
-              console.log(
-                `Processing checkout for ${totalItems} items, total: $${totalPrice.toFixed(
-                  2
-                )}`
-              );
+              // Handle async operation with setTimeout
+              setTimeout(async () => {
+                try {
+                  await handleTryOnMe();
+                } catch (error) {
+                  console.error("Try-on error:", error);
+                }
+              }, 0);
 
-              // Simulate checkout process
-              setTimeout(() => {
-                clearCart();
-                console.log("Checkout completed - cart cleared");
-              }, 1000);
+              result = `I'm starting the try-on process for the ${selectedProduct.name}. This may take a moment to generate your virtual try-on image.`;
               break;
             }
 
             default:
               console.warn("Unknown tool call:", name);
+              result = "I'm sorry, I don't understand that request.";
               break;
           }
+
+          // Send the tool call result back to Tavus
+          if (callObject && tool_call_id) {
+            console.log(`Sending tool result for ${name}:`, result);
+            callObject.sendAppMessage({
+              event_type: "conversation.tool_call_result",
+              properties: {
+                tool_call_id: tool_call_id,
+                result: result
+              }
+            });
+          }
         } catch (error) {
-          console.error("Error parsing tool call arguments:", error);
+          console.error("Error processing tool call:", error);
+          // Send error result back to Tavus
+          if (callObject && tool_call_id) {
+            callObject.sendAppMessage({
+              event_type: "conversation.tool_call_result",
+              properties: {
+                tool_call_id: tool_call_id,
+                result: "I'm sorry, there was an error processing your request."
+              }
+            });
+          }
         }
       }
     },
@@ -529,6 +641,12 @@ Your store Prodcuts: [dont mention anytoing outside here]
       setCurrentCategory,
       cart,
       clearCart,
+      openCartModal,
+      cartModalRef,
+      handleTryOnMe,
+      selectedModelId,
+      openPhotoModal,
+      callObject,
     ]
   );
 
@@ -563,8 +681,8 @@ Your store Prodcuts: [dont mention anytoing outside here]
       newCallObject.on("error", handleCallError);
       newCallObject.on("left-meeting", handleLeftMeeting);
 
-      newCallObject.on("app-message", (event: any) => {
-        processMessage(event.data);
+      newCallObject.on("app-message", async (event: any) => {
+        await processMessage(event.data);
       });
       // Join the call
       await newCallObject.join({ url: conversationUrl });
