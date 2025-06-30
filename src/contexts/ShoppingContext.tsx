@@ -6,6 +6,7 @@ import React, {
   useRef,
   useEffect,
 } from "react";
+import { CartModalRef } from "../components/CartModal";
 
 import { sampleProducts, Product } from "./products";
 
@@ -43,6 +44,7 @@ interface ShoppingContextType {
   removeFromWishlist: (productId: string) => void;
   clearCart: () => void;
   getTotalPrice: () => number;
+  cartModalRef: React.RefObject<CartModalRef>;
   getCartItemCount: () => number;
   selectedProduct: Product | undefined;
   setSelectedProduct: React.Dispatch<React.SetStateAction<Product | undefined>>;
@@ -76,6 +78,14 @@ interface ShoppingContextType {
   saveGeneratedImage: (imageUrl: string) => void;
   loadGeneratedImages: () => GeneratedImage[];
   deleteGeneratedImage: (imageId: string) => void;
+  isCartModalOpen: boolean;
+  setIsCartModalOpen: (isOpen: boolean) => void;
+  openCartModal: () => void;
+  closeCartModal: () => void;
+  isPhotoModalOpen: boolean;
+  setIsPhotoModalOpen: (isOpen: boolean) => void;
+  openPhotoModal: () => void;
+  closePhotoModal: () => void;
 }
 
 const ShoppingContext = createContext<ShoppingContextType | undefined>(
@@ -128,7 +138,16 @@ const modelImages: ModelImage[] = [
 export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  // Load cart from localStorage on initialization
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    try {
+      const savedCart = localStorage.getItem('shopping-cart');
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch (error) {
+      console.error('Error loading cart from localStorage:', error);
+      return [];
+    }
+  });
   const [wishlist, setWishlist] = useState<Product[]>([]);
   const [currentCategory, setCurrentCategory] = useState("Clothing");
 
@@ -141,6 +160,13 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
   const [customPhotos, setCustomPhotos] = useState<ModelImage[]>([]);
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
+
+  // Cart Modal state
+  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+  const cartModalRef = useRef<CartModalRef>(null);
+
+  // Photo Selection Modal state
+  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
 
   // Try On feature states
   const [tryOnResult, setTryOnResult] = useState<string | null>(null);
@@ -342,6 +368,15 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
     setGeneratedImages(storedImages);
   }, []);
 
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem('shopping-cart', JSON.stringify(cart));
+    } catch (error) {
+      console.error('Error saving cart to localStorage:', error);
+    }
+  }, [cart]);
+
   // Clean up polling on component unmount
   useEffect(() => {
     return () => clearPolling();
@@ -494,6 +529,8 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
     return cart.reduce((total, item) => total + item.quantity, 0);
   };
 
+
+
   const addCustomPhoto = (photo: ModelImage) => {
     setCustomPhotos((prev) => [...prev, photo]);
   };
@@ -531,6 +568,24 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
     localStorage.setItem('generatedImages', JSON.stringify(updatedImages));
   };
 
+  // Cart Modal functions
+  const openCartModal = () => {
+    setIsCartModalOpen(true);
+  };
+
+  const closeCartModal = () => {
+    setIsCartModalOpen(false);
+  };
+
+  // Photo Modal functions
+  const openPhotoModal = () => {
+    setIsPhotoModalOpen(true);
+  };
+
+  const closePhotoModal = () => {
+    setIsPhotoModalOpen(false);
+  };
+
   // Combine default model images with custom photos
   const allModelImages = [...modelImages, ...customPhotos];
 
@@ -549,6 +604,7 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
         clearCart,
         getTotalPrice,
         getCartItemCount,
+        cartModalRef,
         selectedProduct,
         setSelectedProduct,
         quantity,
@@ -581,6 +637,14 @@ export const ShoppingProvider: React.FC<{ children: ReactNode }> = ({
         saveGeneratedImage,
         loadGeneratedImages,
         deleteGeneratedImage,
+        isCartModalOpen,
+        setIsCartModalOpen,
+        openCartModal,
+        closeCartModal,
+        isPhotoModalOpen,
+        setIsPhotoModalOpen,
+        openPhotoModal,
+        closePhotoModal,
       }}
     >
       {children}

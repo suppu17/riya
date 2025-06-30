@@ -6,18 +6,17 @@ import CartModal from "./CartModal";
 
 const Header: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
-  const { getCartItemCount } = useShopping();
+  const { getCartItemCount, isCartModalOpen, openCartModal, closeCartModal, cartModalRef } = useShopping();
   const { startListening, isListening } = useVoice();
   const cartCount = getCartItemCount();
 
   const handleCartClick = () => {
     console.log("Cart clicked");
-    setIsCartModalOpen(true);
+    openCartModal();
   };
 
   const handleCloseCartModal = () => {
-    setIsCartModalOpen(false);
+    closeCartModal();
   };
 
   return (
@@ -69,7 +68,7 @@ const Header: React.FC = () => {
       </div>
 
       {/* Cart Modal */}
-      <CartModal isOpen={isCartModalOpen} onClose={handleCloseCartModal} />
+      <CartModal ref={cartModalRef} isOpen={isCartModalOpen} onClose={handleCloseCartModal} />
     </div>
   );
 };

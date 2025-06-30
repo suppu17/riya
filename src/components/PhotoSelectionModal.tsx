@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Check, Camera, Upload, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -139,6 +139,11 @@ const PhotoSelectionModal: React.FC<PhotoSelectionModalProps> = ({ isOpen, onClo
   };
 
   const handleDone = () => {
+    // Save the selected photo to context if one is selected
+    if (selectedPhoto) {
+      setSelectedModelId(selectedPhoto.id);
+    }
+    
     if (stream) {
       stream.getTracks().forEach(track => track.stop());
       setStream(null);

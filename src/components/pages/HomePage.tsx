@@ -6,9 +6,13 @@ import CategoryGallery from "../home/CategoryGallery";
 import CategoryNavigation from "../home/CategoryNavigation";
 import ProductDisplay from "../home/ProductDisplay";
 import ProductActions from "../home/ProductActions";
-import RiyaVoiceAgent from "../RiyaVoiceAgent";
+import RiyaInteractionHub from "../RiyaInteractionHub";
+import PhotoSelectionModal from "../PhotoSelectionModal";
+import { useShopping } from "../../contexts/ShoppingContext";
 
 const HomePage: React.FC = () => {
+  const { isPhotoModalOpen, closePhotoModal } = useShopping();
+
   return (
     <motion.div
       className="min-h-screen"
@@ -73,7 +77,7 @@ const HomePage: React.FC = () => {
             whileHover={{ scale: 1.02, y: -2 }}
             transition={{ duration: 0.2 }}
           >
-            <RiyaVoiceAgent />
+            <RiyaInteractionHub />
           </motion.div>
 
           <motion.div
@@ -84,6 +88,12 @@ const HomePage: React.FC = () => {
           </motion.div>
         </motion.div>
       </motion.div>
+
+      {/* Photo Selection Modal */}
+      <PhotoSelectionModal
+        isOpen={isPhotoModalOpen}
+        onClose={closePhotoModal}
+      />
     </motion.div>
   );
 };

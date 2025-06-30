@@ -7,20 +7,19 @@ import CartModal from "../CartModal";
 import AuthModal from "../auth/AuthModal";
 
 const TopNavigationBar: React.FC = () => {
-  const { getCartItemCount } = useShopping();
+  const { getCartItemCount, isCartModalOpen, openCartModal, closeCartModal, cartModalRef } = useShopping();
   const { user, isAuthenticated, logout } = useAuth();
   const cartCount = getCartItemCount();
-  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
 
 
   const handleCartClick = () => {
-    setIsCartModalOpen(true);
+    openCartModal();
   };
 
   const handleCloseCartModal = () => {
-    setIsCartModalOpen(false);
+    closeCartModal();
   };
 
   const handleDirectLogout = () => {
@@ -136,7 +135,7 @@ const TopNavigationBar: React.FC = () => {
       </motion.div>
 
       {/* Cart Modal */}
-      <CartModal isOpen={isCartModalOpen} onClose={handleCloseCartModal} />
+      <CartModal ref={cartModalRef} isOpen={isCartModalOpen} onClose={handleCloseCartModal} />
 
       {/* Auth Modal */}
       <AuthModal
