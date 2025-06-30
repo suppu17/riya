@@ -61,9 +61,15 @@ const RiyaInteractionHub: React.FC = () => {
           return `I'm sorry, I couldn't find any products matching "${productIDString}".`;
         }
       },
-      add_to_cart: async (query: { productId: string }) => {
+      add_to_cart: async (query: { 
+        productId?: string;
+        type?: { ProductID: string };
+      }) => {
         console.log("from add_to_cart:", JSON.stringify(query, null, 2));
-        const { productId } = query;
+        
+        // Handle both productId and type.ProductID formats
+        const productId = query.productId || query.type?.ProductID;
+        console.log("Extracted productId:", productId);
 
         if (productId) {
           // Find product by ID
