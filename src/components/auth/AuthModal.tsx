@@ -420,6 +420,11 @@ const AuthModal: React.FC<AuthModalProps> = ({
                       {getTitle()}
                     </h2>
                     <p className="text-white/70 text-sm">{getSubtitle()}</p>
+
+                    {/* Helpful Tips Section */}
+                    <span className="text-xs text-white bt-2 bg-yellow-400/20 px-2 py-1 rounded">
+                      Use Demo Account: demo@example.com / demo123
+                    </span>
                   </motion.div>
                 </div>
 
@@ -875,11 +880,6 @@ const AuthModal: React.FC<AuthModalProps> = ({
                           </button>
                         </div>
                       )}
-
-                      {/* Helpful Tips Section */}
-                      <span className="text-xs text-white/50">
-                        Demo Account: demo@example.com / demo123
-                      </span>
                     </motion.div>
                   </>
                 )}

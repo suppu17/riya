@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Play, ArrowRight, LogIn, User } from "lucide-react";
+import { Play, ArrowRight, LogIn, User, X } from "lucide-react";
 import WallpaperSettings from "./WallpaperSettings";
 import AuthModal from "./auth/AuthModal";
 import UserProfile from "./UserProfile";
@@ -18,6 +18,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
   const [showContent, setShowContent] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [showDemoOverlay, setShowDemoOverlay] = useState(false);
 
   useEffect(() => {
     // Animate content in after component mounts
@@ -67,8 +68,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
     <div className="fixed inset-0 flex items-center justify-center z-50 overflow-hidden">
       {/* Dynamic Background with Crystal Clear Tones */}
       <div
-        className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
-        style={{ backgroundImage: `url('${currentWallpaper}')` }}
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000"
+        style={{
+          backgroundImage: `url('${currentWallpaper}')`,
+          backgroundAttachment: "fixed",
+        }}
       />
 
       {/* Crystal Glass Gradient Overlays */}
@@ -157,14 +161,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                 className={`opacity-0 ${showContent ? "fade-in-up" : ""}`}
                 style={{ animationDelay: "0.6s" }}
               >
-                <button
-                  onClick={handleEnterExperience}
-                  className="bg-gray-900/90 backdrop-blur-xl border border-gray-700/50 rounded-full px-6 md:px-8 py-2 md:py-3 text-white font-medium text-xs md:text-sm tracking-wide hover:bg-gray-800/90 transition-all duration-300 group shadow-lg"
-                >
-                  {isAuthenticated
-                    ? "Enter Experience"
-                    : "Sign In to Experience"}
-                </button>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <button
+                    onClick={handleEnterExperience}
+                    className="bg-gray-900/90 backdrop-blur-xl border border-gray-700/50 rounded-full px-6 md:px-8 py-2 md:py-3 text-white font-medium text-xs md:text-sm tracking-wide hover:bg-gray-800/90 transition-all duration-300 group shadow-lg"
+                  >
+                    {isAuthenticated
+                      ? "Enter Experience"
+                      : "Sign In to Experience"}
+                  </button>
+
+                  <button
+                    onClick={() => setShowDemoOverlay(true)}
+                    className="bg-pink-500 backdrop-blur-xl border border-pink-400 rounded-full px-6 md:px-8 py-2 md:py-3 text-white font-medium text-xs md:text-sm tracking-wide hover:bg-pink-600 transition-all duration-300 group shadow-lg flex items-center gap-2"
+                  >
+                    <Play className="w-4 h-4 text-white group-hover:scale-110 transition-transform duration-300" />
+                    Watch Demo
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -275,6 +289,38 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
 
       {/* Fullscreen Prompt */}
       <FullscreenPrompt />
+
+      {/* Demo Video Overlay */}
+      {showDemoOverlay && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300"
+            onClick={() => setShowDemoOverlay(false)}
+          />
+
+          {/* Video Container */}
+          <div className="relative w-[90vw] max-w-5xl h-[75vh] max-h-[700px] bg-white/95 backdrop-blur-xl border border-gray-200/50 rounded-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-500 ease-out">
+            {/* Close Button */}
+            <button
+              onClick={() => setShowDemoOverlay(false)}
+              className="absolute top-4 right-4 z-10 w-10 h-10 bg-gray-100/80 hover:bg-gray-200/80 backdrop-blur-sm rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 group"
+              aria-label="Close demo video"
+            >
+              <X className="w-5 h-5 text-gray-600 group-hover:text-gray-800 transition-colors duration-200" />
+            </button>
+
+            {/* Video */}
+            <iframe
+              src="https://www.youtube.com/embed/9yQzZdF8qgs?autoplay=1&rel=0&showinfo=0&iv_load_policy=3&modestbranding=1"
+              title="SnapStyler - AI-Powered Fashion Shopping Demo"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

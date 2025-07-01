@@ -1,7 +1,7 @@
-import React from 'react';
-import { Heart } from 'lucide-react';
-import { useShopping } from '../../contexts/ShoppingContext';
-import ProductCard from '../ProductCard';
+import React from "react";
+import { Heart } from "lucide-react";
+import { useShopping } from "../../contexts/ShoppingContext";
+import ProductCard from "../ProductCard";
 
 const WishlistPage: React.FC = () => {
   const { wishlist } = useShopping();
@@ -11,9 +11,11 @@ const WishlistPage: React.FC = () => {
       <div className="p-8">
         <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-12 border border-white/10 text-center">
           <Heart className="w-16 h-16 text-white/30 mx-auto mb-6" />
-          <h2 className="text-2xl font-semibold text-white mb-4">Your wishlist is empty</h2>
+          <h2 className="text-2xl font-semibold text-white mb-4">
+            Your wishlist is empty
+          </h2>
           <p className="text-white/60 mb-8">Save items you love for later</p>
-          <button className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300">
+          <button className="px-8 py-3 bg-gradient-to-r from-white-500 to-white-500 text-white rounded-2xl font-medium hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300">
             Browse Products
           </button>
         </div>

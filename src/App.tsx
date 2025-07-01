@@ -6,7 +6,7 @@ import WallpaperSettings from "./components/WallpaperSettings";
 import LandingPage from "./components/LandingPage";
 import FullscreenPrompt from "./components/FullscreenPrompt";
 import Logo from "./components/Logo";
-
+import FirstTimeWallpaperModal from "./components/FirstTimeWallpaperModal";
 
 import { ShoppingProvider } from "./contexts/ShoppingContext";
 import { VoiceProvider } from "./contexts/VoiceContext";
@@ -17,27 +17,40 @@ import { UserProvider } from "./contexts/UserContext";
 const AppContent: React.FC = () => {
   const [currentView, setCurrentView] = useState("home");
   const [showLanding, setShowLanding] = useState(true);
+  const [showWallpaperSelection, setShowWallpaperSelection] = useState(false);
   const { currentWallpaper } = useWallpaper();
   const { isAuthenticated, isLoading, user } = useAuth();
 
   // Reset showLanding when user becomes authenticated
   useEffect(() => {
-    console.log('🔍 App.tsx - Auth state changed:', {
+    console.log("🔍 App.tsx - Auth state changed:", {
       isAuthenticated,
       isLoading,
-      user: user?.email || 'no user',
-      showLanding
+      user: user?.email || "no user",
+      showLanding,
     });
     if (isAuthenticated) {
-      console.log('✅ App.tsx - User authenticated, hiding landing page');
+      console.log("✅ App.tsx - User authenticated, hiding landing page");
       setShowLanding(false);
+
+      // Check if user has selected wallpaper before
+      const hasSelectedWallpaper = localStorage.getItem("wallpaperSelected");
+      if (!hasSelectedWallpaper) {
+        console.log("🎨 First-time user, showing wallpaper selection");
+        setShowWallpaperSelection(true);
+      }
     }
   }, [isAuthenticated, isLoading, user, showLanding]);
+
+  const handleWallpaperSelectionComplete = () => {
+    localStorage.setItem("wallpaperSelected", "true");
+    setShowWallpaperSelection(false);
+  };
 
   // Initialize to home view only on first authentication
   useEffect(() => {
     if (isAuthenticated && showLanding) {
-      setCurrentView('home');
+      setCurrentView("home");
     }
   }, [isAuthenticated, showLanding]);
 
@@ -47,8 +60,11 @@ const AppContent: React.FC = () => {
       <div className="fixed inset-0 flex items-center justify-center z-50 overflow-hidden">
         {/* Dynamic Background with Crystal Clear Tones */}
         <div
-          className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
-          style={{ backgroundImage: `url('${currentWallpaper}')` }}
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000"
+          style={{
+            backgroundImage: `url('${currentWallpaper}')`,
+            backgroundAttachment: "fixed",
+          }}
         />
 
         {/* Crystal Glass Gradient Overlays */}
@@ -65,7 +81,9 @@ const AppContent: React.FC = () => {
               <div className="mb-8">
                 <div className="flex items-center justify-center mb-4">
                   <Logo size="xl" />
-                  <span className="text-lg text-white/80 font-medium ml-2">.app</span>
+                  <span className="text-lg text-white/80 font-medium ml-2">
+                    .app
+                  </span>
                 </div>
                 <p className="text-white/70 text-lg">
                   Your Personal AI Stylist
@@ -78,13 +96,13 @@ const AppContent: React.FC = () => {
                 <div className="relative w-20 h-20 mx-auto mb-6">
                   {/* Outer Ring */}
                   <div className="absolute inset-0 border-4 border-cyan-200/20 rounded-full"></div>
-                  
+
                   {/* Animated Ring */}
                   <div className="absolute inset-0 border-4 border-transparent border-t-cyan-400 border-r-cyan-400 rounded-full animate-spin"></div>
-                  
+
                   {/* Inner Glow */}
                   <div className="absolute inset-2 bg-gradient-to-br from-cyan-400/30 to-blue-500/30 rounded-full animate-pulse"></div>
-                  
+
                   {/* Center Dot */}
                   <div className="absolute inset-6 bg-white/80 rounded-full"></div>
                 </div>
@@ -92,10 +110,14 @@ const AppContent: React.FC = () => {
                 {/* Loading Text */}
                 <div className="space-y-2">
                   <p className="text-white/90 text-lg font-medium">
-                    {user ? `Welcome back, ${user.name}!` : 'Loading your experience...'}
+                    {user
+                      ? `Welcome back, ${user.name}!`
+                      : "Loading your experience..."}
                   </p>
                   <p className="text-white/60 text-sm">
-                    {user ? 'Setting up your dashboard...' : 'Preparing your AI-powered fashion journey'}
+                    {user
+                      ? "Setting up your dashboard..."
+                      : "Preparing your AI-powered fashion journey"}
                   </p>
                 </div>
               </div>
@@ -107,7 +129,7 @@ const AppContent: React.FC = () => {
                     key={i}
                     className="absolute w-1 h-1 bg-cyan-300/40 rounded-full animate-pulse"
                     style={{
-                      left: `${15 + (i * 6)}%`,
+                      left: `${15 + i * 6}%`,
                       top: `${20 + (i % 4) * 15}%`,
                       animationDelay: `${i * 0.3}s`,
                       animationDuration: `${2 + (i % 3)}s`,
@@ -124,7 +146,7 @@ const AppContent: React.FC = () => {
                     className="w-2 h-2 bg-cyan-300/60 rounded-full animate-pulse"
                     style={{
                       animationDelay: `${i * 0.2}s`,
-                      animationDuration: '1.5s',
+                      animationDuration: "1.5s",
                     }}
                   />
                 ))}
@@ -132,7 +154,9 @@ const AppContent: React.FC = () => {
 
               {/* Powered By Section */}
               <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-                <div className="text-white/50 text-sm mb-2 text-center">Powered by:</div>
+                <div className="text-white/50 text-sm mb-2 text-center">
+                  Powered by:
+                </div>
                 <div className="flex items-center justify-center gap-4 opacity-60">
                   <div className="i-bolt-supabase text-white"></div>
                   <div className="i-bolt-elevenlabs text-white"></div>
@@ -162,11 +186,7 @@ const AppContent: React.FC = () => {
 
         {/* Bolt Badge */}
         <div className="fixed top-5 right-12 z-50">
-          <img 
-            src="./bolt.svg" 
-            alt="Badge" 
-            className="w-20 h-20 opacity-80"
-          />
+          <img src="./bolt.svg" alt="Badge" className="w-20 h-20 opacity-80" />
         </div>
       </div>
     );
@@ -182,8 +202,11 @@ const AppContent: React.FC = () => {
     <div className="min-h-screen relative overflow-hidden">
       {/* Dynamic Background */}
       <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url('${currentWallpaper}')` }}
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url('${currentWallpaper}')`,
+          backgroundAttachment: "fixed",
+        }}
       ></div>
 
       {/* Multiple Shadow/Dark Overlays for Better Contrast */}
@@ -202,11 +225,19 @@ const AppContent: React.FC = () => {
       <BottomNav currentView={currentView} setCurrentView={setCurrentView} />
 
       {/* Wallpaper Settings */}
-      <WallpaperSettings />
-      
+      {/* <WallpaperSettings /> */}
+
+      {/* First Time Wallpaper Selection Modal */}
+      {showWallpaperSelection && (
+        <FirstTimeWallpaperModal
+          isOpen={showWallpaperSelection}
+          onClose={() => setShowWallpaperSelection(false)}
+          onComplete={handleWallpaperSelectionComplete}
+        />
+      )}
+
       {/* Fullscreen Prompt */}
       <FullscreenPrompt />
-
     </div>
   );
 };

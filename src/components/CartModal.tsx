@@ -150,12 +150,12 @@ const CartModal = forwardRef<CartModalRef, CartModalProps>(
       <div className="fixed inset-0 z-[9999] flex items-center justify-center">
         {/* Backdrop */}
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 bg-black/10 backdrop-blur-sm"
           onClick={handleClose}
         />
 
         {/* Modal */}
-        <div className="relative w-full max-w-xl mx-4 h-[60%] border border-white/20 rounded-3xl shadow-2xl">
+        <div className="relative w-full max-w-xl mx-4 h-[60%] bg-white/10 backdrop-blur-lg border border-white/10 rounded-3xl shadow-2xl">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-white/10">
             <h2 className="text-xl font-bold text-white flex items-center gap-2">
@@ -268,7 +268,7 @@ const CartModal = forwardRef<CartModalRef, CartModalProps>(
                       <button
                         onClick={() => handleCheckout()}
                         disabled={isCheckingOut || cart.length === 0}
-                        className="w-full hover:bg-white/20 border border-white/20 text-white font-semibold py-3 px-6 rounded-2xl transition-all duration-300 hover:shadow-lg hover:shadow-white/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        className="w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold py-3 px-6 rounded-2xl transition-all duration-300 hover:shadow-lg hover:shadow-white/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       >
                         {isCheckingOut ? (
                           <>
