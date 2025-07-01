@@ -38,7 +38,7 @@ const Logo: React.FC<LogoProps> = ({
 
   return (
     <div
-      className={`relative font-bold text-white tracking-wide bg-opacity-20  px-4 py-2  ${sizeClasses[size]} ${className} mb-10`}
+      className={`relative font-bold text-white tracking-wide bg-opacity-20  px-4 py-2  ${sizeClasses[size]} ${className} `}
     >
       <span className={textClassName}>SnapStyler</span>
     </div>
