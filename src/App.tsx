@@ -4,6 +4,8 @@ import VoiceAssistant from "./components/VoiceAssistant";
 import BottomNav from "./components/BottomNav";
 import WallpaperSettings from "./components/WallpaperSettings";
 import LandingPage from "./components/LandingPage";
+import FullscreenPrompt from "./components/FullscreenPrompt";
+import Logo from "./components/Logo";
 
 
 import { ShoppingProvider } from "./contexts/ShoppingContext";
@@ -61,10 +63,10 @@ const AppContent: React.FC = () => {
             <div className="text-center">
               {/* App Logo/Title */}
               <div className="mb-8">
-                <h1 className="text-5xl md:text-6xl font-bold text-white tracking-wide mb-4">
-                  SnapStyler
-                  <span className="text-lg text-white/80 font-medium">.app</span>
-                </h1>
+                <div className="flex items-center justify-center mb-4">
+                  <Logo size="xl" />
+                  <span className="text-lg text-white/80 font-medium ml-2">.app</span>
+                </div>
                 <p className="text-white/70 text-lg">
                   Your Personal AI Stylist
                 </p>
@@ -202,6 +204,8 @@ const AppContent: React.FC = () => {
       {/* Wallpaper Settings */}
       <WallpaperSettings />
       
+      {/* Fullscreen Prompt */}
+      <FullscreenPrompt />
 
     </div>
   );

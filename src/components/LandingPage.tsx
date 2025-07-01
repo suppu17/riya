@@ -3,8 +3,10 @@ import { Play, ArrowRight, LogIn, User } from "lucide-react";
 import WallpaperSettings from "./WallpaperSettings";
 import AuthModal from "./auth/AuthModal";
 import UserProfile from "./UserProfile";
+import FullscreenPrompt from "./FullscreenPrompt";
 import { useWallpaper } from "../contexts/WallpaperContext";
 import { useAuth } from "../contexts/AuthContext";
+import Logo from "./Logo";
 
 interface LandingPageProps {
   onComplete: () => void;
@@ -80,19 +82,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
         }`}
       >
         {/* Crystal Glass Morphism Container */}
-        <div className="relative w-full h-full bg-white/10 backdrop-blur-xl border border-cyan-200/20 rounded-[3rem] overflow-hidden shadow-2xl flex">
-          {/* Left Side - Content Section */}
-          <div className="w-1/2 relative flex flex-col justify-center px-16 py-20">
+        <div className="relative w-full h-full bg-white/10 backdrop-blur-xl border border-cyan-200/20 rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row">
+          {/* Content Section */}
+          <div className="w-full md:w-1/2 relative flex flex-col justify-center md:justify-center justify-end px-8 md:px-16 py-8 md:py-20 order-2 md:order-1">
             {/* Header with Menu */}
-            <div className="absolute top-8 left-8 flex items-center gap-4 z-30">
-              <div className="text-3xl font-bold text-white tracking-wide">
-                SnapStyler
-              </div>
+            <div className="fixed top-[45%] left-8 md:top-8 md:left-8 flex items-center gap-4 z-30 ">
+              <Logo size="md" className="mb-25" />
             </div>
 
             {/* Success Message for Logged In Users */}
             {isAuthenticated && user && (
-              <div className="absolute top-24 left-8 z-30">
+              <div className="absolute top-16 md:top-24 left-4 md:left-8 z-30">
                 <div className="bg-cyan-500/20 backdrop-blur-xl border border-cyan-400/30 rounded-2xl px-4 py-2">
                   <p className="text-cyan-200 text-sm font-medium">
                     Welcome back, {user.name?.split(" ")[0]}! Redirecting to
@@ -103,7 +103,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
             )}
 
             {/* Main Content */}
-            <div className="space-y-8">
+            <div className="space-y-8 mt-10">
               <div
                 className={`opacity-0 ${showContent ? "fade-in-up" : ""}`}
                 style={{ animationDelay: "0.7s" }}
@@ -113,30 +113,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                     <img
                       src="https://cdn.prod.website-files.com/63b2f566abde4cad39ba419f/63c028497212641ca0f56f80_tavus%20logo%20white.svg"
                       alt="Tavus Logo"
-                      className="h-8 w-auto animate-slide-down-bounce"
+                      className="h-6 md:h-8 w-auto md:animate-slide-down-bounce"
                       style={{ "--animation-delay": "0.8s" }}
                     />
                     <img
                       src="https://11labs-nonprd-15f22c1d.s3.eu-west-3.amazonaws.com/0b9cd3e1-9fad-4a5b-b3a0-c96b0a1f1d2b/elevenlabs-logo-white.png"
                       alt="ElevenLabs Logo"
-                      className="h-4 w-auto animate-slide-down-bounce"
+                      className="h-3 md:h-4 w-auto md:animate-slide-down-bounce"
                       style={{ "--animation-delay": "1.6s" }}
                     />
                   </div>
-                  <span className="bg-gray-800/50 px-3 py-1 rounded">
+                  <span className="bg-gray-800/50 px-3 py-1 rounded hidden md:inline">
                     NEXT-GEN FASHION
                   </span>{" "}
                 </div>
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[0.9] tracking-tight">
-                  YOUR
-                  <br />
-                  PERSONAL
-                  <br />
-                  CONVERSATIONAL
-                  <br />
-                  <span className="font-semibold flex items-center">
-                    REALTIME-AI STYLIST
-                  </span>
+                <h1 className="text-2xl md:text-5xl lg:text-5xl xl:text-6xl font-bold text-white leading-[0.9] tracking-tight">
+                  YOUR <br />
+                  PERSONAL <br /> STYLE PLUG, <br />
+                  POWERED BY AI
                 </h1>
               </div>
 
@@ -144,11 +138,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
                 className={`opacity-0 ${showContent ? "fade-in-up" : ""}`}
                 style={{ animationDelay: "0.4s" }}
               >
-                <p className="text-white/90 text-base leading-relaxed max-w-xxl font-light">
-                  Experience a hands-free, AI-powered journey where discovering
-                  and trying on fashion feels effortless. Powered by a real-time
-                  AI Agent that can see, hear, respond, and interact like a
-                  human — SnapStyler redefines how you shop online.
+                <p className="text-white/90 text-sm md:text-base leading-relaxed max-w-xxl font-light">
+                  <span className="md:hidden">
+                    Experience a hands-free, AI-powered journey where
+                    discovering and trying on fashion feels effortless.
+                  </span>
+                  <span className="hidden md:inline">
+                    Experience a hands-free, AI-powered journey where
+                    discovering and trying on fashion feels effortless. Powered
+                    by a real-time AI Agent that can see, hear, respond, and
+                    interact like a human — SnapStyler redefines how you shop
+                    online.
+                  </span>
                 </p>
               </div>
 
@@ -158,7 +159,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
               >
                 <button
                   onClick={handleEnterExperience}
-                  className="bg-gray-900/90 backdrop-blur-xl border border-gray-700/50 rounded-full px-8 py-3 text-white font-medium text-sm tracking-wide hover:bg-gray-800/90 transition-all duration-300 group shadow-lg"
+                  className="bg-gray-900/90 backdrop-blur-xl border border-gray-700/50 rounded-full px-6 md:px-8 py-2 md:py-3 text-white font-medium text-xs md:text-sm tracking-wide hover:bg-gray-800/90 transition-all duration-300 group shadow-lg"
                 >
                   {isAuthenticated
                     ? "Enter Experience"
@@ -168,8 +169,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
             </div>
           </div>
 
-          {/* Right Section - Clean Video Only */}
-          <div className="w-1/2 relative">
+          {/* Video Section */}
+          <div className="w-full md:w-1/2 relative order-1 md:order-2 h-1/2 md:h-full">
             {/* Video Background - Full Coverage */}
             <div className="absolute inset-0 overflow-hidden">
               <video
@@ -186,24 +187,65 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
             <div className="absolute inset-0 bg-gradient-to-l from-transparent via-cyan-900/5 to-blue-900/10" />
           </div>
 
-          {/* Powered By Section - Right Side */}
-          <div className="absolute bottom-8 right-8 z-30">
-            <div className="flex items-center justify-end gap-3 bg-black/10 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg">
-              <div className="text-white/70 text-sm">App Powered by:</div>
+          {/* Powered By Section */}
+          <div className="absolute bottom-4 md:bottom-8 right-4 md:right-3 z-30">
+            {/* Desktop Version */}
+            <div className="hidden md:flex items-center justify-end gap-2 md:gap-2 bg-black/10 backdrop-blur-sm rounded-lg px-2 md:px-3 py-1 md:py-2 shadow-lg">
+              <div className="text-white/70 text-xs md:text-sm">
+                Powered by:
+              </div>
               <img
                 src="https://cdn.prod.website-files.com/63b2f566abde4cad39ba419f/63c028497212641ca0f56f80_tavus%20logo%20white.svg"
                 alt="Tavus Logo"
-                className="h-5 w-auto"
+                className="h-4 md:h-5 w-auto"
               />
               <img
                 src="https://11labs-nonprd-15f22c1d.s3.eu-west-3.amazonaws.com/0b9cd3e1-9fad-4a5b-b3a0-c96b0a1f1d2b/elevenlabs-logo-white.png"
                 alt="ElevenLabs Logo"
-                className="h-3 w-auto"
+                className="h-2 md:h-3 w-auto"
               />
-              <div className="i-bolt-netlify text-white"></div>
-              <div className="i-bolt-supabase text-white"></div>
-              <div className="i-bolt-entri text-white"></div>
-              <div className="i-bolt-expo text-white"></div>
+              <div className="i-bolt-netlify text-white text-xs md:text-sm"></div>
+              <div className="i-bolt-supabase text-white text-xs md:text-sm"></div>
+              <div className="i-bolt-entri text-white text-xs md:text-sm"></div>
+              <div className="i-bolt-expo text-white text-xs md:text-sm"></div>
+            </div>
+
+            {/* Mobile Version - Scrolling */}
+            <div className="md:hidden bg-black/10 backdrop-blur-sm rounded-lg px-2 py-1 shadow-lg overflow-hidden">
+              <div className="text-white/70 text-xs text-center mb-1">
+                App Powered by:
+              </div>
+              <div className="flex animate-scroll gap-4 whitespace-nowrap">
+                <img
+                  src="https://cdn.prod.website-files.com/63b2f566abde4cad39ba419f/63c028497212641ca0f56f80_tavus%20logo%20white.svg"
+                  alt="Tavus Logo"
+                  className="h-4 w-auto flex-shrink-0"
+                />
+                <img
+                  src="https://11labs-nonprd-15f22c1d.s3.eu-west-3.amazonaws.com/0b9cd3e1-9fad-4a5b-b3a0-c96b0a1f1d2b/elevenlabs-logo-white.png"
+                  alt="ElevenLabs Logo"
+                  className="h-2 w-auto flex-shrink-0"
+                />
+                <div className="i-bolt-netlify text-white text-xs flex-shrink-0"></div>
+                <div className="i-bolt-supabase text-white text-xs flex-shrink-0"></div>
+                <div className="i-bolt-entri text-white text-xs flex-shrink-0"></div>
+                <div className="i-bolt-expo text-white text-xs flex-shrink-0"></div>
+                {/* Duplicate for seamless loop */}
+                <img
+                  src="https://cdn.prod.website-files.com/63b2f566abde4cad39ba419f/63c028497212641ca0f56f80_tavus%20logo%20white.svg"
+                  alt="Tavus Logo"
+                  className="h-4 w-auto flex-shrink-0"
+                />
+                <img
+                  src="https://11labs-nonprd-15f22c1d.s3.eu-west-3.amazonaws.com/0b9cd3e1-9fad-4a5b-b3a0-c96b0a1f1d2b/elevenlabs-logo-white.png"
+                  alt="ElevenLabs Logo"
+                  className="h-2 w-auto flex-shrink-0"
+                />
+                <div className="i-bolt-netlify text-white text-xs flex-shrink-0"></div>
+                <div className="i-bolt-supabase text-white text-xs flex-shrink-0"></div>
+                <div className="i-bolt-entri text-white text-xs flex-shrink-0"></div>
+                <div className="i-bolt-expo text-white text-xs flex-shrink-0"></div>
+              </div>
             </div>
           </div>
 
@@ -230,6 +272,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onComplete }) => {
           <img src="./bolt.svg" alt="Badge" className="w-20 h-20" />
         </a>
       </div>
+
+      {/* Fullscreen Prompt */}
+      <FullscreenPrompt />
     </div>
   );
 };

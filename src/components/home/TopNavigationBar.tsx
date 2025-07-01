@@ -5,6 +5,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { ShoppingCart, User, LogIn, LogOut } from "lucide-react";
 import CartModal from "../CartModal";
 import AuthModal from "../auth/AuthModal";
+import Logo from "../Logo";
 
 const TopNavigationBar: React.FC = () => {
   const { getCartItemCount, isCartModalOpen, openCartModal, closeCartModal, cartModalRef } = useShopping();
@@ -38,16 +39,15 @@ const TopNavigationBar: React.FC = () => {
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.1 }}
       >
-        <motion.span
-          className="text-white text-xl pl-4 font-bold"
+        <motion.div
+          className="pl-4"
           whileHover={{
-            color: "rgba(255, 255, 255, 0.9)",
             scale: 1.05,
           }}
           transition={{ duration: 0.2 }}
         >
-          SnapStyler
-        </motion.span>
+          <Logo size="sm" />
+        </motion.div>
       </motion.div>
 
       <motion.div
