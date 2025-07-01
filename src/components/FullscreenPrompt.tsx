@@ -147,7 +147,7 @@ const FullscreenPrompt: React.FC<FullscreenPromptProps> = ({ onDismiss }) => {
   return (
     <>
       {isVisible && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 hidden md:block">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-30 hidden md:block">
           <div className="flex items-center gap-3 bg-black/10 backdrop-blur-lg rounded-lg px-3 py-2 shadow-lg">
             {/* Content */}
             <div className="text-white/70 text-sm">

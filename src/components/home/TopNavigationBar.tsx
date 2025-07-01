@@ -8,12 +8,16 @@ import AuthModal from "../auth/AuthModal";
 import Logo from "../Logo";
 
 const TopNavigationBar: React.FC = () => {
-  const { getCartItemCount, isCartModalOpen, openCartModal, closeCartModal, cartModalRef } = useShopping();
+  const {
+    getCartItemCount,
+    isCartModalOpen,
+    openCartModal,
+    closeCartModal,
+    cartModalRef,
+  } = useShopping();
   const { user, isAuthenticated, logout } = useAuth();
   const cartCount = getCartItemCount();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-
-
 
   const handleCartClick = () => {
     openCartModal();
@@ -56,13 +60,10 @@ const TopNavigationBar: React.FC = () => {
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.2 }}
       >
-      
-
         {/* Sign Off (Logout) Icon */}
         {isAuthenticated && (
           <motion.button
             onClick={handleDirectLogout}
-            className="flex items-center justify-center w-10 h-10 bg-white-600/20 hover:bg-white-600/30 backdrop-blur-xl rounded-full border border-white-500/30 hover:border-white-500/50 cursor-pointer transition-all duration-200"
             whileTap={{ scale: 0.95 }}
             transition={{ duration: 0.2 }}
             title="Sign Out"
@@ -84,7 +85,7 @@ const TopNavigationBar: React.FC = () => {
             whileHover={{
               scale: 1.02,
               backgroundColor: "rgba(255, 255, 255, 0.2)",
-              borderColor: "rgba(255, 255, 255, 0.4)",
+              borderColor: "rgba(255, 255, 255, 0.1)",
             }}
             whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.2 }}
@@ -96,16 +97,15 @@ const TopNavigationBar: React.FC = () => {
           </motion.button>
         )}
 
-
-
         <motion.button
           onClick={handleCartClick}
-          className="relative flex items-center gap-3 bg-gradient-to-r from-white/15 to-white/5 backdrop-blur-xl rounded-xl px-4 py-2.5 border border-white/30 cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-300"
+          className="relative flex items-center gap-3  px-4 py-2.5 transition-all duration-300"
           whileHover={{
             scale: 1.02,
             backgroundColor: "rgba(255, 255, 255, 0.2)",
             borderColor: "rgba(255, 255, 255, 0.4)",
-            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
+            boxShadow:
+              "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
           }}
           whileTap={{ scale: 0.98 }}
           transition={{ duration: 0.2 }}
@@ -121,29 +121,33 @@ const TopNavigationBar: React.FC = () => {
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
               >
-                {cartCount > 99 ? '99+' : cartCount}
+                {cartCount > 99 ? "99+" : cartCount}
               </motion.div>
             )}
           </div>
           <div className="flex flex-col items-start">
             <span className="text-white text-sm font-medium">Cart</span>
             <span className="text-white/60 text-xs">
-              {cartCount === 0 ? 'Empty' : `${cartCount} item${cartCount > 1 ? 's' : ''}`}
+              {cartCount === 0
+                ? "Empty"
+                : `${cartCount} item${cartCount > 1 ? "s" : ""}`}
             </span>
           </div>
         </motion.button>
       </motion.div>
 
       {/* Cart Modal */}
-      <CartModal ref={cartModalRef} isOpen={isCartModalOpen} onClose={handleCloseCartModal} />
+      <CartModal
+        ref={cartModalRef}
+        isOpen={isCartModalOpen}
+        onClose={handleCloseCartModal}
+      />
 
       {/* Auth Modal */}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
       />
-
-
     </motion.div>
   );
 };

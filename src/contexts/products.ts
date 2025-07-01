@@ -690,4 +690,25 @@ export const sampleProducts: Product[] = [
       "https://assetsimagesai.s3.us-east-1.amazonaws.com/v1/Run_Away_Sneaker/run_away_sneaker_worn.png",
     ],
   },
+  {
+    id: "45",
+    name: "Louis Vuitton Monogram Macassar Avenue Slingbag PM",
+    price: 1850,
+    image: "/images/products/bag-45.jpg",
+    category: "Bags",
+    rating: 4.8,
+    inStock: true,
+    description: "Compact slingbag with hands-free convenience and style.",
+    designer: "Louis Vuitton",
+    articleNumber: "M45223",
+    images: [
+      "/images/products/bag-45.jpg",
+      "/images/products/bag-45-2.jpg",
+      "/images/products/bag-45-3.jpg"
+    ],
+    tryown: "/images/products/bag-45-tryown.jpg",
+    categoryFlag: "Bags",
+    keyWords: ["Avenue Slingbag PM", "Compact", "Hands-free Convenience", "Style", "Louis Vuitton"],
+    moreInfo: "The Avenue Slingbag PM offers compact design with hands-free convenience and style."
+  }
 ];

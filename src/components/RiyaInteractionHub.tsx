@@ -34,7 +34,7 @@ const RiyaInteractionHub: React.FC = () => {
     voiceId: "21m00Tcm4TlvDq8ikWAM",
     clientTools: {
       search_products: async (query: {
-        type: { productID: string | number };
+        type: { productID: string };
       }) => {
         // Log the raw query to avoid console display issues with object mutation
         console.log("from search_products:", JSON.stringify(query, null, 2));
@@ -76,7 +76,9 @@ const RiyaInteractionHub: React.FC = () => {
 
         if (productId) {
           // Find product by ID
-          const productToAdd = products.find((p) => p.id === productId);
+          // Convert productId to string since our product IDs are strings
+        const productIdString = String(productId);
+        const productToAdd = products.find((p) => p.id === productIdString);
           if (productToAdd) {
             addToCart(productToAdd);
             return `I've added the ${productToAdd.name} to your cart for $${productToAdd.price}.`;
@@ -195,6 +197,11 @@ const RiyaInteractionHub: React.FC = () => {
 
         if (!selectedProduct) {
           return "Please select a product first before trying it on.";
+        }
+
+        // Check if the selected product is from clothing category
+        if (selectedProduct.category !== 'Clothing') {
+          return "I'm sorry, the virtual try-on feature is only available for clothing items. Please select a clothing product to use this feature.";
         }
 
         if (!selectedModelId) {
@@ -333,11 +340,13 @@ const RiyaInteractionHub: React.FC = () => {
       {/* Original Status Text */}
       <div className="absolute bottom-8 left-0 right-0 text-center mt-2">
         <p className="text-orange-500 font-medium text-sm mb-0 bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-amber-500">
-          {conversation.status !== "connected"
-            ? "Riya"
-            : conversation.status !== "speaking"
+          {conversation.status === "speaking"
+            ? "speaking"
+            : conversation.status === "listening"
             ? "listening"
-            : "speaking"}
+            : conversation.status === "connected"
+            ? "connected"
+            : "Riya"}
         </p>
       </div>
     </div>

@@ -15,19 +15,22 @@ import {
   MoreHorizontal,
   MessageCircle,
   Share,
+  Download,
   Bell,
   Shield,
   LogOut,
-  Camera,
-  Upload,
-  X,
+  Edit,
+  Edit3,
   Check,
+  X,
+  Upload,
   ZoomIn,
   ZoomOut,
   Move,
-  ShoppingBag,
   Crown,
-  Edit3,
+  ShoppingBag,
+  MoreVertical,
+  Camera,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { useShopping } from "../../contexts/ShoppingContext";
@@ -51,10 +54,67 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({
 }) => {
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [likes, setLikes] = useState(post.likes);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(false);
 
   const handleLike = () => {
     setIsLiked(!isLiked);
     setLikes((prev) => (isLiked ? prev - 1 : prev + 1));
+  };
+
+  const handleDownload = async () => {
+    setIsDownloading(true);
+    try {
+      const response = await fetch(post.url);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${post.productName.replace(/\s+/g, "_")}_${post.id}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading image:", error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handleShare = (platform?: string) => {
+    const shareText = `Check out this amazing AI-generated outfit: ${post.productName} created with ${post.modelUsed}! #AIFashion #Style`;
+    const shareUrl = post.url;
+
+    if (platform === "twitter") {
+      window.open(
+        `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+          shareText
+        )}&url=${encodeURIComponent(shareUrl)}`,
+        "_blank"
+      );
+    } else if (platform === "facebook") {
+      window.open(
+        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+          shareUrl
+        )}`,
+        "_blank"
+      );
+    } else if (platform === "copy") {
+      navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+      setShowShareMenu(false);
+    } else {
+      // Native share API
+      if (navigator.share) {
+        navigator.share({
+          title: "AI Fashion Creation",
+          text: shareText,
+          url: shareUrl,
+        });
+      } else {
+        setShowShareMenu(!showShareMenu);
+      }
+    }
   };
 
   return (
@@ -124,6 +184,54 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({
                 <MessageCircle className="w-6 h-6" />
                 <span className="text-sm font-medium">{post.comments}</span>
               </button>
+
+              {/* Share Button */}
+              <div className="relative">
+                <button
+                  onClick={() => handleShare()}
+                  className="flex items-center gap-2 text-white hover:text-green-400 transition-colors"
+                >
+                  <Share className="w-6 h-6" />
+                  <span className="text-sm font-medium">{post.shares}</span>
+                </button>
+
+                {/* Share Menu */}
+                {showShareMenu && (
+                  <div className="absolute bottom-full left-0 mb-2 bg-black/90 backdrop-blur-sm rounded-lg border border-white/20 p-2 min-w-[120px] z-10">
+                    <button
+                      onClick={() => handleShare("copy")}
+                      className="w-full text-left px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded text-sm transition-colors"
+                    >
+                      Copy Link
+                    </button>
+                    <button
+                      onClick={() => handleShare("twitter")}
+                      className="w-full text-left px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded text-sm transition-colors"
+                    >
+                      Twitter
+                    </button>
+                    <button
+                      onClick={() => handleShare("facebook")}
+                      className="w-full text-left px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded text-sm transition-colors"
+                    >
+                      Facebook
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Download Button */}
+              <button
+                onClick={handleDownload}
+                disabled={isDownloading}
+                className="flex items-center gap-2 text-white hover:text-purple-400 transition-colors disabled:opacity-50"
+              >
+                {isDownloading ? (
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                ) : (
+                  <Download className="w-6 h-6" />
+                )}
+              </button>
             </div>
             <div className="text-white/60 text-xs">
               #{post.productName.replace(/\s+/g, "").toLowerCase()}
@@ -134,6 +242,14 @@ const ReelCard: React.FC<{ post: ReelPost; isActive: boolean }> = ({
 
       {/* Hover Effects */}
       <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+      {/* Close share menu when clicking outside */}
+      {showShareMenu && (
+        <div
+          className="fixed inset-0 z-0"
+          onClick={() => setShowShareMenu(false)}
+        />
+      )}
     </motion.div>
   );
 };
@@ -165,6 +281,24 @@ const ProfilePage: React.FC = () => {
     profile?.bio ||
       "Fashion enthusiast and AI style explorer! ✨ I love experimenting with different looks and discovering new trends through AI-powered fashion technology. Always ready to try something bold and beautiful! 💫"
   );
+  const [showPhotoMenu, setShowPhotoMenu] = useState<string | null>(null);
+  const [showPhotoShareMenu, setShowPhotoShareMenu] = useState<string | null>(null);
+
+  // Close photo menus when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.photo-menu-container')) {
+        setShowPhotoMenu(null);
+        setShowPhotoShareMenu(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cropImageRef = useRef<HTMLImageElement>(null);
@@ -292,6 +426,62 @@ const ProfilePage: React.FC = () => {
     );
     setIsEditingBio(false);
   };
+
+  // Handle photo download from grid
+  const handlePhotoDownload = async (post: ReelPost) => {
+    try {
+      const response = await fetch(post.url);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${post.productName.replace(/\s+/g, "_")}_${post.id}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      setShowPhotoMenu(null);
+    } catch (error) {
+      console.error("Error downloading image:", error);
+    }
+  };
+
+  // Handle photo share from grid
+  const handlePhotoShare = (post: ReelPost, platform?: string) => {
+    const shareText = `Check out this amazing AI-generated outfit: ${post.productName} created with ${post.modelUsed}! #AIFashion #Style`;
+    const shareUrl = post.url;
+
+    if (platform === "twitter") {
+      window.open(
+        `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+          shareText
+        )}&url=${encodeURIComponent(shareUrl)}`,
+        "_blank"
+      );
+    } else if (platform === "facebook") {
+      window.open(
+        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+          shareUrl
+        )}`,
+        "_blank"
+      );
+    } else if (platform === "copy") {
+      navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+      setShowPhotoShareMenu(null);
+      setShowPhotoMenu(null);
+    } else {
+       // Native share API
+       if (navigator.share) {
+         navigator.share({
+           title: "AI Fashion Creation",
+           text: shareText,
+           url: shareUrl,
+         });
+       } else {
+         setShowPhotoShareMenu(post.id);
+       }
+     }
+   };
 
   // Enhance image with optimized dimensions (1024x1024 max)
   const enhanceImageOptimized = (imageSrc: string): Promise<string> => {
@@ -608,9 +798,19 @@ const ProfilePage: React.FC = () => {
                       <Calendar className="w-4 h-4 text-white/40" />
                       <span>
                         Joined{" "}
-                        {profile?.join_date
-                          ? new Date(profile.join_date).getFullYear()
-                          : new Date(user?.createdAt || "").getFullYear()}
+                        {(() => {
+                          const joinDate = profile?.join_date
+                            ? new Date(profile.join_date)
+                            : user?.createdAt
+                            ? new Date(user.createdAt)
+                            : null;
+
+                          if (!joinDate || isNaN(joinDate.getTime())) {
+                            return 2024; // Fallback year if date is invalid
+                          }
+
+                          return joinDate.getFullYear();
+                        })()}
                       </span>
                     </div>
                   </div>
@@ -910,6 +1110,128 @@ const ProfilePage: React.FC = () => {
                 )}
               </div>
             </div>
+          </motion.div>
+
+          {/* My AI Fashion Photos Grid */}
+          <motion.div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+            <h3 className="text-white/80 text-lg font-semibold mb-4">
+              My AI Fashion Photos
+            </h3>
+            
+            {reelPosts.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3">
+                {reelPosts.slice(0, 6).map((post) => (
+                  <div key={post.id} className="relative group">
+                    <div className="relative overflow-hidden rounded-lg bg-black/20">
+                      <img
+                        src={post.url}
+                        alt={post.productName}
+                        className="w-full h-32 object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      
+                      {/* Hover Overlay */}
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handlePhotoDownload(post)}
+                            className="p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
+                          >
+                            <Download className="w-4 h-4 text-white" />
+                          </button>
+                          <button
+                            onClick={() => handlePhotoShare(post)}
+                            className="p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
+                          >
+                            <Share className="w-4 h-4 text-white" />
+                          </button>
+                        </div>
+                      </div>
+                      
+                      {/* Three Dots Menu */}
+                      <div className="absolute top-2 right-2 photo-menu-container">
+                        <button
+                          onClick={() => setShowPhotoMenu(showPhotoMenu === post.id ? null : post.id)}
+                          className="p-1.5 bg-black/50 backdrop-blur-sm rounded-full hover:bg-black/70 transition-colors"
+                        >
+                          <MoreVertical className="w-4 h-4 text-white" />
+                        </button>
+                        
+                        {/* Dropdown Menu */}
+                        {showPhotoMenu === post.id && (
+                          <div className="absolute top-8 right-0 bg-white/10 backdrop-blur-xl rounded-lg border border-white/20 py-2 min-w-[140px] z-10">
+                            <button
+                              onClick={() => handlePhotoDownload(post)}
+                              className="w-full px-3 py-2 text-left text-white/80 hover:bg-white/10 transition-colors flex items-center gap-2 text-sm"
+                            >
+                              <Download className="w-4 h-4" />
+                              Download
+                            </button>
+                            <button
+                              onClick={() => setShowPhotoShareMenu(showPhotoShareMenu === post.id ? null : post.id)}
+                              className="w-full px-3 py-2 text-left text-white/80 hover:bg-white/10 transition-colors flex items-center gap-2 text-sm"
+                            >
+                              <Share className="w-4 h-4" />
+                              Share
+                            </button>
+                            
+                            {/* Share Submenu */}
+                            {showPhotoShareMenu === post.id && (
+                              <div className="absolute left-full top-8 bg-white/10 backdrop-blur-xl rounded-lg border border-white/20 py-2 min-w-[120px] ml-1">
+                                <button
+                                  onClick={() => handlePhotoShare(post, "twitter")}
+                                  className="w-full px-3 py-2 text-left text-white/80 hover:bg-white/10 transition-colors text-sm"
+                                >
+                                  Twitter
+                                </button>
+                                <button
+                                  onClick={() => handlePhotoShare(post, "facebook")}
+                                  className="w-full px-3 py-2 text-left text-white/80 hover:bg-white/10 transition-colors text-sm"
+                                >
+                                  Facebook
+                                </button>
+                                <button
+                                  onClick={() => handlePhotoShare(post, "copy")}
+                                  className="w-full px-3 py-2 text-left text-white/80 hover:bg-white/10 transition-colors text-sm"
+                                >
+                                  Copy Link
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Photo Info */}
+                    <div className="mt-2">
+                      <p className="text-white/80 text-xs font-medium truncate">
+                        {post.productName}
+                      </p>
+                      <p className="text-white/60 text-xs">
+                        {post.modelUsed}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Camera className="w-8 h-8 text-white/60" />
+                </div>
+                <p className="text-white/60 text-sm">
+                  No photos yet. Start creating AI fashion content!
+                </p>
+              </div>
+            )}
+            
+            {reelPosts.length > 6 && (
+              <div className="mt-4 text-center">
+                <button className="text-white/60 hover:text-white text-sm transition-colors">
+                  View All Photos ({reelPosts.length})
+                </button>
+              </div>
+            )}
           </motion.div>
         </motion.div>
       </motion.div>

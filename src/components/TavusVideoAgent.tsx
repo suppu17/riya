@@ -3,6 +3,10 @@ import { FaMicrophone, FaPause } from "react-icons/fa6";
 import { Video, VideoOff, Mic, MicOff, Phone } from "lucide-react";
 import DailyIframe from "@daily-co/daily-js";
 import { useShopping } from "../contexts/ShoppingContext";
+import {
+  tavusConfig,
+  updatePersonaWithShoppingCartTool,
+} from "../config/tavusConfig";
 
 interface TavusVideoAgentProps {
   onClose: () => void;
@@ -22,6 +26,7 @@ const TavusVideoAgent: React.FC<TavusVideoAgentProps> = ({
   const {
     products,
     setSelectedProduct,
+    smoothProductChange,
     addToCart,
     selectedProduct,
     setCurrentCategory,
@@ -66,140 +71,6 @@ const TavusVideoAgent: React.FC<TavusVideoAgentProps> = ({
   const replicaId = import.meta.env.VITE_TAVUS_REPLICA_ID || "r785cb52c85";
   const personaId = import.meta.env.VITE_TAVUS_PERSONA_ID || "p9c2a1e5f3";
 
-  const updatePersonaWithShoppingCartTool = async (personaId) => {
-    const updateData = [
-      {
-        op: "replace",
-        path: "/layers/llm/tools",
-        value: [
-          {
-            type: "function",
-            function: {
-              name: "search_products",
-              description:
-                "Use this tool when a customer asks for specific products or suggestions. Display the results naturally within the conversation. The arguments to this tool are free-form text describing the product the user is looking for.",
-              parameters: {
-                type: "object",
-                properties: {
-                  query: {
-                    type: "string",
-                    description:
-                      "Free-form text describing the product the user is looking for",
-                  },
-                },
-                required: ["query"],
-              },
-            },
-          },
-          {
-            type: "function",
-            function: {
-              name: "add_to_cart",
-              description:
-                "Use this tool when the customer wants to purchase an item. Add the product ID to the cart and confirm the addition to the user. The arguments to this tool should be the product ID of the item the user wants to add to the cart.",
-              parameters: {
-                type: "object",
-                properties: {
-                  productId: {
-                    type: "string",
-                    description:
-                      "The product ID of the item the user wants to add to the cart",
-                  },
-                },
-                required: ["productId"],
-              },
-            },
-          },
-          {
-            type: "function",
-            function: {
-              name: "switch_category",
-              description:
-                "Use this tool if the customer is discussing or switching to a specific category (e.g., 'show me some clothes or bags' or 'I'm looking for a new watch'). Pass the appropriate category name based on your knowledge base.",
-              parameters: {
-                type: "object",
-                properties: {
-                  categoryName: {
-                    type: "string",
-                    description:
-                      "The category name the user wants to switch to",
-                  },
-                },
-                required: ["categoryName"],
-              },
-            },
-          },
-          {
-            type: "function",
-            function: {
-              name: "show_kart",
-              description:
-                "Show the cart when the user asks to checkout and wants to place the order for confirmation on what they are about to place. No arguments are needed for this tool.",
-              parameters: {
-                type: "object",
-                properties: {},
-                required: [],
-              },
-            },
-          },
-          {
-            type: "function",
-            function: {
-              name: "trigger_checkout",
-              description:
-                "Trigger this tool when the user confirms the order and says they can submit the order and complete the order, asking for confirmation before triggering the tool. No arguments are needed for this tool.",
-              parameters: {
-                type: "object",
-                properties: {},
-                required: [],
-              },
-            },
-          },
-          {
-            type: "function",
-            function: {
-              name: "try_on_me",
-              description:
-                "Use this tool when the customer wants to try on a product virtually. Make sure the user has selected a photo before triggering this tool. No arguments are needed for this tool.",
-              parameters: {
-                type: "object",
-                properties: {},
-                required: [],
-              },
-            },
-          },
-        ],
-      },
-    ];
-
-    const apiKey = process.env.NEXT_PUBLIC_TAVUS_API_KEY;
-
-    try {
-      const response = await fetch(
-        `https://tavusapi.com/v2/personas/${personaId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": apiKey,
-          },
-          body: JSON.stringify(updateData),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log("Shopping cart tool updated successfully:", result);
-      return result;
-    } catch (error) {
-      console.error("Error updating persona with shopping cart tool:", error);
-      throw error;
-    }
-  };
-
   /**
    * Creates a new Tavus conversation
    */
@@ -214,7 +85,9 @@ const TavusVideoAgent: React.FC<TavusVideoAgentProps> = ({
 
       console.log("Creating Tavus conversation...");
 
-      // await updatePersonaWithShoppingCartTool(personaId);
+      await updatePersonaWithShoppingCartTool(personaId);
+
+      const conversational_context = tavusConfig.getPromptText();
 
       const response = await fetch("https://tavusapi.com/v2/conversations", {
         method: "POST",
@@ -225,105 +98,9 @@ const TavusVideoAgent: React.FC<TavusVideoAgentProps> = ({
         body: JSON.stringify({
           replica_id: replicaId,
           persona_id: personaId,
-          callback_url: window.location.origin + "/api/tavus-webhook",
-          conversational_context: `# Personality
-
-You are Riya, a friendly, cheerful, and enthusiastic shopping assistant for our online store.
-Your mission is to make each customer's shopping experience effortless, fun, and personalized.
-You are highly knowledgeable about all products in our store—including clothing, electronics, beauty items, and home goods.
-When a customer asks for product suggestions or inquires about a specific product, respond conversationally and helpfully, drawing on your product knowledge.
-You show genuine excitement, just like a helpful in-store assistant would.
-Dont ask too many question recommand based on first ask 
-
-# Environment
-
-You are assisting customers shopping in our online store via voice.
-The customer cannot see the products directly, so you need to describe them clearly.
-You have access to product information, categories, and the customer's shopping cart.
-The customer might be using a variety of devices, including phones and smart speakers.
-
-# Tone
-
-Your tone is warm, approachable, and enthusiastic.
-Use a conversational style, like a helpful friend.
-Be positive and encouraging, making shopping fun.
-Use natural speech patterns with brief affirmations ("Great choice!", "I understand").
-Adapt your language to the customer's style – more casual with friendly customers, more formal when needed.
-
-# Goal
-
-Your primary goal is to guide customers through a seamless and enjoyable shopping experience:
-
-1. Understand the customer's needs  trigger the tool for faster response use switch category for switch the category based on the current item :  ['Clothing', 'Bags', 'Watches', 'Shoes']  -> provide one 
-2. show the product the product id based on the suggestion you have to the user 
-3. Show the cart when the user asks to checkout and wants to place the order for confirmation on what they are about to place.
-4. Trigger the checkout when the user confirms the order and says they can submit the order and complete the order, asking for confirmation before triggering the checkout. 
-
-# Guardrails
-
-Only recommend products available in our store. use knowdgle data shared 
-Never provide personal opinions or biased recommendations.
-Avoid discussing topics unrelated to shopping.
-If you don't know an answer, admit it and offer to find out or suggest alternative solutions.
-Maintain a professional and respectful tone at all times.
-Do not ask for Personally Identifiable Information (PII).
-Do not make assumptions about the user's needs; always ask clarifying questions.
-
-# Tools
-
-You have access to the following tools:
-
-search_products: Use this tool when a customer asks for specific products or suggestions. Display the results naturally within the conversation. The arguments to this tool are free-form text describing the product the user is looking for.
-
-add_to_cart: Use this tool when the customer wants to purchase an item. Add the product ID to the cart and confirm the addition to the user. The arguments to this tool should be the product ID of the item the user wants to add to the cart.
-
-switch_category: switch category for switch the category based on the current discussion automatic :  ['Clothing', 'Bags', 'Watches', 'Shoes']  -> provide one 
-
-show_kart: Show the cart when the user asks to checkout and wants to place the order for confirmation on what they are about to place. No arguments are needed for this tool.
-
-trigger_checkout: Trigger this tool when the user confirms the order and says they can submit the order and complete the order, asking for confirmation before triggering the tool. No arguments are needed for this tool.
-
-
-“try_on_me”: before trigger this make sure use selected the photo which he want to try on himself  
-Your store Products: [dont mention anything outside here]
-
-## Product Catalog (10 Featured Items)
-
-| ID | Category | Keywords |
-|----|----------|----------|
-| 16 | Clothing | Denim, pink, Pinkandblack, Jacket, LV, Cute, trendy, chic |
-| 32 | Bags | Iconic Handbag, Louis Vuitton, Small, Cute, Handy, Original |
-| 33 | Bags | Premium Tote Bag, Blue, Monogram, Denim, Louis Vuitton, Officewear, Sophisticated Design |
-| 34 | Bags | Brown, Monogram, Canvas, Louis Vuitton, Hide Away, Workwear, Weekendwear |
-| 8 | Clothing | Denim, A-line Dress, Louis Vuitton, Dresses, Clothing, Elegant |
-| 9 | Shoes | LV Isola, Flat Mule, Stylish, Signature Design |
-| 13 | Clothing | Knit Dress, Navy, Made in Italy, Sleeveless, Louis Vuitton, Stylish, Vintage |
-| 14 | Clothing | Red Color, Louis Vuitton, silk, Christmas, Elegant, Longdress, fulllength, Sleeveless |
-| 18 | Watches | steel, white, navy, sporty |
-| 20 | Watches | 18-carat, white gold, spin time, dolphin, limited edition |
-
-## Detailed Product Information:
-
-**Clothing:**
-- ID 16: Embroidered Accent Denim Jacket - $4650 (Premium denim jacket with intricate embroidered accents)
-- ID 8: Louis Vuitton Monogram Denim Dress - $3250 (Elegant floral jacquard A-line dress)
-- ID 13: Signature Accent Knit Dress - $4300 (Luxurious signature accent knit dress with refined details)
-- ID 14: Striped Lavalliere Dress - $4750 (Elegant striped lavalliere dress with sophisticated styling)
-
-**Bags:**
-- ID 32: Alma BB - $1900 (Iconic structured handbag with timeless appeal)
-- ID 33: OnTheGo PM - $4000 (Premium tote bag with sophisticated design and ample space)
-- ID 34: Hide Away MM - $3400 (Versatile handbag with modern design and practical functionality)
-
-**Shoes:**
-- ID 9: Louis Vuitton LV Isola Flat Mule - $795 (Stylish flat mule with signature LV design elements)
-
-**Watches:**
-- ID 18: Tambour Street Diver - $5965 (Professional diving watch with quartz movement and steel construction)
-- ID 20: Tambour Taiko Spin Time Air - $85500 (Limited Edition masterpiece with flying tourbillon)
-`,
+          callback_url: `${window.location.origin}/api/tavus-webhook`,
+          conversational_context,
           custom_greeting: "Hello, I'm Riya, your AI stylist agent. ",
-
           properties: {
             max_call_duration: 3600,
             participant_left_timeout: 60,
@@ -361,13 +138,13 @@ Your store Products: [dont mention anything outside here]
   const processMessage = useCallback(
     async (message: any) => {
       if (message.event_type === "conversation.tool_call") {
-        console.log("Tool call message received:", message);
+        console.log("Tool call:", message);
         const { name, arguments: args, tool_call_id } = message.properties;
 
         try {
           const parsedArgs = JSON.parse(args);
           console.log(`Processing tool: ${name} with args:`, parsedArgs);
-          
+
           let result = "";
 
           switch (name) {
@@ -377,45 +154,434 @@ Your store Products: [dont mention anything outside here]
                 JSON.stringify(parsedArgs, null, 2)
               );
 
-              // Handle multiple argument formats
               const query =
                 parsedArgs.query ||
+                parsedArgs.productID ||
                 parsedArgs.type?.productID ||
                 parsedArgs.productID;
+
+              const searchContext = parsedArgs.searchContext || {};
+              const searchType = parsedArgs.type?.searchType || 'semantic';
 
               if (!query) {
                 console.error("Search query is required");
                 return "I'm sorry, I need a search query to find products.";
               }
 
-              // Enhanced search logic - check keywords, name, category, and description
-              const searchResults = products.filter((product) => {
-                const searchTerm = query.toLowerCase();
-                return (
-                  product.name.toLowerCase().includes(searchTerm) ||
-                  product.category.toLowerCase().includes(searchTerm) ||
-                  (product.description &&
-                    product.description.toLowerCase().includes(searchTerm)) ||
-                  (product.keyWords &&
-                    product.keyWords.some((keyword) =>
-                      keyword.toLowerCase().includes(searchTerm)
-                    ))
-                );
-              });
+              // Extract context from natural language query
+              const extractContextFromQuery = (query: string) => {
+                const lowerQuery = query.toLowerCase();
+                const extractedContext: any = {};
+                
+                // Extract occasion context
+                if (lowerQuery.includes('business') || lowerQuery.includes('work') || lowerQuery.includes('office')) {
+                  extractedContext.occasion = 'business';
+                } else if (lowerQuery.includes('formal') || lowerQuery.includes('elegant') || lowerQuery.includes('sophisticated')) {
+                  extractedContext.occasion = 'formal';
+                } else if (lowerQuery.includes('casual') || lowerQuery.includes('everyday') || lowerQuery.includes('relaxed')) {
+                  extractedContext.occasion = 'casual';
+                } else if (lowerQuery.includes('evening') || lowerQuery.includes('night') || lowerQuery.includes('dinner')) {
+                  extractedContext.occasion = 'evening';
+                } else if (lowerQuery.includes('weekend') || lowerQuery.includes('leisure')) {
+                  extractedContext.occasion = 'weekend';
+                }
+                
+                // Extract price context
+                if (lowerQuery.includes('affordable') || lowerQuery.includes('cheap') || lowerQuery.includes('budget')) {
+                  extractedContext.priceRange = 'affordable';
+                } else if (lowerQuery.includes('luxury') || lowerQuery.includes('premium') || lowerQuery.includes('expensive')) {
+                  extractedContext.priceRange = 'luxury';
+                } else if (lowerQuery.includes('mid-range') || lowerQuery.includes('moderate')) {
+                  extractedContext.priceRange = 'mid-range';
+                }
+                
+                // Extract price ranges with numbers
+                const priceMatch = lowerQuery.match(/under\s*\$?(\d+)|below\s*\$?(\d+)|less than\s*\$?(\d+)/);
+                if (priceMatch) {
+                  const amount = parseInt(priceMatch[1] || priceMatch[2] || priceMatch[3]);
+                  extractedContext.priceRange = `under $${amount}`;
+                }
+                
+                // Extract style context
+                if (lowerQuery.includes('modern') || lowerQuery.includes('contemporary')) {
+                  extractedContext.style = 'modern';
+                } else if (lowerQuery.includes('classic') || lowerQuery.includes('timeless') || lowerQuery.includes('traditional')) {
+                  extractedContext.style = 'classic';
+                } else if (lowerQuery.includes('trendy') || lowerQuery.includes('fashionable') || lowerQuery.includes('stylish')) {
+                  extractedContext.style = 'trendy';
+                } else if (lowerQuery.includes('vintage') || lowerQuery.includes('retro')) {
+                  extractedContext.style = 'vintage';
+                } else if (lowerQuery.includes('minimalist') || lowerQuery.includes('simple') || lowerQuery.includes('clean')) {
+                  extractedContext.style = 'minimalist';
+                }
+                
+                // Extract color context
+                const colors = ['red', 'blue', 'black', 'white', 'brown', 'navy', 'crimson', 'rust', 'pink', 'green', 'yellow', 'purple', 'gray', 'grey'];
+                for (const color of colors) {
+                  if (lowerQuery.includes(color)) {
+                    extractedContext.color = color;
+                    break;
+                  }
+                }
+                
+                return extractedContext;
+              };
+              
+              // Merge extracted context with provided context
+              const extractedContext = extractContextFromQuery(query);
+              const mergedContext = { ...extractedContext, ...searchContext };
+              
+              // Helper function to select the best product using AI reasoning
+              const selectBestProduct = (products: any[], context: any, query: string) => {
+                let bestProduct = products[0];
+                let highestScore = 0;
+                
+                products.forEach(product => {
+                  let score = 0;
+                  const productText = `${product.name} ${product.description} ${product.keyWords?.join(' ') || ''}`.toLowerCase();
+                  const queryLower = query.toLowerCase();
+                  
+                  // Category matching (highest priority)
+                  const categoryKeywords = {
+                    'bag': ['bag', 'bags', 'handbag', 'purse', 'tote', 'clutch', 'backpack'],
+                    'clothing': ['jacket', 'dress', 'top', 'shirt', 'blouse', 'sweater', 'coat'],
+                    'shoes': ['shoes', 'shoe', 'boots', 'sneakers', 'heels', 'sandals'],
+                    'watches': ['watch', 'watches', 'timepiece']
+                  };
+                  
+                  for (const [category, keywords] of Object.entries(categoryKeywords)) {
+                    if (keywords.some(keyword => queryLower.includes(keyword))) {
+                      if (product.category.toLowerCase().includes(category) || 
+                          keywords.some(keyword => product.category.toLowerCase().includes(keyword))) {
+                        score += 100; // Very high priority for category match
+                      }
+                    }
+                  }
+                  
+                  // Color preference (high priority)
+                  if (context.color) {
+                    const colorKeywords = context.color.toLowerCase();
+                    if (productText.includes(colorKeywords)) score += 80;
+                    // Handle color variations
+                    if (colorKeywords === 'red' && (productText.includes('crimson') || productText.includes('rust'))) score += 70;
+                    if (colorKeywords === 'blue' && (productText.includes('navy') || productText.includes('azure'))) score += 70;
+                    if (colorKeywords === 'white' && (productText.includes('ivory') || productText.includes('cream'))) score += 70;
+                  }
+                  
+                  // Query relevance (exact matches get higher scores)
+                  const queryWords = queryLower.split(' ');
+                  queryWords.forEach(word => {
+                    if (word.length > 2) { // Skip short words
+                      if (product.name.toLowerCase().includes(word)) score += 30;
+                      else if (productText.includes(word)) score += 15;
+                    }
+                  });
+                  
+                  // Style and occasion preference
+                  if (context.style) {
+                    const styleKeywords = context.style.toLowerCase();
+                    if (productText.includes(styleKeywords)) score += 25;
+                  }
+                  
+                  if (context.occasion) {
+                    const occasionKeywords = context.occasion.toLowerCase();
+                    if (productText.includes(occasionKeywords)) score += 25;
+                  }
+                  
+                  // Price preference scoring
+                  if (context.priceRange) {
+                    const price = product.price;
+                    if (context.priceRange === 'budget' && price < 100) score += 20;
+                    else if (context.priceRange === 'mid-range' && price >= 100 && price <= 500) score += 20;
+                    else if (context.priceRange === 'luxury' && price > 500) score += 20;
+                    else if (typeof context.priceRange === 'object') {
+                      const { min, max } = context.priceRange;
+                      if (price >= min && price <= max) score += 20;
+                    }
+                  }
+                  
+                  // Brand preference (if luxury brands mentioned)
+                  const luxuryBrands = ['louis vuitton', 'lv', 'chanel', 'gucci', 'prada', 'dior'];
+                  const productBrand = product.name.toLowerCase();
+                  if (luxuryBrands.some(brand => productBrand.includes(brand) || queryLower.includes(brand))) {
+                    score += 15;
+                  }
+                  
+                  if (score > highestScore) {
+                    highestScore = score;
+                    bestProduct = product;
+                  }
+                });
+                
+                // Log detailed scoring for debugging
+                const scoringResults = products.map(product => {
+                  let debugScore = 0;
+                  const productText = `${product.name} ${product.description} ${product.keyWords?.join(' ') || ''}`.toLowerCase();
+                  const queryLower = query.toLowerCase();
+                  
+                  // Recalculate score for logging
+                  const categoryKeywords = {
+                    'bag': ['bag', 'bags', 'handbag', 'purse', 'tote', 'clutch', 'backpack'],
+                    'clothing': ['jacket', 'dress', 'top', 'shirt', 'blouse', 'sweater', 'coat'],
+                    'shoes': ['shoes', 'shoe', 'boots', 'sneakers', 'heels', 'sandals'],
+                    'watches': ['watch', 'watches', 'timepiece']
+                  };
+                  
+                  let categoryScore = 0;
+                  for (const [category, keywords] of Object.entries(categoryKeywords)) {
+                    if (keywords.some(keyword => queryLower.includes(keyword))) {
+                      if (product.category.toLowerCase().includes(category) || 
+                          keywords.some(keyword => product.category.toLowerCase().includes(keyword))) {
+                        categoryScore = 100;
+                        debugScore += 100;
+                        break;
+                      }
+                    }
+                  }
+                  
+                  let colorScore = 0;
+                  if (context.color) {
+                    const colorKeywords = context.color.toLowerCase();
+                    if (productText.includes(colorKeywords)) {
+                      colorScore = 80;
+                      debugScore += 80;
+                    }
+                  }
+                  
+                  return {
+                    name: product.name,
+                    category: product.category,
+                    totalScore: debugScore,
+                    categoryScore,
+                    colorScore,
+                    isSelected: product === bestProduct
+                  };
+                });
+                
+                console.log('selectBestProduct detailed scoring:', {
+                  query,
+                  context,
+                  results: scoringResults,
+                  selectedProduct: bestProduct.name
+                });
+                
+                return bestProduct;
+              };
+              
+              // LLM-powered intelligent search with context understanding
+              const performIntelligentSearch = (query: string, context: any, type: string) => {
+                const searchTerms = query.toLowerCase().split(' ');
+                let scoredProducts = products.map(product => {
+                  let score = 0;
+                  const searchableText = [
+                    product.name,
+                    product.category,
+                    product.description || '',
+                    ...(product.keyWords || [])
+                  ].join(' ').toLowerCase();
+
+                  // Category matching (highest priority)
+                  const categoryKeywords = {
+                    'bag': ['bag', 'bags', 'handbag', 'purse', 'tote', 'clutch', 'backpack'],
+                    'clothing': ['jacket', 'dress', 'top', 'shirt', 'blouse', 'sweater', 'coat'],
+                    'shoes': ['shoes', 'shoe', 'boots', 'sneakers', 'heels', 'sandals'],
+                    'watches': ['watch', 'watches', 'timepiece']
+                  };
+                  
+                  // Check if query matches product category
+                  for (const [category, keywords] of Object.entries(categoryKeywords)) {
+                    if (keywords.some(keyword => query.toLowerCase().includes(keyword))) {
+                      if (product.category.toLowerCase().includes(category) || 
+                          keywords.some(keyword => product.category.toLowerCase().includes(keyword))) {
+                        score += 50; // High priority for category match
+                      }
+                    }
+                  }
+
+                  // Base keyword matching
+                  searchTerms.forEach(term => {
+                    if (searchableText.includes(term)) {
+                      score += 10;
+                    }
+                    // Partial matching for similar words
+                    if (searchableText.includes(term.substring(0, Math.max(3, term.length - 2)))) {
+                      score += 5;
+                    }
+                  });
+
+                  // Context-aware scoring
+                  if (context.occasion) {
+                    const occasion = context.occasion.toLowerCase();
+                    if (occasion === 'business' || occasion === 'formal') {
+                      if (searchableText.includes('blazer') || searchableText.includes('formal') || 
+                          searchableText.includes('professional') || searchableText.includes('elegant')) {
+                        score += 15;
+                      }
+                    }
+                    if (occasion === 'casual' || occasion === 'weekend') {
+                      if (searchableText.includes('casual') || searchableText.includes('denim') || 
+                          searchableText.includes('trendy') || searchableText.includes('comfortable')) {
+                        score += 15;
+                      }
+                    }
+                    if (occasion === 'evening') {
+                      if (searchableText.includes('elegant') || searchableText.includes('sophisticated') || 
+                          searchableText.includes('luxurious') || searchableText.includes('dress')) {
+                        score += 15;
+                      }
+                    }
+                  }
+
+                  // Price range scoring
+                  if (context.priceRange) {
+                    const priceRange = context.priceRange.toLowerCase();
+                    if (priceRange.includes('affordable') || priceRange.includes('under')) {
+                      if (product.price < 1500) score += 10;
+                    }
+                    if (priceRange.includes('luxury') || priceRange.includes('premium')) {
+                      if (product.price > 2000) score += 10;
+                    }
+                    if (priceRange.includes('mid-range')) {
+                      if (product.price >= 1000 && product.price <= 2500) score += 10;
+                    }
+                  }
+
+                  // Style scoring
+                  if (context.style) {
+                    const style = context.style.toLowerCase();
+                    if (style === 'modern' || style === 'contemporary') {
+                      if (searchableText.includes('modern') || searchableText.includes('contemporary') || 
+                          searchableText.includes('sleek')) {
+                        score += 12;
+                      }
+                    }
+                    if (style === 'classic' || style === 'timeless') {
+                      if (searchableText.includes('classic') || searchableText.includes('timeless') || 
+                          searchableText.includes('iconic')) {
+                        score += 12;
+                      }
+                    }
+                    if (style === 'trendy' || style === 'fashionable') {
+                      if (searchableText.includes('trendy') || searchableText.includes('chic') || 
+                          searchableText.includes('stylish')) {
+                        score += 12;
+                      }
+                    }
+                  }
+
+                  // Color scoring (high priority)
+                  if (context.color) {
+                    const color = context.color.toLowerCase();
+                    if (searchableText.includes(color)) {
+                      score += 40; // Increased priority for color match
+                    }
+                    // Handle color variations
+                    if (color === 'red' && (searchableText.includes('crimson') || searchableText.includes('rust'))) {
+                      score += 35;
+                    }
+                    if (color === 'blue' && (searchableText.includes('navy') || searchableText.includes('azure'))) {
+                      score += 35;
+                    }
+                    if (color === 'white' && (searchableText.includes('ivory') || searchableText.includes('cream'))) {
+                      score += 35;
+                    }
+                  }
+
+                  return { product, score };
+                }).filter(item => item.score > 0)
+                  .sort((a, b) => b.score - a.score);
+
+                return scoredProducts.map(item => item.product);
+              };
+
+              const searchResults = performIntelligentSearch(query, mergedContext, searchType);
 
               console.log(
-                `Found ${searchResults.length} products for query: "${query}"`
-              );
+                 `Found ${searchResults.length} products for query: "${query}" with context:`,
+                 mergedContext
+               );
 
-              // Set first result as selected if available
+              // Set best result as selected if available
               if (searchResults.length > 0) {
-                setSelectedProduct(searchResults[0]);
-                setCurrentCategory(searchResults[0].category);
-                result = `I found ${searchResults.length} products matching "${query}". I've selected the ${searchResults[0].name} for you to view.`;
+                // Use AI reasoning to select the best product from search results
+                const selectedProduct = selectBestProduct(searchResults, mergedContext, query);
+                
+                smoothProductChange(selectedProduct);
+                setCurrentCategory(selectedProduct.category);
+                
+                // Generate contextual response
+                 let contextualInfo = '';
+                 if (mergedContext.occasion) {
+                   contextualInfo += ` perfect for ${mergedContext.occasion} occasions`;
+                 }
+                 if (mergedContext.style) {
+                   contextualInfo += ` with a ${mergedContext.style} style`;
+                 }
+                 if (mergedContext.color) {
+                   contextualInfo += ` in ${mergedContext.color}`;
+                 }
+                 
+                 // Provide multiple recommendations
+                 const topRecommendations = searchResults.slice(0, 5).map(product => ({
+                   id: product.id,
+                   name: product.name,
+                   price: product.price,
+                   category: product.category,
+                   description: product.description
+                 }));
+                 
+                 // Return single product recommendation with additional context
+                 result = `Perfect! I found the ideal match for you: **${selectedProduct.name}** (ID: ${selectedProduct.id}) - $${selectedProduct.price}. ${selectedProduct.description}${contextualInfo}. This is my top recommendation based on your preferences${searchResults.length > 1 ? ` from ${searchResults.length} matching products` : ''}. Would you like to add it to your cart or see more details?`;
+                 
+                 console.log('AI Selected Best Product:', { id: selectedProduct.id, name: selectedProduct.name, price: selectedProduct.price, category: selectedProduct.category, totalFound: searchResults.length });
               } else {
-                result = `I'm sorry, I couldn't find any products matching "${query}". Please try a different search term.`;
+                // Enhanced fallback with intelligent single product recommendation
+                const fallbackProducts = [];
+                
+                // Check for color-based suggestions
+                if (extractedContext.color || mergedContext.color) {
+                  const colorQuery = extractedContext.color || mergedContext.color;
+                  const colorProducts = products.filter(product => {
+                    const searchText = `${product.name} ${product.description} ${product.keyWords?.join(' ') || ''}`.toLowerCase();
+                    return searchText.includes(colorQuery.toLowerCase());
+                  });
+                  fallbackProducts.push(...colorProducts);
+                }
+                
+                // Check for category-based suggestions
+                const queryWords = query.toLowerCase().split(' ');
+                const categoryKeywords = ['jacket', 'bag', 'dress', 'shoes', 'top', 'bottom', 'accessory'];
+                
+                queryWords.forEach(word => {
+                  if (categoryKeywords.includes(word)) {
+                    const categoryProducts = products.filter(product => 
+                      product.category.toLowerCase().includes(word) ||
+                      product.name.toLowerCase().includes(word)
+                    );
+                    fallbackProducts.push(...categoryProducts);
+                  }
+                });
+                
+                // Remove duplicates
+                const uniqueFallbackProducts = Array.from(new Set(fallbackProducts.map(p => p.id)))
+                  .map(id => fallbackProducts.find(p => p.id === id));
+                
+                if (uniqueFallbackProducts.length > 0) {
+                  // Use AI reasoning to select the best fallback product
+                  const bestFallback = uniqueFallbackProducts.length > 1 
+                    ? selectBestProduct(uniqueFallbackProducts, mergedContext, query)
+                    : uniqueFallbackProducts[0];
+                  
+                  smoothProductChange(bestFallback);
+                  setCurrentCategory(bestFallback.category);
+                  result = `I couldn't find an exact match for "${query}", but here's my best recommendation: **${bestFallback.name}** (ID: ${bestFallback.id}) - $${bestFallback.price}. ${bestFallback.description}. This matches some of your criteria${contextualInfo}. Would you like to see this or would you prefer to refine your search with more specific details like style, occasion, or budget?`;
+                } else {
+                  result = `I'm sorry, we don't have that product which you are looking for. I couldn't find any products matching "${query}"${contextualInfo}. To help me find the perfect item for you, could you please tell me more about: 1) What type of item are you looking for? 2) What's the occasion? 3) Any color preferences? 4) Your budget range? This will help me give you the best recommendation!`;
+                }
               }
+              
               break;
+
             }
 
             case "add_to_cart": {
@@ -431,15 +597,20 @@ Your store Products: [dont mention anything outside here]
                 parsedArgs.type?.productID;
 
               if (productId) {
+                // Convert productId to string since our product IDs are strings
+                const productIdString = String(productId);
+                
                 // Find product by ID
-                const productToAdd = products.find((p) => p.id === productId);
+                const productToAdd = products.find((p) => p.id === productIdString);
                 if (productToAdd) {
                   addToCart(productToAdd);
                   console.log(`Added ${productToAdd.name} to cart`);
                   result = `I've added the ${productToAdd.name} to your cart for $${productToAdd.price}.`;
                 } else {
-                  console.error("Product not found with ID:", productId);
-                  result = "I'm sorry, I couldn't find that product to add to your cart.";
+                  console.error("Product not found with ID:", productIdString);
+                  console.log("Available product IDs:", products.slice(0, 5).map(p => p.id));
+                  result =
+                    "I'm sorry, I couldn't find that product to add to your cart.";
                 }
               } else if (selectedProduct) {
                 // Use currently selected product
@@ -450,7 +621,8 @@ Your store Products: [dont mention anything outside here]
                 console.error(
                   "No product specified or selected for cart addition"
                 );
-                result = "I'm sorry, please select a product first or specify which product you'd like to add to your cart.";
+                result =
+                  "I'm sorry, please select a product first or specify which product you'd like to add to your cart.";
               }
               break;
             }
@@ -500,8 +672,25 @@ Your store Products: [dont mention anything outside here]
                 const categoryProducts = products.filter(
                   (p) => p.category === matchedCategory
                 );
+                
                 if (categoryProducts.length > 0) {
-                  setSelectedProduct(categoryProducts[0]);
+                  // If there's a specific product preference, try to find it
+                  let selectedCategoryProduct = categoryProducts[0];
+                  
+                  if (parsedArgs.preference) {
+                    const preferredProduct = categoryProducts.find(product => 
+                      product.name.toLowerCase().includes(parsedArgs.preference.toLowerCase()) ||
+                      product.description?.toLowerCase().includes(parsedArgs.preference.toLowerCase())
+                    );
+                    if (preferredProduct) {
+                      selectedCategoryProduct = preferredProduct;
+                    }
+                  }
+                  
+                  // Use smoothProductChange for better UI transitions
+                  smoothProductChange(selectedCategoryProduct);
+                  
+                  console.log(`Category switched to ${matchedCategory}, selected product: ${selectedCategoryProduct.name}`);
                 }
 
                 result = `I've switched to the ${matchedCategory} category and found ${
@@ -528,7 +717,8 @@ Your store Products: [dont mention anything outside here]
               openCartModal();
 
               if (cart.length === 0) {
-                result = "I've opened your cart. It's currently empty. Would you like me to help you find some products?";
+                result =
+                  "I've opened your cart. It's currently empty. Would you like me to help you find some products?";
               } else {
                 const totalItems = cart.reduce(
                   (sum, item) => sum + item.quantity,
@@ -584,7 +774,8 @@ Your store Products: [dont mention anything outside here]
               if (!selectedModelId) {
                 console.log("No selectedModelId found, opening photo modal");
                 openPhotoModal();
-                result = "Please select a photo first. I've opened the photo selection modal for you.";
+                result =
+                  "Please select a photo first. I've opened the photo selection modal for you.";
                 break;
               }
 
@@ -614,8 +805,8 @@ Your store Products: [dont mention anything outside here]
               event_type: "conversation.tool_call_result",
               properties: {
                 tool_call_id: tool_call_id,
-                result: result
-              }
+                result: result,
+              },
             });
           }
         } catch (error) {
@@ -626,8 +817,9 @@ Your store Products: [dont mention anything outside here]
               event_type: "conversation.tool_call_result",
               properties: {
                 tool_call_id: tool_call_id,
-                result: "I'm sorry, there was an error processing your request."
-              }
+                result:
+                  "I'm sorry, there was an error processing your request.",
+              },
             });
           }
         }
@@ -659,7 +851,6 @@ Your store Products: [dont mention anything outside here]
 
       const newCallObject = DailyIframe.createCallObject({
         dailyConfig: {
-          experimentalChromeVideoMuteLightOff: true,
           disableNotifications: true,
           disablePipButton: true,
           disableReactions: true,

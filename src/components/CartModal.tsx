@@ -150,12 +150,12 @@ const CartModal = forwardRef<CartModalRef, CartModalProps>(
       <div className="fixed inset-0 z-[9999] flex items-center justify-center">
         {/* Backdrop */}
         <div
-          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+          className="absolute inset-0"
           onClick={handleClose}
         />
 
         {/* Modal */}
-        <div className="relative w-full max-w-xl mx-4 h-[60%] bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl">
+        <div className="relative w-full max-w-xl mx-4 h-[60%] border border-white/20 rounded-3xl shadow-2xl">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-white/10">
             <h2 className="text-xl font-bold text-white flex items-center gap-2">
@@ -184,13 +184,13 @@ const CartModal = forwardRef<CartModalRef, CartModalProps>(
                 <p className="text-white/80 mb-4">
                   Thank you for your purchase
                 </p>
-                <div className="bg-white/10 rounded-2xl p-4 border border-white/20">
+                <div className="rounded-2xl p-4 border border-white/20">
                   <p className="text-white/60 text-sm mb-1">Order ID</p>
                   <p className="text-white font-mono text-lg">{orderId}</p>
                 </div>
                 <button
                   onClick={handleClose}
-                  className="mt-6 w-full bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 text-white font-semibold py-3 px-6 rounded-2xl transition-all duration-300 hover:shadow-lg hover:shadow-white/10"
+                  className="mt-6 w-full hover:bg-white/20 border border-white/20 text-white font-semibold py-3 px-6 rounded-2xl transition-all duration-300 hover:shadow-lg hover:shadow-white/10"
                 >
                   Continue Shopping
                 </button>
@@ -210,7 +210,7 @@ const CartModal = forwardRef<CartModalRef, CartModalProps>(
                       {cart.map((item) => (
                         <div
                           key={item.id}
-                          className="flex items-center gap-4 bg-white/5 rounded-2xl p-4"
+                          className="flex items-center gap-4 rounded-2xl p-4"
                         >
                           <img
                             src={item.image}
@@ -228,7 +228,7 @@ const CartModal = forwardRef<CartModalRef, CartModalProps>(
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => handleQuantityChange(item, -1)}
-                              className="w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors"
+                              className="w-8 h-8 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors"
                               disabled={item.quantity <= 1}
                             >
                               <Minus className="w-4 h-4" />
@@ -238,7 +238,7 @@ const CartModal = forwardRef<CartModalRef, CartModalProps>(
                             </span>
                             <button
                               onClick={() => handleQuantityChange(item, 1)}
-                              className="w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors"
+                              className="w-8 h-8 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors"
                             >
                               <Plus className="w-4 h-4" />
                             </button>
@@ -268,7 +268,7 @@ const CartModal = forwardRef<CartModalRef, CartModalProps>(
                       <button
                         onClick={() => handleCheckout()}
                         disabled={isCheckingOut || cart.length === 0}
-                        className="w-full bg-white/10 hover:bg-white/20 disabled:bg-white/5 backdrop-blur-xl border border-white/20 text-white font-semibold py-3 px-6 rounded-2xl transition-all duration-300 hover:shadow-lg hover:shadow-white/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        className="w-full hover:bg-white/20 border border-white/20 text-white font-semibold py-3 px-6 rounded-2xl transition-all duration-300 hover:shadow-lg hover:shadow-white/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       >
                         {isCheckingOut ? (
                           <>

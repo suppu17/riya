@@ -110,7 +110,8 @@ const ProductDisplay: React.FC = () => {
                   filter: "brightness(1.03)",
                 }}
               >
-                {/* AI Try On Button Overlay with Pink Theme */}
+                {/* AI Try On Button Overlay with Pink Theme - Only for Clothing */}
+                {selectedProduct?.category === 'Clothing' && (
                 <div className="absolute top-4 right-4 group/tooltip">
                   <motion.button
                     onClick={handleTryOnClick}
@@ -270,6 +271,7 @@ const ProductDisplay: React.FC = () => {
                     <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-black/90 border-l border-t border-white/20 rotate-45"></div>
                   </motion.div>
                 </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
