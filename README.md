@@ -1,5 +1,16 @@
 # SnapStyler 🛍️✨
- Demo Vide: https://youtu.be/9yQzZdF8qgs
+
+Watch product demo:
+
+<video width="100%" controls>
+  <source src="./public/demo.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+or 
+ link to Youtube Demo: https://youtu.be/9yQzZdF8qgs
+
+ ## Overview
 > **Your Personal Conversational Real-time AI Stylist**
 
 SnapStyler is a next-generation fashion shopping application that revolutionizes online shopping through AI-powered conversational experiences. Built with cutting-edge technologies including Tavus AI and ElevenLabs, it offers a hands-free, intelligent shopping journey where discovering and trying on fashion feels effortless.
